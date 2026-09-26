@@ -1,0 +1,19 @@
+return_name,form_viii_slr
+legal_basis,Section 24 Banking Regulation Act 1949 (Section 18 & 24 BR Act AACS for co-op banks)
+frequency,monthly_commercial_annual_ucb
+reporting_entity,Uttar Pradesh Grameen Bank (fictional demo entity)
+bank_id,RRB-DEMO-001
+institution_category,Regional_Rural_Bank
+reporting_period_end,2026-06-30
+
+field,value,unit
+net_demand_and_time_liabilities_ndtl,1146800.00,INR_lakh
+slr_required_percent,18.00,percent
+slr_required_amount,206424.00,INR_lakh
+cash_in_hand,2100.00,INR_lakh
+gold_at_book_value,0.00,INR_lakh
+unencumbered_govt_securities,298000.00,INR_lakh
+unencumbered_approved_securities,15000.00,INR_lakh
+total_slr_assets_held,315100.00,INR_lakh
+slr_maintained_percent,27.48,percent
+slr_excess_amount,108676.00,INR_lakh

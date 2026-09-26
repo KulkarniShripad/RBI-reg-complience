@@ -1,0 +1,42 @@
+return_name,form_a_crr
+legal_basis,Section 42(2) RBI Act 1934
+frequency,fortnightly
+reporting_entity,Uttar Pradesh Grameen Bank (fictional demo entity)
+bank_id,RRB-DEMO-001
+institution_category,Regional_Rural_Bank
+reporting_fortnight_end_friday,2026-06-19
+submission_type,final
+
+# --- PRINCIPAL FORM A (main return) ---
+field,value,unit
+demand_liabilities_india,184500.00,INR_lakh
+time_liabilities_india,962300.00,INR_lakh
+net_demand_and_time_liabilities_ndtl,1146800.00,INR_lakh
+legal_tender_notes_and_coins_held,2100.00,INR_lakh
+balance_held_at_rbi,45872.00,INR_lakh
+balances_at_other_banks_current_account,3120.00,INR_lakh
+money_at_call_and_short_notice,1800.00,INR_lakh
+investments_central_state_govt_securities,298000.00,INR_lakh
+advances_in_india,612400.00,INR_lakh
+inland_bills_purchased_discounted,8900.00,INR_lakh
+foreign_bills_purchased_discounted,0.00,INR_lakh
+crr_required_percent,4.50,percent
+crr_required_amount,51606.00,INR_lakh
+crr_maintained_amount,45872.00,INR_lakh
+crr_maintained_percent,4.00,percent
+crr_shortfall_amount,5734.00,INR_lakh
+
+# --- MEMORANDUM TO FORM A (post-1998 addendum) ---
+memo_field,value,unit
+paid_up_capital,8500.00,INR_lakh
+reserves,21300.00,INR_lakh
+time_deposits_short_term_upto_1yr,412000.00,INR_lakh
+time_deposits_long_term_above_1yr,550300.00,INR_lakh
+certificates_of_deposit_outstanding,0.00,INR_lakh
+
+# --- ANNEX A TO FORM A (foreign currency liabilities/assets + 2026 FCNR(B) exemption line) ---
+annex_a_field,value,unit
+fcnr_b_deposits_outstanding,0.00,INR_lakh
+fcnr_b_2026_exempt_para_20_8,0.00,INR_lakh
+overseas_foreign_currency_assets,0.00,INR_lakh
+bank_credit_in_india_foreign_currency,0.00,INR_lakh

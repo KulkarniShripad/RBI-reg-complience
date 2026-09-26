@@ -1,0 +1,13 @@
+return_name,priority_sector_lending_psl
+frequency,quarterly
+reporting_entity,Uttar Pradesh Grameen Bank (fictional demo entity)
+bank_id,RRB-DEMO-001
+reporting_period_end,2026-06-30
+adjusted_net_bank_credit_anbc_inr_lakh,910000.00
+
+sector,target_percent_of_anbc,achieved_percent_of_anbc,achieved_amount_inr_lakh,shortfall_percent
+total_priority_sector,75.00,71.20,647920.00,3.80
+agriculture,18.00,19.40,176540.00,0.00
+micro_enterprises,7.50,6.90,62790.00,0.60
+weaker_sections,12.00,10.10,91910.00,1.90
+export_credit,0.00,1.10,10010.00,0.00

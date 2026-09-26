@@ -1,0 +1,30 @@
+{
+  "name": "urcc-ef-backend",
+  "version": "0.1.0",
+  "description": "URCC-EF compliance checking backend - API layer over the Python ingestion pipeline's SQLite databases",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "migrate": "node migrations/run_migrations.js",
+    "migrate:fts": "node migrations/002_build_fts_index.js",
+    "scrape:rbi": "python3 scripts/rbi_scraper.py",
+    "ingest:build-db": "python3 scripts/db_builder.py",
+    "ingest:build-vectors": "python3 scripts/vector_db_builder.py"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "better-sqlite3": "^11.3.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-async-errors": "^3.1.1",
+    "multer": "^1.4.5-lts.1",
+    "node-cron": "^4.6.0",
+    "zod": "^3.23.8"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

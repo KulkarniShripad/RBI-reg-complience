@@ -1,0 +1,26 @@
+return_name,liberalised_remittance_scheme_lrs
+applicability_note,"LRS applies to Authorized Dealer (AD Category-I/II) banks remitting on behalf of resident individuals; included here for format completeness even though the demo bank (an RRB) is a marginal/edge case for this return - flag this when using the synthetic row"
+frequency,monthly
+reporting_entity,Uttar Pradesh Grameen Bank (fictional demo entity)
+bank_id,RRB-DEMO-001
+reporting_month,2026-06
+
+purpose_code,purpose_description,transaction_count,total_amount_usd,pan_verified_percent
+S0001,Overseas education,4,38000,100.0
+S0002,Medical treatment abroad,1,6500,100.0
+S0003,Overseas investment (equity/debt),2,15000,100.0
+S0004,Gift/donation,3,9200,100.0
+
+return_name,digital_payment_security_and_card_statistics
+frequency,monthly_quarterly
+field,value,unit
+active_debit_cards,142300,count
+active_credit_cards,0,count
+atm_transaction_volume,88500,count
+pos_transaction_volume,210400,count
+upi_transaction_volume,1204500,count
+payment_system_failures_reported,3,count
+fraud_incidents_reported,2,count
+fraud_amount_involved,185000,INR
+customer_grievances_received,41,count
+customer_grievances_resolved_within_tat,38,count

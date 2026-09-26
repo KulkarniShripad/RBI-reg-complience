@@ -1,0 +1,13 @@
+{
+  "bank_id": "RRB-DEMO-001",
+  "note": "Each string is one free-text policy/board-minute excerpt. This is the exact shape check_qualitative_compliance() and qualComplianceService.checkQualitative() consume - a flat list of strings, no structure, no metadata fields read by the current code.",
+  "evidence_texts": [
+    "Minutes of the Risk Management Committee, Q2 2026: The Committee reviewed the bank's early warning indicators for liquidity stress, including high frequency market data on deposit withdrawal patterns and interbank funding spreads. The Committee noted no material stress signals for the quarter and directed the treasury desk to continue daily monitoring.",
+    "Minutes of the Board meeting, March 2026: The Board was briefed on the status of the cyber crisis management plan. Implementation is ongoing; a full tabletop exercise has not yet been scheduled for this financial year.",
+    "Internal Audit Note, Feb 2026: KYC periodic updation for high-risk customers was reviewed for a sample of 40 accounts. Documentation was found complete for 38 of 40 accounts; two accounts flagged for follow-up.",
+    "Board Resolution, April 2026: The Board approved the revised Fit and Proper policy for directors, incorporating the declaration and undertaking format prescribed under the applicable RBI directions, and noted that a Nomination and Remuneration Committee review will be conducted annually.",
+    "Compliance Function Report, Q1 2026: The compliance function tracked 14 regulatory circulars issued during the quarter, assessed applicability for 11, and confirmed implementation for 9; 2 remain under review pending clarification from the concerned business vertical.",
+    "Grievance Redressal Cell Report, May 2026: Of 41 customer complaints received in the month, 38 were resolved within the prescribed turnaround time; 3 remain open pending documentation from the customer.",
+    "Outsourcing Committee Minutes, Jan 2026: The Committee reviewed the annual due-diligence report for the bank's core banking service provider, including a review of the provider's business continuity plan and data localization compliance, and found no material gaps."
+  ]
+}

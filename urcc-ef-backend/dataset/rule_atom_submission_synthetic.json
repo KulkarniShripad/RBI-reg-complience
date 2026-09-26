@@ -1,0 +1,15 @@
+{
+  "note": "This is the ONLY quantitative shape the current codebase can evaluate: {rule_id: single_float_value}. rule_id must already exist as a row in rule_atoms (i.e. already extracted from a real ingested circular via classifier.py's regex templates). There is no field here for period, borrower, currency, or bucket - see ANALYSIS.md for why the richer formats above (CRILC, ALM/SSL, Form A memo) cannot be fed into this dict as-is without new schema + a mapping layer.",
+  "bank_id": "RRB-DEMO-001",
+  "period_label": "2026-Q2",
+  "submitted_quantitative_data": {
+    "273": 27.3,
+    "279": 3.2,
+    "284": 91.0
+  },
+  "field_labels_for_llm_mapping_check": {
+    "273": "HTM category investments as % of total investment portfolio",
+    "279": "Single-broker transaction concentration, % of total broking turnover",
+    "284": "CRR maintenance, % of fortnightly required CRR"
+  }
+}

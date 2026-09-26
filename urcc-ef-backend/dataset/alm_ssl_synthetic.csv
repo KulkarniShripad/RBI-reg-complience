@@ -1,0 +1,18 @@
+return_name,ssl_statement_of_structural_liquidity
+note,"web source's generic label 'ALM Returns' maps to two distinct live XBRL returns: SSL (Statement of Structural Liquidity) and IRS/SIR (Interest Rate Sensitivity, Rupee/Forex) - not one single 'ALM' return code"
+frequency,fortnightly_monthly
+reporting_entity,Uttar Pradesh Grameen Bank (fictional demo entity)
+bank_id,RRB-DEMO-001
+reporting_date,2026-06-30
+
+time_bucket,inflows_inr_lakh,outflows_inr_lakh,cumulative_mismatch_inr_lakh,cumulative_mismatch_percent_of_outflows
+1_to_7_days,18500,21200,-2700,-12.7
+8_to_14_days,9200,8100,-1600,-8.5
+15_to_30_days,14300,15900,-3200,-11.0
+31_days_to_2_months,22100,19800,-900,-2.4
+2_to_3_months,17600,16200,500,1.1
+3_to_6_months,31000,28500,3000,4.6
+6_months_to_1_year,42000,39800,5200,5.8
+1_to_3_years,88000,71000,22200,18.2
+3_to_5_years,54000,48000,28200,20.9
+over_5_years,96000,61000,63200,31.4

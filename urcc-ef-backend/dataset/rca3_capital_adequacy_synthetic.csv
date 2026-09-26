@@ -1,0 +1,22 @@
+return_name,rca3_return_on_capital_adequacy
+note,"web source called this 'RCA2'; current live RBI XBRL return list (rbi.org.in list-of-returns-under-xbrl, DBS dept.) shows the active version as RCA3 - RCA2 appears to be a superseded/legacy label"
+frequency,quarterly
+reporting_entity,Uttar Pradesh Grameen Bank (fictional demo entity)
+bank_id,RRB-DEMO-001
+reporting_period_end,2026-06-30
+capital_framework,Basel III
+
+field,value,unit
+common_equity_tier1_capital,42000.00,INR_lakh
+additional_tier1_capital,3000.00,INR_lakh
+tier1_capital_total,45000.00,INR_lakh
+tier2_capital,9500.00,INR_lakh
+total_eligible_capital,54500.00,INR_lakh
+risk_weighted_assets_credit_risk,398000.00,INR_lakh
+risk_weighted_assets_market_risk,12500.00,INR_lakh
+risk_weighted_assets_operational_risk,31200.00,INR_lakh
+total_risk_weighted_assets,441700.00,INR_lakh
+crar_percent,12.34,percent
+crar_required_minimum_percent,11.50,percent
+tier1_capital_ratio_percent,10.19,percent
+leverage_ratio_percent,5.80,percent

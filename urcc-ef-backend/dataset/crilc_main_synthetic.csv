@@ -1,0 +1,23 @@
+return_name,crilc_main
+legal_basis,Section 27(2) Banking Regulation Act 1949 / CRILC framework (Jan 2014 guidelines)
+frequency,monthly_commercial_quarterly_ucb
+reporting_entity,Uttar Pradesh Grameen Bank (fictional demo entity)
+bank_id,RRB-DEMO-001
+threshold_note,only borrowers with aggregate fund+non-fund exposure >= INR 5 crore are reportable
+section,Section 1 - Exposure to Large Borrowers (Global Operations)
+
+borrower_id,borrower_name_fictional,pan_masked,fund_based_exposure_inr_cr,non_fund_based_exposure_inr_cr,aggregate_exposure_inr_cr,asset_classification,sma_status,days_past_due,jlf_formed,written_off_flag,reporting_period
+BRW-1001,Ganga Agro Traders Pvt Ltd,ABCDE1***F,6.20,0.80,7.00,Standard,SMA-0,12,No,No,2026-06
+BRW-1002,Yamuna Textiles Ltd,PQRSX2***M,14.50,2.10,16.60,Standard,None,0,No,No,2026-06
+BRW-1003,Saraswati Infra Projects,LMNOP3***K,22.00,5.30,27.30,Sub-Standard,SMA-2,74,Yes,No,2026-06
+BRW-1004,Kaveri Rice Mills,GHIJK4***R,5.10,0.00,5.10,Standard,SMA-1,35,No,No,2026-06
+BRW-1005,Narmada Cold Storage,TUVWX5***Z,9.80,1.20,11.00,Doubtful,None,190,No,No,2026-06
+BRW-1006,Godavari Dairy Coop,ABCXY6***Q,3.40,1.90,5.30,Standard,None,0,No,No,2026-06
+
+section,Section 3 - Balance in Current Account (Global Operations)
+borrower_id,current_account_credit_balance_inr_cr,reporting_period
+BRW-1003,0.45,2026-06
+
+section,Section 4 - Non-cooperative Borrowers (Global Operations)
+borrower_id,listed_as_non_cooperative,listing_date,reporting_period
+BRW-1005,Yes,2026-04-15,2026-06
