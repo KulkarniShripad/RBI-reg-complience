@@ -1,0 +1,7 @@
+{
+  "name": "sharp",
+  "version": "0.34.5",
+  "description": "Stub for sharp. @huggingface/transformers requires sharp at load time for image models; this project only embeds text, so the native image library is not needed.",
+  "main": "index.js",
+  "license": "MIT"
+}

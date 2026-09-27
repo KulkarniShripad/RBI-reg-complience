@@ -28,9 +28,13 @@
     "express-async-errors": "^3.1.1",
     "multer": "^1.4.5-lts.1",
     "node-cron": "^4.6.0",
+    "sharp": "file:vendor/sharp-stub",
     "zod": "^3.23.8"
   },
   "engines": {
     "node": ">=18"
+  },
+  "overrides": {
+    "sharp": "$sharp"
   }
 }
