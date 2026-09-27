@@ -12,11 +12,13 @@ const db = require("../config/db");
 const routing = require("./routingService");
 const quantService = require("./quantComplianceService");
 const qualService = require("./qualComplianceService");
-const vectorSearch = require("./vectorSearchService");
+const embedding = require("./embeddingService");
 
 const OPERATORS = {
   "<=": (v, t) => v <= t,
   ">=": (v, t) => v >= t,
+  "<": (v, t) => v < t,
+  ">": (v, t) => v > t,
   within_days: (v, t) => v <= t,
 };
 
@@ -29,28 +31,44 @@ async function runRoutedCompliance({ bankId, periodLabel, graphDataAvailable = f
   // TYPE is a signal it reasons about, not a pre-sorted queue.
   const allClauses = db
     .prepare(
-      `SELECT cr.clause_uri, cr.clause_type, cr.confidence, cr.needs_llm_refinement,
+      `SELECT cr.clause_uri, cr.clause_type, cr.clause_role, cr.needs_llm_refinement,
+              CASE WHEN ra.rule_id IS NOT NULL THEN ra.confidence ELSE cr.confidence END AS confidence,
               cr.clause_text, cr.page_number, d.rbi_ref,
               ra.rule_id, ra.operator, ra.threshold_value, ra.threshold_unit
        FROM clause_registry cr
        JOIN documents d ON cr.doc_id = d.doc_id
-       LEFT JOIN rule_atoms ra ON ra.clause_uri = cr.clause_uri
-       WHERE d.institution_category = ?`
+       LEFT JOIN rule_atoms ra ON ra.clause_uri = cr.clause_uri AND ra.atom_kind = 'requirement'
+       WHERE d.doc_id IN (SELECT doc_id FROM document_categories WHERE category = ?)
+         AND cr.clause_role = 'obligation'
+       ORDER BY d.title, cr.seq`
     )
     .all(bank.institution_category);
 
   // Keep routed runs bounded for interactive use. Quantitative and other
   // structured clauses are retained; qualitative clauses use the same
   // sample-size contract as the fixed-hybrid endpoint.
+  // Same qualitative sample as the fixed pipeline (round-robin across
+  // directions), so the two strategies are compared on identical clauses.
+  const sampledUris = new Set(
+    qualService.sampleObligations(bank.institution_category, qualSampleLimit).sample.map((c) => c.clause_uri)
+  );
   const clauses = [
     ...allClauses.filter((clause) => clause.rule_id != null),
-    ...allClauses.filter((clause) => clause.clause_type === "qualitative").slice(0, qualSampleLimit),
+    ...allClauses.filter((clause) => clause.rule_id == null && sampledUris.has(clause.clause_uri)),
   ];
 
   const evidenceRows = db
     .prepare(`SELECT evidence_text FROM bank_qual_evidence WHERE bank_id = ?`)
     .all(bankId)
     .map((r) => r.evidence_text);
+  let evidenceVecs = null;
+  if (evidenceRows.length) {
+    try {
+      evidenceVecs = await embedding.embedPassages(evidenceRows);
+    } catch (_) {
+      evidenceVecs = null;
+    }
+  }
 
   // Qualitative retrieval and judgment are run once for the selected sample.
   // Re-running the whole sample for every clause creates quadratic work and
@@ -81,7 +99,7 @@ async function runRoutedCompliance({ bankId, periodLabel, graphDataAvailable = f
         .get(bankId, clause.rule_id, periodLabel);
       evidenceAvailable = !!sub;
       reportedValue = sub?.reported_value ?? null;
-    } else if (clause.clause_type === "qualitative") {
+    } else if (clause.clause_type === "qualitative" || clause.clause_type === "quantitative") {
       evidenceAvailable = evidenceRows.length > 0;
     } else {
       evidenceAvailable = true; // relational/procedural clauses with no data requirement yet - don't short-circuit
@@ -89,11 +107,12 @@ async function runRoutedCompliance({ bankId, periodLabel, graphDataAvailable = f
 
     let retrievalTopScore = null;
     let retrievalSecondScore = null;
-    if (clause.clause_type === "qualitative" && evidenceRows.length > 0) {
+    if (!ruleAtom && evidenceVecs) {
       try {
-        const ranked = await vectorSearch.rankTexts(clause.clause_text, evidenceRows);
-        retrievalTopScore = ranked[0]?.score ?? null;
-        retrievalSecondScore = ranked[1]?.score ?? null;
+        const [cv] = await embedding.embedPassages([clause.clause_text]);
+        const ranked = evidenceVecs.map((v) => embedding.dot(cv, v)).sort((a, b) => b - a);
+        retrievalTopScore = ranked[0] ?? null;
+        retrievalSecondScore = ranked[1] ?? null;
       } catch (e) {
         // leave scores null - router treats this as "no retrieval score available"
       }

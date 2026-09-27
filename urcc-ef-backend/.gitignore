@@ -1,3 +1,12 @@
 node_modules/
 .env
 scripts/circulars/**/*.pdf.download
+
+# Embedding model files (downloaded on first use)
+models/
+# In-progress / scratch database files
+data/*.building
+data/*.building-*
+data/*.tfidf-legacy
+data/*-wal
+data/*-shm

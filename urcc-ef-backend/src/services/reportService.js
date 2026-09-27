@@ -108,7 +108,17 @@ function getRun(runId) {
     .prepare(`SELECT * FROM compliance_run_details WHERE run_id = ?`)
     .all(runId)
     .map((d) => ({ ...d, detail_json: JSON.parse(d.detail_json) }));
-  return { ...run, summary_json: JSON.parse(run.summary_json), details };
+  const report = JSON.parse(run.summary_json);
+  // The dashboard's history view reads report / quant_results / qual_results
+  // (the same shape POST .../run returns); details stay for API users.
+  return {
+    ...run,
+    summary_json: report,
+    report,
+    quant_results: details.filter((d) => d.check_type === "quantitative").map((d) => d.detail_json),
+    qual_results: details.filter((d) => d.check_type === "qualitative").map((d) => d.detail_json),
+    details,
+  };
 }
 
 module.exports = { generateReport, persistRun, listRuns, getRun };

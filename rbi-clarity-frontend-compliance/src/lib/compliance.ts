@@ -1,4 +1,5 @@
 import axios from "axios";
+import { API_BASE_URL } from "@/lib/api";
 import type {
   ApplicableRule,
   ComplianceSummary,
@@ -7,20 +8,7 @@ import type {
   SubmissionFlag,
 } from "@/lib/api";
 
-// ── Institution categories (subset of the existing FOLDER_SUBTOPICS taxonomy) ──
-export const INSTITUTION_CATEGORIES = [
-  "commercial_banks",
-  "NBFC",
-  "payment_banks",
-  "small_financial_banks",
-  "Regional_Rural_Bank",
-  "local_area_banks",
-  "Urban_Cooperative_Bank",
-  "Rural_Cooperative_Bank",
-  "All_India_Financial_Institutions",
-  "Asset_Reconstruction_Companies",
-  "Credit_Information_Services",
-] as const;
+// Institution categories are loaded from the backend - see src/lib/categories.ts.
 
 export const formatLabel = (s: string | null | undefined) =>
   (s ?? "").replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -240,7 +228,7 @@ export const getErrorMessage = (err: unknown, fallback = "Something went wrong."
   if (axios.isAxiosError(err)) {
     if (!err.response) {
       if (err.code === "ECONNABORTED") return "The request timed out. The backend may still be processing.";
-      return "Cannot reach the backend at http://localhost:4002. Check that it is running.";
+      return `Cannot reach the backend at ${API_BASE_URL}. Check that it is running.`;
     }
     const data = err.response.data as unknown;
     if (typeof data === "string" && data.trim()) return data;

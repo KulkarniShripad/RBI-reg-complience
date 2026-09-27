@@ -2,6 +2,7 @@ const db = require("../config/db");
 const quantService = require("../services/quantComplianceService");
 const qualService = require("../services/qualComplianceService");
 const anomalyService = require("../services/anomalyCheckService");
+const categoryService = require("../services/categoryService");
 
 function listBanks(req, res) {
   const rows = db.prepare(`SELECT * FROM banks ORDER BY created_at DESC`).all();
@@ -13,20 +14,20 @@ function createBank(req, res) {
   if (!bank_id || !bank_name || !institution_category) {
     return res.status(400).json({ error: "bank_id, bank_name, institution_category are required" });
   }
-  const validCategory = db
-    .prepare(`SELECT 1 FROM documents WHERE institution_category = ? LIMIT 1`)
-    .get(institution_category);
-  if (!validCategory) {
+  // Accept any spelling of a known category ("small financial banks",
+  // "SFB", "small_finance_banks") and store the canonical id.
+  const category = categoryService.normalise(institution_category);
+  if (!category || category === "multiple") {
     return res.status(400).json({
-      error: `institution_category '${institution_category}' has no matching documents in the corpus. ` +
-        `Check GET /api/meta/institution-categories for valid values.`,
+      error: `institution_category '${institution_category}' is not a known institution type.`,
+      valid_categories: categoryService.all().filter((c) => c.id !== "multiple").map((c) => ({ id: c.id, label: c.label })),
     });
   }
   db.prepare(
     `INSERT INTO banks (bank_id, bank_name, institution_category) VALUES (?, ?, ?)
      ON CONFLICT(bank_id) DO UPDATE SET bank_name = excluded.bank_name, institution_category = excluded.institution_category`
-  ).run(bank_id, bank_name, institution_category);
-  res.status(201).json({ bank_id, bank_name, institution_category });
+  ).run(bank_id, bank_name, category);
+  res.status(201).json({ bank_id, bank_name, institution_category: category, institution_label: categoryService.label(category) });
 }
 
 function getBank(req, res) {
@@ -118,14 +119,17 @@ function applicableQuantRules(req, res) {
 
   const rules = db
     .prepare(
-      `SELECT ra.rule_id, ra.operator, ra.threshold_value, ra.threshold_unit, ra.variable_text,
-              cr.clause_text, cr.page_number, d.rbi_ref,
+      `SELECT ra.rule_id, ra.operator, ra.threshold_value, ra.threshold_unit, ra.threshold_base, ra.variable_text,
+              ra.confidence, ra.sentence, cr.clause_uri, cr.clause_text, cr.page_number, cr.paragraph_number,
+              d.rbi_ref, d.title AS doc_title, d.doc_id,
               m.canonical_label, m.approved_by, m.cims_return_code, m.cims_field_tag
        FROM rule_atoms ra
        JOIN clause_registry cr ON ra.clause_uri = cr.clause_uri
        JOIN documents d ON cr.doc_id = d.doc_id
        LEFT JOIN rule_field_mappings m ON m.rule_id = ra.rule_id
-       WHERE d.institution_category = ?`
+       WHERE d.doc_id IN (SELECT doc_id FROM document_categories WHERE category = ?)
+         AND ra.atom_kind = 'requirement'
+       ORDER BY ra.confidence = 'high' DESC, d.title, cr.seq`
     )
     .all(bank.institution_category);
 

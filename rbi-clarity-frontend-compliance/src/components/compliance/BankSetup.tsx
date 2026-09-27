@@ -10,11 +10,10 @@ import { useToast } from "@/hooks/use-toast";
 import { createBank, type Bank } from "@/lib/api";
 import {
   BANK_ID_PATTERN,
-  INSTITUTION_CATEGORIES,
   formatDateTime,
-  formatLabel,
   getErrorMessage,
 } from "@/lib/compliance";
+import { categoryLabel, useCategories } from "@/lib/categories";
 import { cn } from "@/lib/utils";
 import { EmptyState, ErrorState, LoadingState, SectionHeading } from "./shared";
 
@@ -34,6 +33,7 @@ const emptyForm = { bank_id: "", bank_name: "", institution_category: "" };
 
 export const BankSetup = ({ banks, loading, error, onRetry, selectedBank, onSelect, onSaved }: Props) => {
   const { toast } = useToast();
+  const categories = useCategories(false);
   const [mode, setMode] = useState<"create" | "edit">("create");
   const [form, setForm] = useState(emptyForm);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -168,9 +168,9 @@ export const BankSetup = ({ banks, loading, error, onRetry, selectedBank, onSele
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
-                {INSTITUTION_CATEGORIES.map((c) => (
-                  <SelectItem key={c} value={c}>
-                    {formatLabel(c)}
+                {categories.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -235,7 +235,7 @@ export const BankSetup = ({ banks, loading, error, onRetry, selectedBank, onSele
                     <div className="flex flex-wrap items-center gap-2 mt-1">
                       <span className="text-xs text-muted-foreground">{b.bank_id}</span>
                       <Badge variant="secondary" className="text-xs">
-                        {formatLabel(b.institution_category)}
+                        {categoryLabel(categories, b.institution_category)}
                       </Badge>
                       {b.created_at && (
                         <span className="text-xs text-muted-foreground hidden sm:inline">

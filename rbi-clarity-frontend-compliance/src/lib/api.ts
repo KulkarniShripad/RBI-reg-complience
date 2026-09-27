@@ -1,47 +1,110 @@
 import axios from "axios";
 
+/** Backend URL. Override with VITE_API_BASE_URL in .env.local (e.g. http://localhost:4000). */
+export const API_BASE_URL: string =
+  (import.meta.env?.VITE_API_BASE_URL as string | undefined)?.replace(/\/$/, "") || "http://localhost:4002";
+
 const api = axios.create({
-  baseURL: "http://localhost:4002",
+  baseURL: API_BASE_URL,
   headers: { "Content-Type": "application/json" },
 });
 
-// ── Types ──
+// ── Chat ──
 
 export interface ChatMessage {
+  id?: string;
   role: "user" | "assistant";
   content: string;
   metadata?: ChatResponseData;
+  error?: boolean;
+  createdAt?: string;
 }
+
+export interface RuleAtomSummary {
+  rule_id: number;
+  operator: string;
+  threshold_value: number;
+  threshold_unit: string | null;
+  threshold_base?: string | null;
+  variable_text?: string | null;
+  atom_kind?: "requirement" | "condition" | string;
+  confidence?: string;
+}
+
+export interface CategoryRef {
+  id?: string;
+  category?: string;
+  label: string;
+}
+
+/** One retrieved provision the answer is based on. `clause_text` is the full paragraph. */
+export interface ChatSource {
+  id: number;
+  clause_uri: string;
+  doc_id: string;
+  doc_title: string;
+  rbi_ref?: string | null;
+  doc_date?: string | null;
+  categories?: CategoryRef[];
+  paragraph: string;
+  heading_path?: string | null;
+  page?: number | null;
+  page_end?: number | null;
+  clause_role?: string | null;
+  clause_text: string;
+  snippet?: string | null;
+  score?: number;
+  semantic_score?: number | null;
+  why?: string[];
+  rule_atoms?: RuleAtomSummary[];
+}
+
+export type AnswerMode = "llm" | "extractive" | "not_found" | "smalltalk";
 
 export interface ChatResponseData {
   query: string;
   answer: string;
+  answer_mode?: AnswerMode;
+  rewritten_query?: string | null;
+  sources?: ChatSource[];
+  detected_categories?: { id: string; label: string }[];
   relevant_rule_ids: string[];
   source_circulars: string[];
   confidence: "high" | "medium" | "low";
   sources_used: number;
   rules_matched: number;
   fallback_used: boolean;
+  fallbacks?: string[];
+  model?: string | null;
   rules_detail?: RuleDetail[];
-  error?: string;
+  error?: string | null;
+  elapsed_ms?: number;
 }
 
 export interface RuleDetail {
   rule_id: string;
   title: string;
   topic: string;
+  topic_label?: string;
   subtopic: string;
   is_active: boolean;
   tags: string[];
   plain_language_summary: string;
   source_circular_id: string;
+  document_title?: string;
+  doc_id?: string;
   effective_date?: string;
   requirements: Requirement[];
-  conditions: any[];
-  exceptions: any[];
-  penalties: any[];
+  conditions: unknown[];
+  exceptions: unknown[];
+  penalties: unknown[];
   related_rule_ids: string[];
   section_number?: string;
+  clause_uri?: string;
+  page?: number | null;
+  clause_text?: string;
+  atom_kind?: string;
+  confidence?: string;
   visualization_meta?: { cluster_color: string; node_label: string; cluster: string };
 }
 
@@ -49,19 +112,52 @@ export interface Requirement {
   type: string;
   field: string;
   value: number;
+  unit?: string | null;
   currency: string | null;
   description: string;
+}
+
+// ── Categories & topics (served by the backend; never hard-coded) ──
+
+export interface CategoryOption {
+  id: string;
+  label: string;
+  document_count?: number;
+}
+
+export interface TopicDocument {
+  doc_id: string;
+  title: string;
+  rbi_ref?: string | null;
+  topic?: string | null;
+  date?: string | null;
+  categories: { id: string; label: string }[];
+  families: { id: string; label: string }[];
+  clause_count: number;
+  rule_count: number;
+  uploaded?: boolean;
 }
 
 export interface TopicData {
   topic_id: string;
   label: string;
+  kind?: "institution" | "subject";
   subtopics: string[];
   related_topics: string[];
   rule_count: number;
   active_rule_count?: number;
+  document_count?: number;
+  clause_count?: number;
   circular_ids: string[];
+  documents?: TopicDocument[];
   visualization_meta?: { cluster_color: string };
+}
+
+export interface TopicsResponse {
+  topics: TopicData[];
+  families?: TopicData[];
+  total: number;
+  documents?: number;
 }
 
 export interface CircularData {
@@ -75,9 +171,55 @@ export interface CircularData {
   issuing_authority?: string;
 }
 
+// ── Documents / clauses (for verifying a source) ──
+
+export interface ClauseDetail {
+  clause_uri: string;
+  doc_id: string;
+  paragraph_number: string;
+  heading_path?: string | null;
+  clause_text: string;
+  clause_role?: string | null;
+  clause_type?: string | null;
+  page_number?: number | null;
+  page_end?: number | null;
+  document: {
+    doc_id: string;
+    title: string;
+    rbi_ref?: string | null;
+    doc_date?: string | null;
+    last_updated_label?: string | null;
+    categories?: { id: string; label: string }[];
+    pdf_available?: boolean;
+  } | null;
+  rule_atoms: (RuleAtomSummary & { sentence?: string | null })[];
+  cross_references: {
+    ref_type: string;
+    target_paragraph?: string | null;
+    target_annex?: string | null;
+    target_text?: string | null;
+    resolved_target_clause_uri?: string | null;
+    target_clause_text?: string | null;
+    target_doc_title?: string | null;
+  }[];
+  definitions: { term: string; definition_text: string }[];
+  footnotes: { page_number: number; footnote_text: string }[];
+  previous: { clause_uri: string; paragraph_number: string; preview: string } | null;
+  next: { clause_uri: string; paragraph_number: string; preview: string } | null;
+}
+
+export interface DocumentClause {
+  clause_uri: string;
+  paragraph_number: string;
+  heading_path?: string | null;
+  clause_text: string;
+  clause_role?: string | null;
+  page_number?: number | null;
+}
+
 export interface ComplianceResult {
   overall_status: "COMPLIANT" | "NON_COMPLIANT" | "INSUFFICIENT_DATA";
-  input_parsed: Record<string, any>;
+  input_parsed: Record<string, unknown>;
   topic_checked: string;
   rules_evaluated: number;
   violations_count: number;
@@ -111,66 +253,100 @@ export interface RulesResponse {
 
 export interface UploadResult {
   success: boolean;
+  status?: "added" | "replaced";
   circular_id: string;
+  doc_id?: string;
   title: string;
+  rbi_ref?: string | null;
   topic: string;
+  institution_category?: string;
+  categories?: { id: string; label: string }[];
+  clauses?: number;
   rules_extracted: number;
+  conditions_extracted?: number;
+  definitions?: number;
   chunks_embedded: number;
-  word_count: number;
+  word_count?: number;
   note?: string;
+  warnings?: string[];
   error?: string;
   duplicate?: boolean;
 }
 
-// ── Topic taxonomy (static fallback) ──
+export interface ExistingDocument {
+  doc_id: string;
+  title?: string | null;
+  rbi_ref?: string | null;
+  file_path?: string | null;
+  last_updated_label?: string | null;
+}
 
-export const FOLDER_SUBTOPICS: Record<string, string[]> = {
-  commercial_banks:                 ["credit","deposits","NPA","capital_adequacy","interest_rate"],
-  NBFC:                             ["registration","prudential_norms","fair_practices","systemic_risk"],
-  payment_banks:                    ["operations","deposit_limits","KYC","digital_payments"],
-  small_financial_banks:            ["lending","priority_sector","deposits","KYC"],
-  Regional_Rural_Bank:              ["agricultural_credit","priority_sector","refinance"],
-  local_area_banks:                 ["operations","capital","lending"],
-  Urban_Cooperative_Bank:           ["governance","audit","deposits","lending"],
-  Rural_Cooperative_Bank:           ["agricultural_credit","governance","audit"],
-  All_India_Financial_Institutions: ["long_term_finance","infrastructure","bonds"],
-  Asset_Reconstruction_Companies:   ["securitisation","NPA_acquisition","resolution"],
-  Credit_Information_Services:      ["credit_report","data_submission","dispute_resolution"],
-  KYC:                              ["small_account","re_kyc","video_kyc","aadhaar_kyc"],
-  AML:                              ["suspicious_transactions","cash_transactions","STR","CTR"],
-  PMLA:                             ["record_keeping","beneficial_ownership","reporting"],
-  forex:                            ["FEMA","remittance","import_export","ECB"],
-  governance:                       ["board_composition","audit","disclosure","risk_management"],
-  general:                          ["miscellaneous"],
-};
+/** Error body returned by POST /upload (409 duplicate / possible_update, 400, 422 ...). */
+export interface UploadErrorBody {
+  success: false;
+  error: string;
+  code: "duplicate" | "duplicate_in_progress" | "possible_update" | "not_pdf" | "unknown_category" | "no_text" | string;
+  duplicate?: boolean;
+  existing?: ExistingDocument | ExistingDocument[];
+  incoming?: { title: string; rbi_ref: string; last_updated_label?: string };
+}
 
 // ── API Calls ──
 
-export const askQuery = async (query: string, topic?: string): Promise<ChatResponseData> => {
-  const params: Record<string, string> = { query };
-  if (topic) params.topic = topic;
-  const res = await api.get("/ask", { params });
+export const askQuery = async (
+  query: string,
+  opts: { history?: { role: string; content: string }[]; category?: string | null } = {},
+): Promise<ChatResponseData> => {
+  const res = await api.post(
+    "/ask",
+    { query, history: opts.history ?? [], category: opts.category || undefined },
+    { timeout: 120_000 },
+  );
   return res.data;
 };
 
 export const uploadCircular = async (
   file: File,
-  topic: string = "general",
-  title?: string
+  category: string = "auto",
+  title?: string,
+  replace = false,
 ): Promise<UploadResult> => {
   const form = new FormData();
   form.append("file", file);
-  form.append("topic", topic);
+  form.append("category", category);
   if (title) form.append("title", title);
+  if (replace) form.append("replace", "true");
   const res = await api.post("/upload", form, {
     headers: { "Content-Type": "multipart/form-data" },
+    timeout: 600_000,
   });
   return res.data;
 };
 
-export const getTopics = async (): Promise<{ topics: TopicData[]; total: number }> => {
+/** SHA-256 of a file in the browser, to detect duplicates before uploading. */
+export const sha256OfFile = async (file: File): Promise<string | null> => {
+  try {
+    if (!globalThis.crypto?.subtle || typeof file.arrayBuffer !== "function") return null;
+    const digest = await globalThis.crypto.subtle.digest("SHA-256", await file.arrayBuffer());
+    return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
+  } catch {
+    return null;
+  }
+};
+
+export const checkDuplicate = async (sha256: string): Promise<{ duplicate: boolean; existing: ExistingDocument | null }> => {
+  const res = await api.post("/upload/check", { sha256 });
+  return res.data;
+};
+
+export const getTopics = async (): Promise<TopicsResponse> => {
   const res = await api.get("/topics");
   return res.data;
+};
+
+export const getCategories = async (): Promise<CategoryOption[]> => {
+  const res = await api.get("/categories");
+  return Array.isArray(res.data?.categories) ? res.data.categories : [];
 };
 
 export const getRules = async (params: {
@@ -180,10 +356,25 @@ export const getRules = async (params: {
   search?: string;
   page?: number;
   per_page?: number;
+  kind?: string;
 }): Promise<RulesResponse> => {
   const res = await api.get("/rules", { params });
   return res.data;
 };
+
+export const getClause = async (clauseUri: string): Promise<ClauseDetail> => {
+  const res = await api.get(`/api/documents/clauses/by-uri/${encodeURIComponent(clauseUri)}`);
+  return res.data;
+};
+
+export const getDocumentClauses = async (docId: string): Promise<DocumentClause[]> => {
+  const res = await api.get(`/api/documents/${encodeURIComponent(docId)}/clauses`, { params: { limit: 2000 } });
+  return Array.isArray(res.data) ? res.data : [];
+};
+
+/** URL of the original PDF, opened at a page. */
+export const pdfUrl = (docId: string, page?: number | null) =>
+  `${API_BASE_URL}/api/documents/${encodeURIComponent(docId)}/pdf${page ? `#page=${page}` : ""}`;
 
 export const checkCompliance = async (data: {
   data: string;
@@ -195,7 +386,7 @@ export const checkCompliance = async (data: {
 };
 
 export const testServices = async () => {
-  const res = await api.get("/test");
+  const res = await api.get("/api/health");
   return res.data;
 };
 

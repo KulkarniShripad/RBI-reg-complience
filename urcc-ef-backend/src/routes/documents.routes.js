@@ -3,9 +3,10 @@ const ctrl = require("../controllers/documentController");
 
 router.get("/stats", ctrl.corpusStats);
 router.get("/institution-categories", ctrl.institutionCategories);
-router.get("/clauses/by-uri/:clauseUri", ctrl.getClauseByUri);
+router.get("/clauses/by-uri/:clauseUri(*)", ctrl.getClauseByUri);
 router.get("/", ctrl.listDocuments);
 router.get("/:docId", ctrl.getDocument);
 router.get("/:docId/clauses", ctrl.getDocumentClauses);
+router.get("/:docId/pdf", ctrl.getDocumentPdf);
 
 module.exports = router;

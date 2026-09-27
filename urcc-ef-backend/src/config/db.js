@@ -15,11 +15,22 @@ const Database = require("better-sqlite3");
 const fs = require("fs");
 const env = require("./env");
 
+const HOW_TO_BUILD = 'Build it with "npm run build:corpus" (about 1 minute), then "npm run build:vectors".';
+
 if (!fs.existsSync(env.db.relationalPath)) {
-  console.warn(
-    `[db] WARNING: relational DB not found at ${env.db.relationalPath}. ` +
-      `Run "npm run ingest:build-db" first, or copy an existing urcc_ef.db into ./data/`
-  );
+  console.warn(`[db] WARNING: relational DB not found at ${env.db.relationalPath}. ${HOW_TO_BUILD}`);
+} else {
+  // A Git LFS pointer (a ~130-byte text file) is what you get when the repo is
+  // cloned without git-lfs; SQLite would only report "malformed".
+  const head = Buffer.alloc(64);
+  const fd = fs.openSync(env.db.relationalPath, "r");
+  fs.readSync(fd, head, 0, 64, 0);
+  fs.closeSync(fd);
+  if (head.toString("utf8").startsWith("version https://git-lfs")) {
+    throw new Error(
+      `[db] ${env.db.relationalPath} is a Git LFS pointer, not a database (the repo was cloned without git-lfs). ${HOW_TO_BUILD}`
+    );
+  }
 }
 
 const db = new Database(env.db.relationalPath, {
@@ -28,5 +39,25 @@ const db = new Database(env.db.relationalPath, {
 });
 db.pragma("journal_mode = WAL"); // lets reads and the ingestion job coexist without locking readers out
 db.pragma("foreign_keys = ON");
+
+// The API needs a corpus built by the current extraction pipeline (v2+:
+// canonical categories, clause roles, chunks_fts, ...). A database from the
+// old pipeline would only fail later with confusing SQL errors.
+function extractionVersion() {
+  try {
+    return db.prepare("SELECT value FROM corpus_meta WHERE key = 'extraction_version'").get()?.value ?? null;
+  } catch (_) {
+    return null;
+  }
+}
+const version = extractionVersion();
+if (!version || parseFloat(version) < 2) {
+  const msg =
+    `[db] ${env.db.relationalPath} was not built by the current extraction pipeline ` +
+    `(extraction_version=${version ?? "none"}). ${HOW_TO_BUILD} ` +
+    "Rebuilding keeps your banks, submissions, evidence and run history (they are carried over).";
+  if (process.env.NODE_ENV === "test") console.warn(msg);
+  else throw new Error(msg);
+}
 
 module.exports = db;

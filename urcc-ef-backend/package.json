@@ -1,20 +1,26 @@
 {
   "name": "urcc-ef-backend",
   "version": "0.1.0",
-  "description": "URCC-EF compliance checking backend - API layer over the Python ingestion pipeline's SQLite databases",
+  "description": "URCC-EF compliance backend: RBI corpus extraction (Python), hybrid semantic search and grounded chat, compliance checks (Node)",
   "main": "src/server.js",
   "type": "commonjs",
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
+    "setup": "npm run build:corpus && npm run build:vectors",
+    "build:corpus": "python3 scripts/db_builder.py build --circulars ../circulars --db data/urcc_ef.db --carry-over data/urcc_ef.db",
+    "build:vectors": "node scripts/build_vectors.js",
+    "build:vectors:rebuild": "node scripts/build_vectors.js --rebuild",
+    "audit": "python3 scripts/audit_extraction.py --db data/urcc_ef.db --circulars ../circulars --boundary-sample 300",
+    "eval:retrieval": "node scripts/eval_retrieval.js",
     "migrate": "node migrations/run_migrations.js",
     "migrate:fts": "node migrations/002_build_fts_index.js",
     "scrape:rbi": "python3 scripts/rbi_scraper.py",
-    "ingest:build-db": "python3 scripts/db_builder.py",
-    "ingest:build-vectors": "python3 scripts/vector_db_builder.py"
+    "test": "python3 -m unittest scripts/test_pipeline.py && node --test test/*.test.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
+    "@huggingface/transformers": "^3.8.1",
     "better-sqlite3": "^11.3.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

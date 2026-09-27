@@ -11,6 +11,7 @@ import CircularsPage from "./pages/CircularsPage";
 import RulesPage from "./pages/RulesPage";
 import CompliancePage from "./pages/CompliancePage";
 import NotFound from "./pages/NotFound";
+import { ChatProvider } from "./context/ChatContext";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <ChatProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
@@ -32,6 +34,7 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
+      </ChatProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

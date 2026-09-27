@@ -1,337 +1,206 @@
-# URCC-EF Backend (Node.js API layer)
+# URCC-EF Backend
 
-This is the API layer that sits on top of your existing Python ingestion
-pipeline. **The Python scripts didn't get rewritten** — they were moved into
-`scripts/` unchanged (plus two small new worker scripts) and the Node
-backend calls into the SQLite databases they produce, plus shells out to
-Python for the two things that are genuinely Python's job here (vector
-math, PDF scraping).
+Extraction pipeline (Python) + API (Node) for the RBI regulatory comprehension
+and compliance system:
 
-## How the pieces fit together
+- **Extraction**: the RBI Master Direction PDFs in `../circulars` are parsed into
+  paragraphs, annexes and footnotes, classified, and their numeric thresholds
+  extracted into rule atoms (`scripts/`).
+- **Search & chat**: hybrid retrieval (BM25 full-text + BGE semantic embeddings)
+  over every paragraph, and a grounded chat that cites the exact paragraphs it
+  used (`src/services/retrievalService.js`, `answerService.js`).
+- **Compliance**: deterministic checks of a bank's figures against extracted
+  thresholds, and LLM-judged checks of its governance evidence against
+  qualitative obligations — see [`../docs/COMPLIANCE_FLOW.md`](../docs/COMPLIANCE_FLOW.md).
 
-```
-scripts/                    <- your original pipeline, unchanged, + additions
-  parser.py                 (unchanged)
-  classifier.py              (unchanged)
-  chunker.py                  (unchanged)
-  db_builder.py             (ONE LINE PATCHED - see note below - otherwise
-                             unchanged; run this for a full fresh rebuild)
-  incremental_ingest.py      (NEW - safe way to add one new circular
-                              without rebuilding/destroying the whole DB)
-  build_vectors.py            (NEW - wraps vector_db_builder.py with a
-                               small-corpus dimension guard, see below)
-  vector_db_builder.py             (unchanged - run this to build urcc_ef_vectors.db)
-  query_demo.py                     (unchanged - kept as a CLI reference/debug tool)
-  compliance_checker.py              (unchanged - kept as reference; Node reimplements
-                                       its logic in src/services/ so it can call Gemini
-                                       for real instead of stubbing)
-  bank_submission_demo.py             (unchanged - kept as reference/seed data)
-  run_compliance_check.py              (unchanged - kept as CLI reference)
-  vector_search_worker.py              (NEW - thin CLI bridge, called by Node)
-  vector_rank_worker.py                (NEW - thin CLI bridge, called by Node)
-  rbi_scraper.py                        (NEW - the "keep the DB updated" scraper)
-  requirements.txt
+## Setup
 
-data/                        <- put urcc_ef.db, urcc_ef_vectors.db, vector_model.pkl here
-migrations/                  <- additive SQL + a persisted FTS5 index builder
-src/
-  config/                     env.js, db.js
-  services/                   geminiService.js, quantComplianceService.js,
-                               qualComplianceService.js, vectorSearchService.js,
-                               reportService.js
-  controllers/                bankController.js, complianceController.js,
-                               documentController.js, queryController.js,
-                               ingestController.js
-  routes/                     one file per resource, mounted under /api/*
-  server.js                   Express app + cron job for scheduled RBI checks
-```
-
-## Quick start — this exact repo already has a working demo database in it
-
-`data/urcc_ef.db`, `data/urcc_ef_vectors.db`, and `data/vector_model.pkl` in
-this zip are **real, already-built** databases — not placeholders. They
-were produced by actually running `parser.py` → `classifier.py` →
-`chunker.py` → the ingestion pipeline against two synthetic-but-realistic
-RBI-style circulars (see `scripts/circulars/`), the same way your real
-266-document corpus would be ingested. This means you can run the full
-demo immediately without building anything first:
+Requirements: Node ≥ 18, Python ≥ 3.10.
 
 ```bash
 cd urcc-ef-backend
 npm install
-pip install -r scripts/requirements.txt --break-system-packages
-cp .env.example .env   # add GEMINI_API_KEY if you want real qualitative judgments;
-                        # the demo below still works without one - see note in step 6
-npm start
+pip install -r scripts/requirements.txt        # PyMuPDF, requests, beautifulsoup4
+cp .env.example .env                            # add GEMINI_API_KEY (optional, see below)
+
+npm run build:corpus    # ~1 min: parse all PDFs in ../circulars -> data/urcc_ef.db
+npm run build:vectors   # embed every chunk -> data/urcc_ef_vectors.db
+                        #   ~15-25 min on a 4-core CPU the first time; later runs only embed new chunks.
+                        #   Downloads the embedding model (~130 MB) to ./models on first use.
+npm start               # http://localhost:4002
 ```
 
-In a second terminal:
-```bash
-bash scripts/demo/seed_and_test.sh
-```
+- `build:corpus` builds into a temporary file and swaps it in only when it
+  succeeds. If `data/urcc_ef.db` already exists, banks, submissions, evidence,
+  run history and approved rule mappings are **carried over**, and submissions
+  are re-pointed to the new rule ids where the same rule is found again.
+- If you start the server before `build:vectors` has finished (or after
+  uploads), chunks without an embedding are embedded in the background; until
+  then those chunks are still found by keyword search.
+- Without `GEMINI_API_KEY` everything still runs: chat answers are assembled
+  from the most relevant sentences of the retrieved paragraphs (and say so),
+  and qualitative compliance items come back as `NEEDS_REVIEW`.
+- The server refuses to start on a database from the previous pipeline and
+  tells you to run `npm run build:corpus`.
 
-That one script registers a bank, shows the applicable-rules form data,
-submits synthetic quantitative + qualitative data, then runs **all three**
-compliance check flavors (fixed-hybrid baseline, adaptive router, and a
-side-by-side comparison) and prints everything. Read
-`scripts/demo/sample_bank_data.json` first — it documents exactly what
-each submitted value is testing for (one intentional breach, two passes,
-one boundary-adjacent pass) and why.
+Other commands:
 
-**Without a `GEMINI_API_KEY` set**, qualitative clauses will correctly
-come back as `NEEDS_REVIEW` with an `{error: "..."}` judgment instead of a
-fabricated verdict — this is the honest-failure path in
-`qualComplianceService.js` working as designed, not a bug. Add a real key
-to see actual `COVERED`/`PARTIAL`/`LIKELY_GAP` judgments.
-
----
-
-## Setup from scratch (building your own corpus instead of the demo one)
-
-```bash
-cd urcc-ef-backend
-npm install
-pip install -r scripts/requirements.txt --break-system-packages   # or use a venv
-
-cp .env.example .env
-# edit .env: set GEMINI_API_KEY at minimum
-
-# Copy your already-built databases in (from the original project), or build fresh:
-cp /path/to/urcc_ef.db data/
-cp /path/to/urcc_ef_vectors.db data/
-cp /path/to/vector_model.pkl data/
-# --- OR, to build from scratch against your circulars.zip corpus ---
-# edit the paths at the bottom of scripts/db_builder.py, then:
-npm run ingest:build-db
-npm run ingest:build-vectors
-
-npm run migrate       # adds banks/submissions/compliance_runs/document_versions tables
-npm run migrate:fts   # builds the persisted full-text search index
-
-npm start             # or npm run dev for auto-restart
-```
-
-Server listens on `http://localhost:4000` by default.
-
----
-
-## Adding a new circular / updating the DB when RBI publishes something new
-
-**Do not just re-run `scripts/db_builder.py` against a live system.** It
-deletes and rebuilds `urcc_ef.db` from scratch on every run (`os.remove
-(db_path)` at the top) — fine for the very first ingest, but it will
-silently destroy every bank, submission, compliance run, and routing
-decision you've accumulated since. Use `incremental_ingest.py` instead:
-
-```bash
-# 1. Get the new PDF into the right category folder (rbi_scraper.py --mode
-#    apply does this automatically when run for real; see below)
-cp new_circular.pdf scripts/circulars/Regional_Rural_Bank/
-
-# 2. Add ONLY the new/changed documents - safe to run anytime, anti-idempotent
-#    re-runs are no-ops (already-ingested doc_ids are skipped, logged, not
-#    reprocessed)
-cd scripts
-python3 incremental_ingest.py circulars --db ../data/urcc_ef.db
-
-# 3. Re-embed (cheap at real corpus scale - only re-embeds what changed if
-#    you extend build_vectors.py to diff, or just re-run fully like this
-#    for now) and refresh full-text search
-python3 build_vectors.py
-cd .. && npm run migrate:fts
-```
-
-This was tested during development exactly this way: a second synthetic
-circular (`scripts/circulars/NBFC/sample_nbfc_capital_directions.pdf`) was
-added to a database that already had a registered bank, 4 quantitative
-submissions, 2 qualitative evidence rows, and 20 logged routing decisions
-— all of which survived untouched, confirmed by row-count comparison
-before/after. `incremental_ingest.py`'s docstring also states the one
-real limitation this doesn't solve: if an amendment shifts paragraph
-numbers, that document's `clause_uri`s change, which can orphan
-`rule_field_mappings`/`bank_quant_submissions` tied to the old numbering —
-the script deletes and re-inserts only that one document's rows and prints
-the old `rule_id`s so a human can review what to do about them, rather
-than attempting automatic rule migration.
-
-### Automating the RBI-side detection of "something changed"
-
-```bash
-# Check-only: refreshes rbi_watch_list by diffing RBI's own "(Updated as
-# on ...)" title labels - cheap, no downloads. Also runs automatically on
-# the cron schedule in .env (RBI_UPDATE_CRON).
-curl -X POST http://localhost:4000/api/ingest/scan
-
-# See what changed
-curl http://localhost:4000/api/ingest/pending-updates
-
-# Apply: downloads the changed PDFs into scripts/circulars/<category>/
-curl -X POST "http://localhost:4000/api/ingest/scan?apply=true"
-
-# Then run steps 2-3 above (incremental_ingest.py -> build_vectors.py -> migrate:fts)
-```
-Remember: `rbi_scraper.py` needs `rbi.org.in` reachable, which this
-sandbox's network allowlist doesn't include — run it from your own
-machine, not from inside this development environment.
-
----
-
-## The routing algorithm — how it actually decides, and how to see it decide
-
-`src/services/routingService.js` implements the adaptive modality router
-from `URCC-EF_Research_Blueprint.md` §5. For every clause applicable to a
-bank, it picks one of four routes and — critically for the research
-angle — **records exactly why**:
-
-| Route | Fires when |
+| Command | What it does |
 |---|---|
-| `RULE_ENGINE` | clause is quantitative, extraction confidence is `high`, and a clean `rule_atom` exists — never trusts a rule_atom alone if the classifier itself flagged low confidence |
-| `GRAPH` | clause is relational AND real ownership/exposure graph data exists for the bank (never fires in this codebase — no real data source, see blueprint §7; the gate is real, just never satisfied) |
-| `RAG_LLM` | vector-retrieval confidence is high — either a large score gap between the best and second-best evidence match (large evidence pools), or a high absolute top score when the evidence pool is too small (<3 documents) for a relative gap to mean anything |
-| `HUMAN` | nothing else met its bar, or a rule has a history of routes disagreeing on it |
+| `npm run audit` | verifies the built DB against the PDFs (coverage, cut-off clauses, numbering gaps, boundary fidelity) |
+| `npm run eval:retrieval` | retrieval quality on `eval/retrieval_eval.json` (Hit@k, MRR) |
+| `npm test` | API tests on a throw-away database (duplicate upload, categories, topics, chat fallback, ...) |
+| `npm run build:vectors:rebuild` | re-embed everything from scratch |
+| `bash scripts/demo/seed_and_test.sh` | end-to-end compliance demo against a running server |
 
-**This exact router surfaced and fixed a real bug during development,** worth
-knowing about since it's a genuine finding, not a hypothetical: with only 2
-qualitative evidence documents submitted, the *relative gap* between the
-top-1 and top-2 retrieval scores collapsed to 0.000 even when the top
-match was a clearly strong 0.89 absolute similarity — because with only 2
-candidates, "how much better is the best match than the second-best" stops
-being a meaningful signal. The router now uses an absolute-score floor
-instead of relative spread when the evidence pool is small
-(`THRESHOLDS.SMALL_POOL_SIZE` in `routingService.js`). This is exactly the
-kind of measured, reported finding the blueprint's ablation-study section
-wants — consider writing this up as a concrete example in your methods
-section rather than smoothing it out of the story.
+## Pipeline
 
-**See it decide, live:**
-```bash
-# Run the adaptive router and see route + reasons per clause
-curl -X POST http://localhost:4000/api/compliance/RRB-DEMO-001/run-routed \
-  -H "Content-Type: application/json" -d '{"period_label": "Q2-FY2026-27"}' | python3 -m json.tool
-
-# Compare it against the fixed-hybrid baseline on the same data (RQ1 experiment)
-curl -X POST http://localhost:4000/api/compliance/RRB-DEMO-001/compare \
-  -H "Content-Type: application/json" -d '{"period_label": "Q2-FY2026-27"}' | python3 -m json.tool
+```
+PDF ─► pdf_text.py ─► parser.py ─► classifier.py ─► chunker.py ─► db_builder.py ─► urcc_ef.db
+       layout lines    structure    roles, types,    legal-boundary   documents, clauses,
+       (fonts, x/y)    (chapters,   rule atoms,      chunks with      rule atoms, definitions,
+       footnotes out   sections,    definitions,     context prefix   cross-refs, annexes,
+       page nos out    paragraphs,  cross-refs                        footnotes, chunks, FTS5
+                       annexes)
+                                                        build_vectors.js ─► urcc_ef_vectors.db (BGE, 384-d)
 ```
 
-Every routing decision is also logged to the `routing_decisions` table
-(added by `migrations/004_routing_decisions.sql`) so you can query
-route-distribution and agreement-rate statistics across many runs later
-for the paper's experiments, not just inspect one run's JSON output.
+- **`pdf_text.py`** reads each page with PyMuPDF, keeping font size, bold and
+  position per span. It merges spans on the same baseline ("4." + "(1) In these
+  Directions ..."), drops footnote reference markers (superscript digits),
+  moves footnote text into its own table, and removes page numbers and running
+  headers.
+- **`parser.py`** segments the body: chapter / "Section I" / "Part" headings,
+  lettered sections (`A.`, `B.2`, `C.3.1`), numbered paragraphs (flat `12.`,
+  undotted `12 ` with hanging indent, decimal `3.1.2`, inserted `9A.`),
+  annexes, and the preamble. Paragraph numbers must continue the sequence and
+  sit at the left margin in body-size type — that is what keeps numbered
+  table rows and wrapped references ("... Paragraph\n53)") from becoming
+  clauses. Numbering that restarts under a new heading opens a new scope
+  (`II.3`). No text is ever discarded: anything that is not a paragraph lands
+  in the preamble, an unnumbered block (`12.u1`) or an annex.
+- **`classifier.py`** assigns a role to every clause (`obligation`,
+  `definition`, `applicability`, `short_title`, `repeal`, `deleted`,
+  `information`, `annex`, `preamble`) and extracts rule atoms sentence by
+  sentence. Each atom is a `requirement` (governed by shall / should / must)
+  or a `condition` (a threshold that only defines scope, e.g. "loans up to
+  ₹20 lakh").
+- **`categories.py`** is the single source of truth for institution categories
+  (the regulated-entity types on RBI's Master Directions page) and their
+  aliases, and derives each document's topic and subject family from its title.
+  A document can apply to several categories (`document_categories`).
+- **`chunker.py`** makes one chunk per paragraph, or per sub-clause /
+  definition when a paragraph is long, each repeating the paragraph's lead-in
+  sentence and prefixed with document, entity type and heading path.
+- **`db_builder.py`**: `build` (whole corpus, parallel, content-hash
+  de-duplication, atomic swap, carry-over) and `ingest` (one uploaded PDF).
 
----
+`doc_id` is the first 16 hex characters of the PDF's SHA-256, so the same file
+always gets the same id on any machine and is never ingested twice.
+`clause_uri` = `rbi://<category-slug>/<doc_id>/para<N>` (also `/annexI`,
+`/preamble`).
 
-## Setup from scratch (building your own corpus instead of the demo one)
+## Measured quality
 
-### Corpus browsing (read-only, over your existing 266-doc ingest)
+All numbers below were measured on the 266 PDFs in `../circulars`
+(264 distinct files) with `scripts/audit_extraction.py` and
+`scripts/eval_retrieval.js`, comparing the previous database with the rebuilt
+one.
+
+### Extraction
+
+| | Previous pipeline | Current pipeline |
+|---|---|---|
+| Documents with zero clauses | 16 | **0** |
+| Mean share of PDF words stored | 70.5 % | **99.7 %** |
+| Documents below 50 % coverage | 65 | **0** |
+| Clauses ending mid-sentence ¹ | 27.5 % | **7.1 %** |
+| Clauses with a page number glued on | 1,838 | **0** |
+| Duplicate documents | 3 groups | **0** |
+| Documents filed as `uncategorized` | 17 | **0** |
+| Boundary check, 400 random paragraphs: recall / precision ² | 0.939 / 0.995 | **0.996 / 1.000** |
+
+¹ The remaining 7 % mostly end in a table cell, a signature block or a list
+item ending "; and" — not truncations. ² Words between "N." and the next
+paragraph number in the raw PDF text vs. the stored clause (for the old DB this
+is measured only on paragraphs it kept at all).
+
+Rule atoms: 1,112 requirements + 3,116 conditions (previously 387 atoms with no
+requirement/condition distinction). Manual check of 30 random high-confidence
+requirements: operator, value and unit correct 30/30; requirement-vs-condition
+label correct 29/30. Small sample — expect errors, especially in
+`variable_text`.
+
+### Retrieval
+
+36 hand-written questions (`eval/retrieval_eval.json`), each with a regex for the
+correct clause. "Previous system" is the original `searchHybrid` (raw-question
+FTS5 + TF-IDF/SVD vectors) run on the previous database.
+
+| | Hit@1 | Hit@3 | Hit@5 | MRR@10 |
+|---|---|---|---|---|
+| Previous system | 0.167 | 0.194 | 0.250 | 0.196 |
+| New: keyword only (BM25) | 0.611 | 0.806 | 0.833 | 0.721 |
+| New: semantic only (BGE) | 0.611 | 0.667 | 0.806 | 0.675 |
+| **New: hybrid (used by chat)** | **0.722** | **0.778** | **0.833** | **0.768** |
+
+In the previous system 28 of the 36 questions made the full-text query fail
+(FTS5 syntax errors from punctuation such as `?`, silently swallowed), so it
+ran on TF-IDF vectors alone — and it sent Gemini only 400-character snippets.
+That is why simple questions came back "not enough context".
+Still missed in the top 5: the HTM ceiling phrased as "held to maturity
+category", NBFC minimum NOF, primary-dealer eligibility, a specific definition
+and a table-based threshold.
+
+## API
+
+### Chat, topics, rules, upload (used by the dashboard)
 | Method | Path | Purpose |
 |---|---|---|
-| GET | `/api/documents/stats` | corpus-wide counts (docs, clauses by type, rule atoms, etc.) |
-| GET | `/api/documents/institution-categories` | valid category values + doc counts, for populating a dropdown |
-| GET | `/api/documents?institution_category=&limit=&offset=` | list documents |
-| GET | `/api/documents/:docId` | one document + clause count |
-| GET | `/api/documents/:docId/clauses?clause_type=` | clauses within a document |
-| GET | `/api/documents/clauses/by-uri/:clauseUri` | a single clause + its rule_atoms + cross_references |
-| GET | `/api/query?q=...&top_k=5&institution_category=` | hybrid lexical+vector search (the chatbot backend) |
+| POST / GET | `/ask` | `{query, history?, category?}` → answer with `[n]` citations, `sources[]` (full clause text, document, RBI ref, paragraph, page, extracted rules), confidence, answer mode |
+| GET | `/topics` | topics computed from the DB: `topics` (by institution type) and `families` (by subject), each with its documents |
+| GET | `/categories` | canonical institution categories with document counts |
+| GET | `/rules?topic=&kind=requirement\|condition\|all&search=&page=` | extracted rule atoms |
+| POST | `/upload` | multipart `file`, `category` (id, alias or `auto`), `title?`, `replace?` → 201 added / 409 `duplicate` / 409 `possible_update` / 400 `not_pdf` / 400 `unknown_category` / 422 `no_text` |
+| POST | `/upload/check` | `{sha256}` → is this exact file already ingested? |
 
-### Banks — **this is how you input bank data**
+### Documents
 | Method | Path | Purpose |
 |---|---|---|
-| POST | `/api/banks` | register a bank: `{bank_id, bank_name, institution_category}` |
-| GET | `/api/banks` | list banks |
-| GET | `/api/banks/:bankId/applicable-rules?period_label=` | every quantitative rule that applies to this bank's category, with `already_submitted` flags — **use this to render the manual-entry form** |
-| POST | `/api/banks/:bankId/quant-submissions` | submit one or an array of `{rule_id, reported_value, period_label, source_note?}` — response includes `flags[]` from deterministic range + trend-anomaly checks (see `anomalyCheckService.js`); flags never block the write, they're a review signal |
-| GET | `/api/banks/:bankId/quant-submissions` | list what's been submitted |
-| POST | `/api/banks/:bankId/qual-evidence` | submit one or an array of `{evidence_text, source_type?, period_label?}` (board minutes, policy excerpts, audit notes) |
-| GET | `/api/banks/:bankId/qual-evidence` | list submitted evidence |
+| GET | `/api/documents?category=&family=&search=` | list documents |
+| GET | `/api/documents/:docId` | one document with counts, categories, annexes |
+| GET | `/api/documents/:docId/clauses` | its clauses in reading order |
+| GET | `/api/documents/:docId/pdf` | the original PDF (append `#page=N` in a browser) |
+| GET | `/api/documents/clauses/by-uri/:clauseUri` | one clause + document, rule atoms, resolved cross-references, footnotes, previous/next |
+| GET | `/api/documents/stats` | corpus counts |
+| GET | `/api/query?q=&category=` | raw hybrid retrieval with scores and match reasons (debugging) |
+| GET | `/api/health` | corpus version, vector index status, LLM configuration |
 
-**Manual entry workflow for the dashboard:**
-1. `POST /api/banks` once to register the bank.
-2. `GET /api/banks/:bankId/applicable-rules` to get the list of fields to show on a form.
-3. User fills in the form → `POST /api/banks/:bankId/quant-submissions` (bulk array).
-4. Paste in board minutes / policy text → `POST /api/banks/:bankId/qual-evidence`.
-5. Run the check (below).
+### Banks, compliance, rule mappings, RBI updates
+Unchanged in shape; see [`../docs/COMPLIANCE_FLOW.md`](../docs/COMPLIANCE_FLOW.md) for the full flow.
 
-### Rule field mapping curation — **this is how you actually guarantee correctness**
+| Method | Path |
+|---|---|
+| POST/GET | `/api/banks`, GET `/api/banks/:bankId` |
+| GET | `/api/banks/:bankId/applicable-rules?period_label=` |
+| POST/GET | `/api/banks/:bankId/quant-submissions`, `/api/banks/:bankId/qual-evidence` |
+| POST | `/api/compliance/:bankId/run`, `/run-routed`, `/compare` |
+| GET | `/api/compliance/:bankId/runs`, `/api/compliance/runs/:runId` |
+| GET/POST/PUT | `/api/rule-mappings`, `/:ruleId/suggest`, `/:ruleId/approve` |
+| GET/POST | `/api/ingest/watch-list`, `/pending-updates`, `/scan?apply=` (needs rbi.org.in reachable) |
 
-See the chat discussion: RBI's real reporting formats (XBRL/CIMS, return
-codes like `R089`, `DNBS-02`, etc.) are the authoritative source of "which
-figure is which," not runtime LLM inference. This workflow curates that
-mapping **once per rule, with a human approval gate**, instead of guessing
-per submission.
+## Known limitations
 
-| Method | Path | Purpose |
-|---|---|---|
-| GET | `/api/rule-mappings?approved_only=true` | list curated mappings |
-| POST | `/api/rule-mappings/:ruleId/suggest` | Gemini proposes a canonical label + possible CIMS return code/tag — **inert until approved** |
-| PUT | `/api/rule-mappings/:ruleId/approve` | human approval: `{canonical_label, cims_return_code?, cims_field_tag?, approved_by}` — only after this does `applicable-rules` serve `mapping_status: "approved"` for that rule |
-
-`GET /api/banks/:bankId/applicable-rules` now returns `form_label` and
-`mapping_status` per rule (`"approved"` vs `"unverified"`) — render
-unverified fields with a visible warning on the dashboard until curated.
-
-### Compliance checking
-| Method | Path | Purpose |
-|---|---|---|
-| POST | `/api/compliance/:bankId/run` | fixed-hybrid baseline: quant→rule engine, qual→LLM always, no routing decisions made |
-| POST | `/api/compliance/:bankId/run-routed` | **adaptive router** — see "The routing algorithm" section above |
-| POST | `/api/compliance/:bankId/compare` | runs both on the same data, returns per-clause agreement — the RQ1 experiment endpoint |
-| GET | `/api/compliance/:bankId/runs` | run history (for trend charts) |
-| GET | `/api/compliance/runs/:runId` | full detail of one past run |
-
-`POST .../run` body:
-```json
-{
-  "period_label": "Q1-FY2026-27",
-  "use_llm_mapping_check": false,
-  "submitted_field_labels": { "273": "HTM investment %, per treasury MIS" },
-  "qual_sample_limit": 40,
-  "persist": true
-}
-```
-- `use_llm_mapping_check` is **optional and off by default** — see the design
-  note at the top of `complianceController.js` for why quantitative
-  arithmetic itself never goes through the LLM, only this secondary
-  plausibility flag does.
-- Qualitative judgment (Subsystem 2) always calls Gemini for real now —
-  the honest stub in the original `compliance_checker.py` is fully wired.
-
-### Keeping the DB updated from live RBI
-| Method | Path | Purpose |
-|---|---|---|
-| GET | `/api/ingest/watch-list` | everything the scraper has seen on RBI's site |
-| GET | `/api/ingest/pending-updates` | docs where RBI's label differs from what's ingested |
-| POST | `/api/ingest/scan?apply=true\|false` | runs `rbi_scraper.py`; `apply=true` also downloads changed PDFs |
-
-A cron job (`RBI_UPDATE_CRON` in `.env`, default daily 3am) runs the
-check-only scan automatically. `apply` is never automatic — re-ingestion
-should be a reviewed action (see `rbi_scraper.py` docstring for why: RBI's
-`(Updated as on ...)` label is the cheap, reliable diff signal, and this is
-confirmed against the live page structure, not guessed).
-
-**Important:** `rbi_scraper.py` needs `rbi.org.in` / `rbidocs.rbi.org.in`
-reachable, which is outside this sandbox's network allowlist. It's written
-and structurally verified against the real page (fetched during this
-session), but run it from your own machine or a server with normal
-internet access, not from inside this sandboxed environment.
-
-## What's genuinely NOT untouched, and why
-
-`db_builder.py`'s single `INSERT INTO documents VALUES (?,?,?,?,?,?,?,?,?)`
-line was changed to name its 9 columns explicitly. This was required, not
-optional: `migrations/001_add_operational_tables.sql` adds 3 columns to
-`documents` (`source_url`, `last_updated_label`, `superseded_by`), and a
-positional `INSERT ... VALUES` with only 9 placeholders against a
-12-column table fails outright once those migrations have run. Confirmed
-by actually hitting this error during development (see git history / the
-chat this was built in) — this is not a hypothetical fix.
-
-## What's deliberately NOT built yet
-- **Auth.** Every endpoint above is open. Add a real auth layer (JWT scaffold
-  is in `.env.example`) before this touches real bank data.
-- **Network Topology Mapper (Subsystem 3).** No graph DB wired in — see the
-  chat response for the feasibility discussion on why this needs MCA
-  registry data you don't have yet.
-- **CIMS/XBRL bridge.** `quant-submissions` is manual entry by design; wiring
-  it to a real bank return format is the unsolved mapping problem your
-  original `compliance_checker.py` docstring already names honestly.
+- Scanned (image-only) PDFs are rejected; there is no OCR step.
+- Rule atoms come from deterministic patterns. `variable_text` is the weakest
+  field; recall of all numeric requirements in the corpus has not been measured.
+- Applicability below the category level (e.g. NBFC-UL only, deposit-taking
+  NBFCs only) is not modelled.
+- Tables are kept as text rows (`cell | cell`), not as structured tables.
+- The retrieval evaluation set is small (36 questions) and was written by the
+  developer; treat the numbers as indicative, and extend `eval/` with your own
+  questions.
+- SQLite stands in for PostgreSQL; the vector index is exact search in memory
+  (fine at ~40k chunks; use pgvector/an ANN index at much larger scale).
+- No authentication.
+- The network/graph subsystem is not implemented.

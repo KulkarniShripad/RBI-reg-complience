@@ -18,6 +18,7 @@ vi.mock("@/lib/api", async (orig) => {
     runComplianceCheck: vi.fn(),
     getComplianceRuns: vi.fn(),
     getComplianceRun: vi.fn(),
+    getCategories: vi.fn().mockResolvedValue([]),
   };
 });
 

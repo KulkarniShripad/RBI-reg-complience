@@ -1,122 +1,125 @@
 """
-Stage 3: turn each clause into one or more retrieval-ready chunks.
+Stage 3: turn clauses into retrieval chunks.
 
-Two techniques combined here, both grounded in things discussed earlier:
+Legal-boundary chunking: a chunk boundary is always a paragraph, a
+top-level sub-clause "(1)", a definition item, or (for very long parts) a
+list item / sentence boundary - never a fixed token window that cuts a rule
+in half. Each chunk is embedded together with a short, template-generated
+context prefix (document title, entity type, chapter/section path,
+paragraph number) - the "contextual retrieval" idea without an LLM call,
+since the parser already knows this context exactly.
 
-1. Legal-boundary chunking - the chunk boundary IS the clause boundary
-   (paragraph, or sub-clause if the paragraph is long). Never a fixed token
-   window. This is what stops a rule from being cut mid-sentence and losing
-   its meaning, which was the original concern.
-
-2. Contextual prefixing - Anthropic's "Contextual Retrieval" technique
-   prepends a short LLM-written context sentence to each chunk before
-   embedding, because a bare chunk like "shall not exceed 5 per cent" means
-   nothing on its own. We get the same benefit WITHOUT an LLM call: since
-   the structural parser already knows the exact chapter/section/document
-   this clause sits in, the context sentence can be template-generated
-   deterministically. This is strictly cheaper and, for a template-drafted
-   corpus like RBI's, at least as accurate as an LLM guessing the same
-   thing from scratch.
-
-   Recent work (CRAwLeR, arXiv 2506.21676, 2026) found that contextual
-   embedding alone still under-performs on legal cross-reference-dependent
-   queries - a chunk about a "prescribed ceiling" that only makes sense
-   together with the paragraph it cross-references. So cross-reference
-   text is appended into the prefix too, not just chapter/section context.
-
-3. Embedding: no LLM/embedding-model server is reachable from this sandbox
-   (no Ollama, no Hugging Face host in the network allowlist), so this
-   module computes TF-IDF vectors as a stand-in and documents the swap
-   point clearly. The chunking/prefixing/storage design is what matters for
-   the architecture and doesn't change when a real embedding model (e.g.
-   nomic-embed-text via local Ollama, per your existing setup) is dropped in.
+When a long paragraph is split, every piece repeats the paragraph's
+lead-in sentence ("In these Directions, unless the context otherwise
+requires,") so a piece never loses the sentence that gives it meaning.
 """
+from __future__ import annotations
+
+import re
 from dataclasses import dataclass
+
+MAX_CHARS = 1400        # a whole paragraph up to this size stays one chunk
+PIECE_CHARS = 1100      # target size when a long part has to be split
+LEAD_IN_CHARS = 280
 
 
 @dataclass
 class Chunk:
-    clause_uri: str
-    chunk_text: str              # the contextualized text that gets embedded
-    raw_text: str                 # the original clause text, unprefixed
+    clause_uri: str             # uri of the unit this chunk represents (paragraph or sub-clause)
+    parent_clause_uri: str      # the paragraph / annex / preamble clause it belongs to
+    chunk_text: str             # context prefix + text: what gets embedded and full-text indexed
+    raw_text: str               # the text itself, without prefix
     chunk_index: int
-    boundary_type: str            # 'paragraph' | 'sub_clause'
+    boundary_type: str          # paragraph | sub_clause | definition | window | annex | preamble
 
 
-def build_context_prefix(doc_title: str, chapter_title: str, section_title: str,
-                          paragraph_number, cross_ref_targets: list[str] | None = None) -> str:
-    parts = [f"From: {doc_title}."]
-    if chapter_title:
-        parts.append(f"Chapter: {chapter_title}.")
-    if section_title:
-        parts.append(f"Section: {section_title}.")
-    parts.append(f"Paragraph {paragraph_number}.")
-    if cross_ref_targets:
-        parts.append(f"Cross-referenced with paragraph(s): {', '.join(cross_ref_targets)}.")
-    return " ".join(parts)
+def context_prefix(doc_title: str, category_label: str, heading_path: list[str], label: str) -> str:
+    parts = [doc_title.strip()]
+    if category_label:
+        parts.append(f"Applies to: {category_label}")
+    parts.extend(h for h in heading_path if h)
+    if label:
+        parts.append(label)
+    return " | ".join(p for p in parts if p)
 
 
-def chunk_paragraph(clause_uri: str, paragraph, doc_title: str,
-                     cross_ref_targets: list[str] | None = None,
-                     max_chars: int = 1200) -> list[Chunk]:
-    """A paragraph becomes ONE chunk unless it's unusually long (has many
-    sub-clauses pushing it past max_chars), in which case each sub-clause
-    becomes its own chunk - still boundary-aligned, never mid-sentence."""
-    prefix = build_context_prefix(
-        doc_title, paragraph.chapter_title, paragraph.section_title,
-        paragraph.number, cross_ref_targets)
-
-    full_text = paragraph.text
-    if paragraph.subclauses:
-        full_text += " " + " ".join(f"({n}) {t}" for n, t, _ in paragraph.subclauses)
-
-    if len(full_text) <= max_chars or not paragraph.subclauses:
-        return [Chunk(
-            clause_uri=clause_uri, chunk_text=f"{prefix} {full_text}",
-            raw_text=full_text, chunk_index=0, boundary_type="paragraph",
-        )]
-
-    chunks = []
-    if paragraph.text.strip():
-        chunks.append(Chunk(
-            clause_uri=clause_uri, chunk_text=f"{prefix} {paragraph.text}",
-            raw_text=paragraph.text, chunk_index=0, boundary_type="paragraph",
-        ))
-    for i, (sub_no, sub_text, _) in enumerate(paragraph.subclauses, start=1):
-        sub_uri = f"{clause_uri}/{sub_no}"
-        chunks.append(Chunk(
-            clause_uri=sub_uri,
-            chunk_text=f"{prefix} Sub-clause ({sub_no}): {sub_text}",
-            raw_text=sub_text, chunk_index=i, boundary_type="sub_clause",
-        ))
-    return chunks
+def _split_long(text: str, limit: int = PIECE_CHARS) -> list[str]:
+    """Split at list-item lines first, then sentences; pack pieces up to limit."""
+    units = [u for u in re.split(r"\n", text) if u.strip()]
+    if len(units) <= 1:
+        units = re.split(r"(?<=[.;])\s+(?=[A-Z(\[‘'\"])", text)
+    pieces, cur = [], ""
+    for u in units:
+        u = u.strip()
+        if len(u) > limit * 1.6:                       # one enormous unit (e.g. a table row dump)
+            if cur:
+                pieces.append(cur)
+                cur = ""
+            for i in range(0, len(u), limit):
+                pieces.append(u[i:i + limit])
+            continue
+        if cur and len(cur) + len(u) + 1 > limit:
+            pieces.append(cur)
+            cur = u
+        else:
+            cur = f"{cur}\n{u}" if cur else u
+    if cur:
+        pieces.append(cur)
+    return pieces
 
 
-# ---------------------------------------------------------------------------
-# TF-IDF stand-in for a real embedding model (see module docstring).
-# ---------------------------------------------------------------------------
+def _lead_in(text: str) -> str:
+    first = re.split(r"\n\s*\[?\s*\((?:\d{1,2}|[ivxlc]{1,6}|[a-z])\)\s", text, maxsplit=1)[0]
+    first = first.strip()
+    return first[:LEAD_IN_CHARS] + ("…" if len(first) > LEAD_IN_CHARS else "")
 
-class TfidfVectorStore:
-    """Minimal, swappable placeholder for pgvector/HNSW. Same interface shape
-    (add texts keyed by clause_uri, search by query) so the rest of the
-    pipeline doesn't need to change when this is replaced with real
-    embeddings + a proper ANN index."""
 
-    def __init__(self):
-        from sklearn.feature_extraction.text import TfidfVectorizer
-        self.vectorizer = TfidfVectorizer(max_features=20000, ngram_range=(1, 2))
-        self.uris: list[str] = []
-        self.texts: list[str] = []
-        self.matrix = None
+def chunk_paragraph(clause_uri: str, text: str, prefix: str, subclauses: list, definitions: list | None = None,
+                    ) -> list[Chunk]:
+    text = text.strip()
+    if not text:
+        return []
+    out: list[Chunk] = []
 
-    def build(self, uri_text_pairs: list[tuple[str, str]]):
-        self.uris = [u for u, _ in uri_text_pairs]
-        self.texts = [t for _, t in uri_text_pairs]
-        self.matrix = self.vectorizer.fit_transform(self.texts)
+    # Definitions: one chunk per defined term so "what is X" finds exactly it.
+    if definitions and len(definitions) >= 2:
+        lead = _lead_in(text)
+        for i, d in enumerate(definitions):
+            body = d["definition_text"]
+            out.append(Chunk(
+                clause_uri=f"{clause_uri}/def-{d['sub_clause_number']}".replace(" ", ""),
+                parent_clause_uri=clause_uri,
+                chunk_text=f"{prefix} | Definition: {d['term']}\n{body}",
+                raw_text=body, chunk_index=i, boundary_type="definition",
+            ))
+        return out
 
-    def search(self, query: str, top_k: int = 5) -> list[tuple[str, float]]:
-        from sklearn.metrics.pairwise import cosine_similarity
-        q_vec = self.vectorizer.transform([query])
-        sims = cosine_similarity(q_vec, self.matrix)[0]
-        ranked = sorted(zip(self.uris, sims), key=lambda x: -x[1])
-        return ranked[:top_k]
+    if len(text) <= MAX_CHARS:
+        return [Chunk(clause_uri, clause_uri, f"{prefix}\n{text}", text, 0, "paragraph")]
+
+    lead = _lead_in(text)
+    parts = subclauses if subclauses else [("", p) for p in _split_long(text)]
+    idx = 0
+    for marker, part in parts:
+        pieces = [part] if len(part) <= MAX_CHARS else _split_long(part)
+        for j, piece in enumerate(pieces):
+            uri = f"{clause_uri}/{marker}" if marker else clause_uri
+            body = piece if (idx == 0 or piece.startswith(lead[:60])) else f"{lead}\n{piece}"
+            out.append(Chunk(
+                clause_uri=uri if j == 0 else f"{uri}~{j + 1}",
+                parent_clause_uri=clause_uri,
+                chunk_text=f"{prefix}{f' ({marker})' if marker else ''}\n{body}",
+                raw_text=piece, chunk_index=idx,
+                boundary_type="sub_clause" if marker else "window",
+            ))
+            idx += 1
+    return out
+
+
+def chunk_block(clause_uri: str, text: str, prefix: str, boundary_type: str) -> list[Chunk]:
+    """Annexes and preambles: line-boundary windows."""
+    text = text.strip()
+    if not text:
+        return []
+    pieces = [text] if len(text) <= MAX_CHARS else _split_long(text)
+    return [Chunk(clause_uri, clause_uri, f"{prefix}\n{p}", p, i, boundary_type) for i, p in enumerate(pieces)]

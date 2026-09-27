@@ -45,11 +45,12 @@ MASTER_DIRECTIONS_URL = os.environ.get(
 DATA_DIR = os.environ.get("URCC_DATA_DIR", os.path.join(os.path.dirname(__file__), "..", "data"))
 DB_PATH = os.path.join(DATA_DIR, "urcc_ef.db")
 PDF_STORAGE_DIR = os.environ.get(
-    "RBI_PDF_STORAGE_DIR", os.path.join(os.path.dirname(__file__), "circulars")
+    "RBI_PDF_STORAGE_DIR", os.path.join(os.path.dirname(__file__), "..", "..", "circulars")
 )
 
 # Maps the department heading text on the RBI page to your existing
-# institution_category slugs (see db_builder.py CATEGORY_SLUG). Extend as
+# corpus folder names (categories.py maps every folder name to a canonical
+# institution category). Extend as
 # you encounter more headings - fail loud (raise) rather than silently
 # mis-categorize a new heading.
 CATEGORY_MAP = {

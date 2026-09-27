@@ -9,9 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { getBanks, type Bank } from "@/lib/api";
+import { categoryLabel, useCategories } from "@/lib/categories";
 import {
   QUARTER_MONTHS,
-  formatLabel,
   formatPeriod,
   fyOptions,
   getErrorMessage,
@@ -32,6 +32,7 @@ const TABS: Tab[] = ["setup", "quant", "qual", "run", "history"];
 
 const CompliancePage = () => {
   const { toast } = useToast();
+  const categories = useCategories(false);
   const [params, setParams] = useSearchParams();
 
   const [banks, setBanks] = useState<Bank[]>([]);
@@ -207,7 +208,7 @@ const CompliancePage = () => {
           {selectedBank && (
             <>
               <span className="ml-1">Category</span>
-              <Badge variant="secondary" className="text-xs">{formatLabel(selectedBank.institution_category)}</Badge>
+              <Badge variant="secondary" className="text-xs">{categoryLabel(categories, selectedBank.institution_category)}</Badge>
             </>
           )}
           {unsaved > 0 && <span className="ml-auto text-yellow-800">{unsaved} unsaved</span>}

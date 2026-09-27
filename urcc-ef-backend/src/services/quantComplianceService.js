@@ -4,8 +4,15 @@ const gemini = require("./geminiService");
 const OPERATORS = {
   "<=": (v, t) => v <= t,
   ">=": (v, t) => v >= t,
+  "<": (v, t) => v < t,
+  ">": (v, t) => v > t,
   within_days: (v, t) => v <= t,
 };
+
+// Documents that apply to an institution category. A document can apply to
+// several categories (document_categories), e.g. a direction addressed to
+// "Scheduled Commercial Banks including Small Finance Banks".
+const APPLIES_TO = "d.doc_id IN (SELECT doc_id FROM document_categories WHERE category = ?)";
 
 /**
  * Deterministic evaluation - a direct port of compliance_checker.py's
@@ -19,12 +26,14 @@ const OPERATORS = {
 function checkQuantitative(institutionCategory, bankId, periodLabel) {
   const rules = db
     .prepare(
-      `SELECT ra.rule_id, ra.clause_uri, ra.operator, ra.threshold_value, ra.threshold_unit,
-              ra.variable_text, cr.clause_text, cr.page_number, d.rbi_ref
+      `SELECT ra.rule_id, ra.clause_uri, ra.operator, ra.threshold_value, ra.threshold_unit, ra.threshold_base,
+              ra.variable_text, ra.confidence, ra.sentence, cr.clause_text, cr.page_number, cr.paragraph_number,
+              d.rbi_ref, d.title AS doc_title, d.doc_id
        FROM rule_atoms ra
        JOIN clause_registry cr ON ra.clause_uri = cr.clause_uri
        JOIN documents d ON cr.doc_id = d.doc_id
-       WHERE d.institution_category = ?`
+       WHERE ${APPLIES_TO} AND ra.atom_kind = 'requirement'
+       ORDER BY ra.confidence = 'high' DESC, d.title, cr.seq`
     )
     .all(institutionCategory);
 
@@ -52,6 +61,12 @@ function checkQuantitative(institutionCategory, bankId, periodLabel) {
       threshold_value: r.threshold_value,
       threshold_unit: r.threshold_unit,
       variable_text: r.variable_text,
+      threshold_base: r.threshold_base,
+      extraction_confidence: r.confidence,
+      sentence: r.sentence,
+      paragraph: r.paragraph_number,
+      doc_id: r.doc_id,
+      doc_title: r.doc_title,
       reported_value: reported,
       status,
       clause_text: r.clause_text,

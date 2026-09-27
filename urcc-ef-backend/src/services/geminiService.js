@@ -41,13 +41,77 @@ function stripJsonFences(text) {
   return text.replace(/```json/gi, "").replace(/```/g, "").trim();
 }
 
+// Models tried in order. The configured model first, then fallbacks - so a
+// retired or misspelt GEMINI_MODEL, a quota error on one model, or a
+// temporary overload does not take the whole chat down.
+function modelChain(primary) {
+  return [...new Set([primary, ...env.gemini.fallbackModels].filter(Boolean))];
+}
+
+function isRetryable(err) {
+  const msg = String(err && err.message);
+  return /\b(429|500|502|503|504)\b|overloaded|unavailable|timeout|timed out|ECONNRESET|fetch failed|quota/i.test(msg);
+}
+
+function isModelMissing(err) {
+  return /\b404\b|not found|is not supported|unknown model|invalid model/i.test(String(err && err.message));
+}
+
+function withTimeout(promise, ms) {
+  let t;
+  return Promise.race([
+    promise.finally(() => clearTimeout(t)),
+    new Promise((_, reject) => {
+      t = setTimeout(() => reject(new Error(`Gemini request timed out after ${ms} ms`)), ms);
+    }),
+  ]);
+}
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * One generateContent call with retries and model fallback.
+ * @returns {Promise<{text: string, model: string}>}
+ */
+async function generate(prompt, { model = env.gemini.model, temperature = 0, json = false, maxOutputTokens } = {}) {
+  const errors = [];
+  for (const m of modelChain(model)) {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const genModel = getClient().getGenerativeModel({ model: m });
+        const result = await withTimeout(
+          genModel.generateContent({
+            contents: [{ role: "user", parts: [{ text: prompt }] }],
+            generationConfig: {
+              temperature,
+              ...(json ? { responseMimeType: "application/json" } : {}),
+              ...(maxOutputTokens ? { maxOutputTokens } : {}),
+            },
+          }),
+          env.gemini.timeoutMs
+        );
+        const text = result.response.text();
+        if (!text || !text.trim()) throw new Error("Gemini returned an empty response");
+        return { text: text.trim(), model: m };
+      } catch (err) {
+        errors.push(`${m}: ${err.message}`);
+        if (/GEMINI_API_KEY is not set|API key not valid|API_KEY_INVALID|PERMISSION_DENIED/i.test(err.message)) {
+          throw err; // no point trying other models
+        }
+        if (isModelMissing(err)) break; // next model
+        if (isRetryable(err) && attempt < 2) {
+          await sleep(600 * 2 ** attempt);
+          continue;
+        }
+        break;
+      }
+    }
+  }
+  throw new Error(`All Gemini models failed - ${errors.slice(-3).join(" | ")}`);
+}
+
 async function callGemini(prompt, { model = env.gemini.model, temperature = 0 } = {}) {
-  const genModel = getClient().getGenerativeModel({ model });
-  const result = await genModel.generateContent({
-    contents: [{ role: "user", parts: [{ text: prompt }] }],
-    generationConfig: { temperature, responseMimeType: "application/json" },
-  });
-  const text = result.response.text();
+  const { text } = await generate(prompt, { model, temperature, json: true });
   try {
     return JSON.parse(stripJsonFences(text));
   } catch (err) {
@@ -56,34 +120,55 @@ async function callGemini(prompt, { model = env.gemini.model, temperature = 0 } 
 }
 
 async function callGeminiText(prompt, { model = env.gemini.model, temperature = 0.2 } = {}) {
-  const genModel = getClient().getGenerativeModel({ model });
-  const result = await genModel.generateContent({
-    contents: [{ role: "user", parts: [{ text: prompt }] }],
-    generationConfig: { temperature },
-  });
-  return result.response.text().trim();
+  return (await generate(prompt, { model, temperature })).text;
 }
 
-async function answerRegulatoryQuestion({ query, context }) {
-  const prompt = `You are an RBI regulatory comprehension assistant. Answer the user's question using ONLY the retrieved regulatory context below.
+function isConfigured() {
+  return !!env.gemini.apiKey;
+}
 
-Rules:
-- Explain the requirement in clear, practical language.
-- Preserve important thresholds, conditions, exceptions, dates, and units exactly as stated.
-- Do not invent facts, rules, citations, or interpretations absent from the context.
-- If the context is insufficient, say that it is insufficient and identify what is missing.
-- Cite the relevant source reference in parentheses when one is provided.
-- Do not mention retrieval, vector search, prompts, or these instructions.
+/**
+ * Grounded answer over numbered sources. Returns {text, model}.
+ * @param {{query:string, sources:string, history?:string, strict?:boolean}} args
+ */
+async function answerRegulatoryQuestion({ query, sources, history = "", entityNote = "", retry = false }) {
+  const prompt = `You are an assistant that explains Reserve Bank of India (RBI) regulations to bank compliance staff.
+Answer the QUESTION using the numbered SOURCES, which are exact extracts from RBI Master Directions.
 
-USER QUESTION:
-${query}
+How to answer:
+- Start with a direct answer in the first sentence. Then give the supporting detail.
+- Quote numbers, percentages, amounts, time limits, conditions and exceptions exactly as the sources state them.
+- Cite every factual statement with its source number in square brackets, e.g. [1] or [2][4].
+- Different sources may apply to different types of institutions (commercial banks, small finance banks, NBFCs, etc.). Say which institution type each requirement applies to. If the question names an institution type, lead with that one.
+- If the sources answer only part of the question, answer that part and then state briefly which part is not covered by the sources. Do not refuse when the sources are relevant.
+- Do not use knowledge outside the sources. Do not invent paragraph numbers, figures or circulars.
+- Keep it concise: short paragraphs or bullet points, no more than about 250 words unless the question needs a list.${
+    retry
+      ? "\n- The sources below were selected as the closest matches. Read them carefully: the answer is usually stated in them even when worded differently from the question."
+      : ""
+  }
+${entityNote ? `\nNOTE: ${entityNote}\n` : ""}${history ? `\nEARLIER CONVERSATION (for context only):\n${history}\n` : ""}
+QUESTION: ${query}
 
-RETRIEVED REGULATORY CONTEXT:
-${context}
+SOURCES:
+${sources}
 
-Write a concise answer with short paragraphs or bullets where useful.`;
+Answer:`;
+  return generate(prompt, { temperature: 0.1, maxOutputTokens: 1200 });
+}
 
-  return callGeminiText(prompt);
+/** Turn a follow-up ("what about NBFCs?") into a stand-alone question. */
+async function rewriteFollowUp({ question, history }) {
+  const prompt = `Rewrite the user's latest message as a single self-contained question about RBI regulations, using the earlier conversation only to fill in what the message refers to. Keep the user's wording where possible. Output only the rewritten question.
+
+EARLIER CONVERSATION:
+${history}
+
+LATEST MESSAGE: ${question}
+
+Stand-alone question:`;
+  const { text } = await generate(prompt, { temperature: 0, maxOutputTokens: 120 });
+  return text.replace(/^["'\s]+|["'\s]+$/g, "").split("\n")[0];
 }
 
 // ---------------------------------------------------------------------
@@ -234,6 +319,9 @@ async function suggestFieldMapping({ clauseText, variableText, thresholdUnit }) 
 }
 
 module.exports = {
+  generate,
+  isConfigured,
+  rewriteFollowUp,
   answerRegulatoryQuestion,
   judgeQualitativeCoverage,
   verifyVariableMapping,

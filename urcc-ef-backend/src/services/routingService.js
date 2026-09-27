@@ -78,9 +78,8 @@ function route(clause, ruleAtom, context) {
   // the signal, not just the presence of a rule_atom row.
   if (
     ruleAtom &&
-    clause.clause_type === "quantitative" &&
-    clause.confidence === "high" &&
-    !clause.needs_llm_refinement
+    ["quantitative", "hybrid"].includes(clause.clause_type) &&
+    clause.confidence === "high"
   ) {
     reasons.push(
       `quantitative clause, high extraction confidence, clean rule_atom (${ruleAtom.operator} ${ruleAtom.threshold_value}${ruleAtom.threshold_unit})`

@@ -1,69 +1,112 @@
 const db = require("../config/db");
-const vectorSearch = require("./vectorSearchService");
+const embedding = require("./embeddingService");
 const gemini = require("./geminiService");
 
 /**
- * For each qualitative clause applicable to this institution category
- * (capped at sampleLimit - see the same caveat as the original
- * compliance_checker.py: a full production run should cover the full set
- * or a risk-prioritized subset, not just the first N), find the bank's
- * best-matching submitted evidence text via vector search, then get a REAL
- * Gemini judgment (this is the piece that was an honest stub before).
+ * Subsystem 2: does the bank's own governance text (board minutes, policy
+ * manuals, audit notes) show that it meets each qualitative obligation?
+ *
+ * 1. Obligations applicable to the bank's category are taken round-robin
+ *    across the applicable directions (one from each direction in turn), so
+ *    a sample of N covers many directions instead of the first N paragraphs
+ *    of one document (the old behaviour: mostly titles and definitions).
+ *    Only clauses classified as obligations are used - not definitions,
+ *    short titles, repeal clauses or deleted paragraphs.
+ * 2. The bank's evidence texts are ranked against each obligation with the
+ *    same BGE embeddings used for search (cosine similarity).
+ * 3. If the best evidence clears `similarityThreshold`, Gemini judges
+ *    whether it demonstrates compliance (full / partial / none). Without a
+ *    usable match the obligation is a LIKELY_GAP; if the LLM call fails it is
+ *    NEEDS_REVIEW - never silently COVERED.
  */
-async function checkQualitative({ institutionCategory, bankId, sampleLimit = 40, similarityThreshold = 0.35 }) {
-  const clauses = db
+function sampleObligations(institutionCategory, sampleLimit) {
+  const rows = db
     .prepare(
-      `SELECT cr.clause_uri, cr.clause_text, cr.page_number, d.rbi_ref
+      `SELECT cr.clause_uri, cr.clause_text, cr.page_number, cr.paragraph_number, cr.doc_id, d.rbi_ref, d.title AS doc_title
        FROM clause_registry cr
        JOIN documents d ON cr.doc_id = d.doc_id
-       WHERE d.institution_category = ? AND cr.clause_type = 'qualitative'
-       LIMIT ?`
+       WHERE d.doc_id IN (SELECT doc_id FROM document_categories WHERE category = ?)
+         AND cr.clause_role = 'obligation' AND cr.clause_type IN ('qualitative', 'relational')
+         AND length(cr.clause_text) BETWEEN 80 AND 4000
+       ORDER BY d.title, cr.seq`
     )
-    .all(institutionCategory, sampleLimit);
+    .all(institutionCategory);
+  const byDoc = new Map();
+  for (const r of rows) {
+    if (!byDoc.has(r.doc_id)) byDoc.set(r.doc_id, []);
+    byDoc.get(r.doc_id).push(r);
+  }
+  const queues = [...byDoc.values()];
+  const out = [];
+  for (let i = 0; out.length < sampleLimit && queues.some((q) => i < q.length); i++) {
+    for (const q of queues) {
+      if (i < q.length && out.length < sampleLimit) out.push(q[i]);
+    }
+  }
+  return { sample: out, total: rows.length };
+}
 
+async function checkQualitative({ institutionCategory, bankId, sampleLimit = 40, similarityThreshold = 0.6 }) {
+  const { sample: clauses, total } = sampleObligations(institutionCategory, sampleLimit);
   const evidenceRows = db
     .prepare(`SELECT evidence_id, evidence_text FROM bank_qual_evidence WHERE bank_id = ?`)
     .all(bankId);
 
+  const base = (c) => ({
+    clause_uri: c.clause_uri,
+    clause_text: c.clause_text,
+    page_number: c.page_number,
+    paragraph: c.paragraph_number,
+    rbi_ref: c.rbi_ref,
+    doc_title: c.doc_title,
+    applicable_obligations_total: total,
+  });
+
   if (evidenceRows.length === 0) {
     return clauses.map((c) => ({
-      clause_uri: c.clause_uri,
-      clause_text: c.clause_text,
-      page_number: c.page_number,
-      rbi_ref: c.rbi_ref,
+      ...base(c),
       best_evidence_text: null,
       similarity_score: null,
       status: "LIKELY_GAP",
       llm_judgment: null,
-      note: "No qual evidence submitted for this bank yet.",
+      note: "No qualitative evidence submitted for this bank yet.",
     }));
+  }
+
+  // Embed the evidence once, then score every obligation against it.
+  let evidenceVecs = null;
+  try {
+    evidenceVecs = await embedding.embedPassages(evidenceRows.map((e) => e.evidence_text));
+  } catch (err) {
+    evidenceVecs = null;
   }
 
   const results = [];
   for (const c of clauses) {
-    // Vector search scoped by the clause's own text as the query - finds
-    // which submitted evidence chunk is semantically closest. Note: this
-    // searches the REGULATION vector DB structure conceptually but here we
-    // want nearest EVIDENCE to a CLAUSE, so we do a lightweight in-process
-    // TF-IDF-free proxy: ask the Python worker to rank evidence rows by
-    // similarity to clause text using the same embedding pipeline.
     let best = null;
-    let bestScore = -1;
-    try {
-      const ranked = await vectorSearch.rankTexts(c.clause_text, evidenceRows.map((e) => e.evidence_text));
-      if (ranked && ranked.length) {
-        best = evidenceRows[ranked[0].index];
-        bestScore = ranked[0].score;
+    let bestScore = null;
+    if (evidenceVecs) {
+      try {
+        const [cv] = await embedding.embedPassages([c.clause_text]);
+        evidenceVecs.forEach((v, i) => {
+          const s = embedding.dot(cv, v);
+          if (bestScore === null || s > bestScore) {
+            bestScore = s;
+            best = evidenceRows[i];
+          }
+        });
+      } catch (_) {
+        /* fall through: no match */
       }
-    } catch (err) {
-      // fall through with no match rather than crash the whole check
     }
 
-    const bestEvidenceText = bestScore >= similarityThreshold ? best?.evidence_text ?? null : null;
-
+    const bestEvidenceText = bestScore !== null && bestScore >= similarityThreshold ? best?.evidence_text ?? null : null;
     let judgment = null;
     let status;
-    if (!bestEvidenceText) {
+    if (!evidenceVecs) {
+      status = "NEEDS_REVIEW";
+      judgment = { error: "embedding model unavailable - evidence could not be matched" };
+    } else if (!bestEvidenceText) {
       status = "LIKELY_GAP";
     } else {
       try {
@@ -82,14 +125,13 @@ async function checkQualitative({ institutionCategory, bankId, sampleLimit = 40,
     }
 
     results.push({
-      clause_uri: c.clause_uri,
-      clause_text: c.clause_text,
-      page_number: c.page_number,
-      rbi_ref: c.rbi_ref,
+      ...base(c),
       best_evidence_text: bestEvidenceText,
-      similarity_score: bestScore === -1 ? null : Number(bestScore.toFixed(4)),
+      evidence_id: bestEvidenceText ? best.evidence_id : null,
+      similarity_score: bestScore === null ? null : Number(bestScore.toFixed(4)),
       status,
       llm_judgment: judgment,
+      justification: judgment && judgment.justification ? judgment.justification : null,
     });
   }
   return results;
@@ -116,4 +158,4 @@ function insertEvidence({ bankId, evidenceText, sourceType, periodLabel }) {
     .run(bankId, evidenceText, sourceType || null, periodLabel || null);
 }
 
-module.exports = { checkQualitative, insertEvidence };
+module.exports = { checkQualitative, insertEvidence, sampleObligations };
