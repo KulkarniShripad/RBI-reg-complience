@@ -487,7 +487,10 @@ def seed_categories(conn):
 # Carry-over of bank / operational data from a previous database
 # ---------------------------------------------------------------------------
 OPERATIONAL_TABLES = ["banks", "bank_qual_evidence", "compliance_runs", "compliance_run_details",
-                      "routing_decisions", "rbi_watch_list"]
+                      "routing_decisions", "rbi_watch_list",
+                      # counterparty network (graph subsystem) - no rule ids inside, copied as is
+                      "graph_entities", "graph_edges", "graph_exposures", "graph_capital", "graph_bank_profile",
+                      "graph_check_runs", "graph_check_results"]
 
 
 def carry_over(conn, old_path: str) -> dict:

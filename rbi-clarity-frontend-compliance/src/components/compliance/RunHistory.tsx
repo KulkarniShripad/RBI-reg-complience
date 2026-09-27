@@ -81,6 +81,7 @@ export const RunHistory = ({ bankId, period, refreshKey }: Props) => {
             report={detail.report ?? {}}
             quant={detail.quant_results}
             qual={detail.qual_results}
+            network={detail.graph_results ?? null}
           />
         ) : null}
       </div>

@@ -67,7 +67,11 @@ export const RunCheck = ({ bankId, period, quant, qual, onComplete }: Props) => 
       onComplete({ ...res, period, ranAt: new Date().toISOString(), persisted: persist });
       toast({
         title: "Compliance check complete",
-        description: `${s.quant_breach ?? 0} breach(es), ${s.qual_gap ?? 0} likely gap(s)${res.run_id !== null ? ` · Run #${res.run_id}` : ""}.`,
+        description: `${s.quant_breach ?? 0} breach(es), ${s.qual_gap ?? 0} likely gap(s)${
+          res.graph_results?.summary
+            ? `, ${(res.graph_results.summary.status_counts.BREACH ?? 0) + (res.graph_results.summary.status_counts.PROHIBITED ?? 0)} network finding(s)`
+            : ""
+        }${res.run_id !== null ? ` · Run #${res.run_id}` : ""}.`,
       });
     } catch (err) {
       const msg = getErrorMessage(err, "The compliance check failed.");
@@ -93,6 +97,10 @@ export const RunCheck = ({ bankId, period, quant, qual, onComplete }: Props) => 
             <Check ok={!!qual && qual.saved > 0}>
               {qual ? `${qual.saved} qualitative evidence entr${qual.saved === 1 ? "y" : "ies"} saved` : "Open Qualitative Evidence to review entries"}
             </Check>
+            <li className="flex items-start gap-2 text-sm text-muted-foreground">
+              <Circle className="h-4 w-4 shrink-0 mt-0.5 opacity-0" />
+              <span>The counterparty network is checked too when exposures exist for {period} (Network tab).</span>
+            </li>
           </ul>
           {unsaved > 0 && (
             <p className="mt-3 text-xs text-yellow-800 flex items-start gap-1.5">

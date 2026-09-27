@@ -1,0 +1,260 @@
+{
+  "_note": "SYNTHETIC ownership / exposure networks for demonstrating and testing the network check. Every entity and figure is invented. Real deployment needs the bank's own counterparty data (and MCA / CERSAI / credit-bureau feeds for ownership), which this study does not have. Amounts are in ₹ crore.",
+  "scenarios": [
+    {
+      "id": "cb_control_and_dependence",
+      "title": "Control chains and economic dependence (RBI's worked example)",
+      "category": "commercial_banks",
+      "description": "Reproduces the grouping illustration in the Commercial Banks Concentration Risk directions (paragraph 30): A controls A1 and A2; B controls B1, which controls B2 and B3. B1 depends on A2 (one-way), so B1 and everything it controls join A's group (downstream contagion); B depends on B1, so B joins as well (upstream contagion). Individually every counterparty is within limits; as a group they breach 25%.",
+      "profile": {},
+      "capital": { "tier1_capital": 1000, "tier2_capital": 200 },
+      "entities": [
+        { "entity_id": "A", "name": "Apex Holdings Ltd", "entity_type": "company" },
+        { "entity_id": "A1", "name": "Apex Steel Ltd", "entity_type": "company" },
+        { "entity_id": "A2", "name": "Apex Motors Ltd", "entity_type": "company" },
+        { "entity_id": "B", "name": "Bharat Components Ltd", "entity_type": "company" },
+        { "entity_id": "B1", "name": "Bharat Auto Parts Ltd", "entity_type": "company" },
+        { "entity_id": "B2", "name": "Bharat Castings Ltd", "entity_type": "company" },
+        { "entity_id": "B3", "name": "Bharat Forgings Ltd", "entity_type": "company" },
+        { "entity_id": "C", "name": "Coastal Infra Projects Ltd", "entity_type": "company" }
+      ],
+      "edges": [
+        { "from_entity": "A", "to_entity": "A1", "edge_type": "OWNS", "ownership_pct": 60 },
+        { "from_entity": "A", "to_entity": "A2", "edge_type": "CONTROLS", "basis": "board_appointment", "evidence": "A appoints 5 of 7 directors of A2" },
+        { "from_entity": "B", "to_entity": "B1", "edge_type": "OWNS", "ownership_pct": 55 },
+        { "from_entity": "B1", "to_entity": "B2", "edge_type": "OWNS", "ownership_pct": 70 },
+        { "from_entity": "B1", "to_entity": "B3", "edge_type": "OWNS", "ownership_pct": 51 },
+        { "from_entity": "B1", "to_entity": "A2", "edge_type": "ECONOMIC_DEPENDENCE", "criterion": 3, "evidence": "80% of B1's output is sold to A2" },
+        { "from_entity": "B", "to_entity": "B1", "edge_type": "ECONOMIC_DEPENDENCE", "criterion": 1, "evidence": "B1 accounts for 60% of B's gross receipts" }
+      ],
+      "exposures": [
+        { "entity_id": "A", "amount": 75 },
+        { "entity_id": "A1", "amount": 60 },
+        { "entity_id": "A2", "amount": 55 },
+        { "entity_id": "B", "amount": 40 },
+        { "entity_id": "B1", "amount": 30 },
+        { "entity_id": "B2", "amount": 20 },
+        { "entity_id": "B3", "amount": 10 },
+        { "entity_id": "C", "amount": 210 }
+      ],
+      "expected": [
+        { "rule_key": "cb_group", "members_include": ["A", "A1", "A2", "B", "B1", "B2", "B3"], "status": "BREACH", "exposure": 290 },
+        { "rule_key": "cb_single", "subject": "A", "status": "PASS" },
+        { "rule_key": "cb_single", "subject": "C", "status": "BREACH" },
+        { "rule_key": "cb_large_exposure", "subject": "C", "status": "REPORTABLE" },
+        { "rule_key": "cb_econ_assessment", "subject": "A", "status": "ASSESSMENT_REQUIRED" },
+        { "rule_key": "cb_econ_assessment", "subject": "A2", "status": "PASS" }
+      ]
+    },
+    {
+      "id": "cb_related_parties",
+      "title": "Loans to directors, their relatives, promoters and major shareholders",
+      "category": "commercial_banks",
+      "description": "Director D1 sits on the board of X (whose subsidiary is Y), is a partner in firm F and a director of a Section 8 company K. D1's spouse S1 has a loan. Promoter P holds 30% of P1. H owns 12% of the bank and controls H1. A mutual fund owns 11% of the bank as a non-strategic investment. The graph finds every prohibited borrower and the path that makes it prohibited.",
+      "profile": {},
+      "capital": { "tier1_capital": 1000, "tier2_capital": 200 },
+      "entities": [
+        { "entity_id": "D1", "name": "R. Mehta (director)", "entity_type": "individual" },
+        { "entity_id": "S1", "name": "S. Mehta", "entity_type": "individual" },
+        { "entity_id": "X", "name": "Xenon Textiles Ltd", "entity_type": "company" },
+        { "entity_id": "Y", "name": "Xenon Exports Ltd", "entity_type": "company" },
+        { "entity_id": "F", "name": "Mehta & Associates (firm)", "entity_type": "firm" },
+        { "entity_id": "K", "name": "Mehta Education Foundation (Section 8)", "entity_type": "company", "attributes": { "section8_company": true } },
+        { "entity_id": "P", "name": "Pinnacle Promoters Ltd", "entity_type": "company" },
+        { "entity_id": "P1", "name": "Pinnacle Realty Ltd", "entity_type": "company" },
+        { "entity_id": "H", "name": "Horizon Investments Ltd", "entity_type": "company" },
+        { "entity_id": "H1", "name": "Horizon Logistics Ltd", "entity_type": "company" },
+        { "entity_id": "MF", "name": "Unity Mutual Fund", "entity_type": "fund", "attributes": { "non_strategic_investor": true } },
+        { "entity_id": "MF1", "name": "Unity Portfolio Co Ltd", "entity_type": "company" },
+        { "entity_id": "G", "name": "Global Pharma Ltd", "entity_type": "company" }
+      ],
+      "edges": [
+        { "from_entity": "D1", "to_entity": "SELF", "edge_type": "DIRECTOR_OF" },
+        { "from_entity": "D1", "to_entity": "X", "edge_type": "DIRECTOR_OF" },
+        { "from_entity": "X", "to_entity": "Y", "edge_type": "OWNS", "ownership_pct": 75 },
+        { "from_entity": "D1", "to_entity": "F", "edge_type": "INTERESTED_IN", "role": "partner" },
+        { "from_entity": "D1", "to_entity": "K", "edge_type": "DIRECTOR_OF" },
+        { "from_entity": "S1", "to_entity": "D1", "edge_type": "RELATIVE_OF", "relation": "spouse" },
+        { "from_entity": "P", "to_entity": "SELF", "edge_type": "PROMOTER_OF" },
+        { "from_entity": "P", "to_entity": "P1", "edge_type": "OWNS", "ownership_pct": 30 },
+        { "from_entity": "H", "to_entity": "SELF", "edge_type": "OWNS", "ownership_pct": 12 },
+        { "from_entity": "H", "to_entity": "H1", "edge_type": "CONTROLS", "basis": "voting_agreement" },
+        { "from_entity": "MF", "to_entity": "SELF", "edge_type": "OWNS", "ownership_pct": 11 },
+        { "from_entity": "MF", "to_entity": "MF1", "edge_type": "OWNS", "ownership_pct": 60 }
+      ],
+      "exposures": [
+        { "entity_id": "X", "amount": 5 },
+        { "entity_id": "Y", "amount": 3 },
+        { "entity_id": "F", "amount": 2 },
+        { "entity_id": "K", "amount": 2 },
+        { "entity_id": "S1", "amount": 1 },
+        { "entity_id": "D1", "amount": 0.5, "section20_exception": "loan against own fixed deposit within LTV" },
+        { "entity_id": "P1", "amount": 4 },
+        { "entity_id": "H1", "amount": 6 },
+        { "entity_id": "MF1", "amount": 5 },
+        { "entity_id": "G", "amount": 50 }
+      ],
+      "expected": [
+        { "rule_key": "cb_section20", "subject": "X", "status": "PROHIBITED" },
+        { "rule_key": "cb_section20", "subject": "Y", "status": "PROHIBITED" },
+        { "rule_key": "cb_section20", "subject": "F", "status": "PROHIBITED" },
+        { "rule_key": "cb_section20", "subject": "D1", "status": "NEEDS_REVIEW" },
+        { "rule_key": "cb_section20", "subject": "K", "absent": true },
+        { "rule_key": "cb_director_relatives", "subject": "S1", "status": "PROHIBITED" },
+        { "rule_key": "cb_promoters", "subject": "P1", "status": "PROHIBITED" },
+        { "rule_key": "cb_promoters", "subject": "H1", "status": "PROHIBITED" },
+        { "rule_key": "cb_promoters", "subject": "MF1", "absent": true },
+        { "rule_key": "cb_single", "subject": "G", "status": "PASS" }
+      ]
+    },
+    {
+      "id": "cb_exemptions_and_review",
+      "title": "Sovereign exemption, rebutted control, flagged dependence and credit protection",
+      "category": "commercial_banks",
+      "description": "Two PSUs controlled by the Government are not a group (sovereign exemption). A ring-fenced SPV's control link to its originator was rebutted to RBI, so they are not grouped. A suspected funding dependence between M and N is only flagged: the group breach it would cause is reported as POTENTIAL_BREACH for review. A guarantee from another bank moves part of Q's exposure to the guarantor. Exposure to the Government is exempt but still reportable.",
+      "profile": {},
+      "capital": { "tier1_capital": 1000, "tier2_capital": 200 },
+      "entities": [
+        { "entity_id": "GOI", "name": "Government of India", "entity_type": "government" },
+        { "entity_id": "PSU1", "name": "National Power Corp", "entity_type": "company", "attributes": { "government_company": true } },
+        { "entity_id": "PSU2", "name": "National Rail Freight Corp", "entity_type": "company", "attributes": { "government_company": true } },
+        { "entity_id": "O", "name": "Orbit Finance Originator Ltd", "entity_type": "company" },
+        { "entity_id": "SPV", "name": "Orbit Receivables Trust 2026 (SPV)", "entity_type": "trust" },
+        { "entity_id": "M", "name": "Meridian Shipping Ltd", "entity_type": "company" },
+        { "entity_id": "N", "name": "Northstar Ports Ltd", "entity_type": "company" },
+        { "entity_id": "BK", "name": "Coastal Commercial Bank", "entity_type": "bank" },
+        { "entity_id": "GB", "name": "Guarantor Bank Ltd", "entity_type": "bank" },
+        { "entity_id": "Q", "name": "Quantum Chemicals Ltd", "entity_type": "company" }
+      ],
+      "edges": [
+        { "from_entity": "GOI", "to_entity": "PSU1", "edge_type": "OWNS", "ownership_pct": 100 },
+        { "from_entity": "GOI", "to_entity": "PSU2", "edge_type": "OWNS", "ownership_pct": 100 },
+        { "from_entity": "O", "to_entity": "SPV", "edge_type": "CONTROLS", "basis": "accounting_standard", "status": "rebutted", "evidence": "SPV is bankruptcy remote; demonstrated to RBI (DOS) that there is no channel of contagion" },
+        { "from_entity": "N", "to_entity": "M", "edge_type": "ECONOMIC_DEPENDENCE", "criterion": 7, "status": "flagged", "evidence": "relationship manager note: both rely on the same shipping-finance lender" }
+      ],
+      "exposures": [
+        { "entity_id": "PSU1", "amount": 150 },
+        { "entity_id": "PSU2", "amount": 150 },
+        { "entity_id": "O", "amount": 100 },
+        { "entity_id": "SPV", "amount": 180 },
+        { "entity_id": "M", "amount": 150 },
+        { "entity_id": "N", "amount": 120 },
+        { "entity_id": "BK", "amount": 230, "exposure_kind": "interbank" },
+        { "entity_id": "Q", "amount": 260, "crm_amount": 100, "crm_provider": "GB" },
+        { "entity_id": "GOI", "amount": 500, "exposure_kind": "investment" }
+      ],
+      "expected": [
+        { "rule_key": "cb_group", "members_include": ["PSU1", "PSU2"], "absent": true },
+        { "rule_key": "cb_group", "members_include": ["O", "SPV"], "absent": true },
+        { "rule_key": "cb_group", "members_include": ["M", "N"], "status": "POTENTIAL_BREACH", "exposure": 270 },
+        { "rule_key": "cb_single", "subject": "SPV", "status": "PASS" },
+        { "rule_key": "cb_interbank", "subject": "BK", "status": "PASS" },
+        { "rule_key": "cb_single", "subject": "Q", "status": "PASS", "exposure": 160 },
+        { "rule_key": "cb_interbank", "subject": "GB", "status": "PASS", "exposure": 100 },
+        { "rule_key": "cb_large_exposure", "subject": "GOI", "status": "REPORTABLE" },
+        { "rule_key": "cb_single", "subject": "GOI", "absent": true }
+      ]
+    },
+    {
+      "id": "cb_intra_group",
+      "title": "Intra-group exposures to the bank's own subsidiaries and associates",
+      "category": "commercial_banks",
+      "description": "The bank owns an NBFC subsidiary (regulated financial), an IT services company (non-financial), 26% of a fund and has a joint venture. Intra-group limits apply to them (equity excluded) and they drop out of the large-exposure limits.",
+      "profile": {},
+      "capital": { "tier1_capital": 1000, "tier2_capital": 200 },
+      "entities": [
+        { "entity_id": "SUB_NBFC", "name": "Bank Capital Finance Ltd (NBFC subsidiary)", "entity_type": "nbfc" },
+        { "entity_id": "SUB_IT", "name": "Bank Technology Services Ltd", "entity_type": "company", "ite_class": "non_financial" },
+        { "entity_id": "ASSOC_FUND", "name": "Bank Opportunities Fund", "entity_type": "fund" },
+        { "entity_id": "JV", "name": "Bank-Insure Distribution JV", "entity_type": "company", "group_relation": "joint_venture" },
+        { "entity_id": "Z", "name": "Zenith Cements Ltd", "entity_type": "company" }
+      ],
+      "edges": [
+        { "from_entity": "SELF", "to_entity": "SUB_NBFC", "edge_type": "OWNS", "ownership_pct": 100 },
+        { "from_entity": "SELF", "to_entity": "SUB_IT", "edge_type": "OWNS", "ownership_pct": 51 },
+        { "from_entity": "SELF", "to_entity": "ASSOC_FUND", "edge_type": "OWNS", "ownership_pct": 26 }
+      ],
+      "exposures": [
+        { "entity_id": "SUB_NBFC", "amount": 90 },
+        { "entity_id": "SUB_NBFC", "amount": 200, "exposure_kind": "equity" },
+        { "entity_id": "SUB_IT", "amount": 60 },
+        { "entity_id": "ASSOC_FUND", "amount": 30 },
+        { "entity_id": "JV", "amount": 20 },
+        { "entity_id": "Z", "amount": 120 }
+      ],
+      "expected": [
+        { "rule_key": "cb_ite_single_fin", "subject": "SUB_NBFC", "status": "PASS", "exposure": 90 },
+        { "rule_key": "cb_ite_single_nonfin", "subject": "SUB_IT", "status": "BREACH" },
+        { "rule_key": "cb_ite_single_nonfin", "subject": "ASSOC_FUND", "status": "PASS" },
+        { "rule_key": "cb_ite_agg_nonfin", "status": "BREACH", "exposure": 110 },
+        { "rule_key": "cb_ite_agg_all", "status": "PASS", "exposure": 200 },
+        { "rule_key": "cb_single", "subject": "SUB_NBFC", "absent": true },
+        { "rule_key": "cb_single", "subject": "Z", "status": "PASS" }
+      ]
+    },
+    {
+      "id": "nbfc_ul_infrastructure",
+      "title": "NBFC (upper layer): Board-approved excess and infrastructure headroom",
+      "category": "nbfc",
+      "description": "An upper-layer NBFC (not an IFC). The single-counterparty limit is 20% of Tier 1, with +5% allowed by the Board or on account of infrastructure, never above 25%.",
+      "profile": { "nbfc_layer": "UL", "nbfc_is_ifc": 0 },
+      "capital": { "tier1_capital": 500 },
+      "entities": [
+        { "entity_id": "R1", "name": "Rapid Highways Ltd", "entity_type": "company" },
+        { "entity_id": "R2", "name": "Riverside Housing Ltd", "entity_type": "company" },
+        { "entity_id": "R3", "name": "Ridge Metals Ltd", "entity_type": "company" },
+        { "entity_id": "R4", "name": "Rover Group Holdings", "entity_type": "company" },
+        { "entity_id": "R5", "name": "Rover Retail Ltd", "entity_type": "company" }
+      ],
+      "edges": [
+        { "from_entity": "R4", "to_entity": "R5", "edge_type": "OWNS", "ownership_pct": 80 }
+      ],
+      "exposures": [
+        { "entity_id": "R1", "amount": 95 },
+        { "entity_id": "R1", "amount": 20, "exposure_kind": "investment", "infrastructure": 1 },
+        { "entity_id": "R2", "amount": 120, "board_approved_excess": 1 },
+        { "entity_id": "R3", "amount": 130, "board_approved_excess": 1 },
+        { "entity_id": "R4", "amount": 60 },
+        { "entity_id": "R5", "amount": 80 }
+      ],
+      "expected": [
+        { "rule_key": "nbfc_ul_single", "subject": "R1", "status": "PASS_WITH_CONDITIONS" },
+        { "rule_key": "nbfc_ul_single", "subject": "R2", "status": "PASS_WITH_CONDITIONS" },
+        { "rule_key": "nbfc_ul_single", "subject": "R3", "status": "BREACH" },
+        { "rule_key": "nbfc_ul_group", "members_include": ["R4", "R5"], "status": "BREACH", "exposure": 140 },
+        { "rule_key": "nbfc_ul_large_exposure", "subject": "R3", "status": "REPORTABLE" }
+      ]
+    },
+    {
+      "id": "ucb_group_and_directors",
+      "title": "Urban co-operative bank: sanctioned limits, common partners and a director's firm",
+      "category": "urban_cooperative_banks",
+      "description": "For UCBs the sanctioned limit or the outstanding, whichever is higher, counts. Two firms with common partners form a connected group. A director of the bank is a partner in a borrowing firm (Section 20 read with Section 56 of the BR Act).",
+      "profile": {},
+      "capital": { "tier1_capital": 200 },
+      "entities": [
+        { "entity_id": "U1", "name": "Unnati Traders", "entity_type": "firm" },
+        { "entity_id": "U2", "name": "Utkarsh Textiles", "entity_type": "firm" },
+        { "entity_id": "U3", "name": "Utkarsh Garments", "entity_type": "firm" },
+        { "entity_id": "U4", "name": "Desai Brothers", "entity_type": "firm" },
+        { "entity_id": "D", "name": "V. Desai (director)", "entity_type": "individual" }
+      ],
+      "edges": [
+        { "from_entity": "U2", "to_entity": "U3", "edge_type": "COMMON_MANAGEMENT", "evidence": "same partners, same line of business" },
+        { "from_entity": "D", "to_entity": "SELF", "edge_type": "DIRECTOR_OF" },
+        { "from_entity": "D", "to_entity": "U4", "edge_type": "INTERESTED_IN", "role": "partner" }
+      ],
+      "exposures": [
+        { "entity_id": "U1", "amount": 20, "sanctioned_limit": 35 },
+        { "entity_id": "U2", "amount": 25 },
+        { "entity_id": "U3", "amount": 30 },
+        { "entity_id": "U4", "amount": 5 }
+      ],
+      "expected": [
+        { "rule_key": "ucb_single", "subject": "U1", "status": "BREACH", "exposure": 35 },
+        { "rule_key": "ucb_group", "members_include": ["U2", "U3"], "status": "BREACH", "exposure": 55 },
+        { "rule_key": "ucb_section20", "subject": "U4", "status": "PROHIBITED" }
+      ]
+    }
+  ]
+}

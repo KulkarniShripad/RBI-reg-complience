@@ -4,8 +4,9 @@
 |---|---|
 | `circulars/` | the source corpus: RBI Master Directions (PDF), one folder per institution type |
 | `urcc-ef-backend/` | extraction pipeline (Python) + API (Node): search, grounded chat, uploads, compliance checks — see its [README](urcc-ef-backend/README.md) |
-| `rbi-clarity-frontend-compliance/` | the dashboard (React/Vite): chat, upload, topics, rules, compliance checker |
+| `rbi-clarity-frontend-compliance/` | the dashboard (React/Vite): chat, upload, topics, rules, compliance checker, exposure network |
 | `docs/COMPLIANCE_FLOW.md` | how the compliance checker works end to end |
+| `docs/NETWORK_GRAPH.md` | the counterparty network (graph) subsystem: data model, algorithms, rules, API |
 
 ## Run it
 
@@ -23,6 +24,10 @@ npm install
 npm run dev                     # http://localhost:8080 (set VITE_API_BASE_URL if the API is not on :4002)
 ```
 
-Rebuilding the database keeps your banks, submitted figures, evidence and run
-history. Check extraction quality any time with `npm run audit` and retrieval
-quality with `npm run eval:retrieval` (both in `urcc-ef-backend/`).
+Rebuilding the database keeps your banks, submitted figures, evidence,
+counterparty networks and run history. Check extraction quality any time with `npm run audit` and retrieval
+quality with `npm run eval:retrieval`, and the network check with
+`npm run eval:graph` (all in `urcc-ef-backend/`).
+
+To try the network check: Compliance Checker → Network → **Sample networks**
+→ open one as a demo bank.

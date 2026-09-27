@@ -14,6 +14,7 @@ const queryRoutes = require("./routes/query.routes");
 const ingestRoutes = require("./routes/ingest.routes");
 const ruleMappingsRoutes = require("./routes/ruleMappings.routes");
 const legacyRoutes = require("./routes/legacy.routes");
+const graphRoutes = require("./routes/graph.routes");
 
 const db = require("./config/db");
 const vectorStore = require("./services/vectorStore");
@@ -61,6 +62,7 @@ app.use("/api/compliance", complianceRoutes);
 app.use("/api/query", queryRoutes);
 app.use("/api/ingest", ingestRoutes);
 app.use("/api/rule-mappings", ruleMappingsRoutes);
+app.use("/api/graph", graphRoutes);
 
 app.use((req, res) => res.status(404).json({ error: "Not found" }));
 app.use(errorHandler);

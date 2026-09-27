@@ -118,6 +118,13 @@ export const STATUS_STYLES: Record<string, string> = {
   PARTIAL: WARN,
   NOT_REPORTED: NEUTRAL,
   NEEDS_REVIEW: NEUTRAL,
+  // network check (graph subsystem)
+  PASS_WITH_CONDITIONS: GOOD,
+  PROHIBITED: BAD,
+  POTENTIAL_BREACH: WARN,
+  ASSESSMENT_REQUIRED: WARN,
+  REPORTABLE: "bg-blue-50 text-blue-800 border-blue-200",
+  INFO: NEUTRAL,
 };
 
 export const statusClass = (status: string | null | undefined) =>
@@ -133,6 +140,12 @@ export const STATUS_LABELS: Record<string, string> = {
   PARTIAL: "Partial",
   LIKELY_GAP: "Likely gap",
   NEEDS_REVIEW: "Needs review",
+  PASS_WITH_CONDITIONS: "Pass (conditions)",
+  PROHIBITED: "Prohibited",
+  POTENTIAL_BREACH: "Potential breach",
+  ASSESSMENT_REQUIRED: "Assessment required",
+  REPORTABLE: "Reportable",
+  INFO: "Info",
 };
 
 export const statusLabel = (s: string | null | undefined) =>

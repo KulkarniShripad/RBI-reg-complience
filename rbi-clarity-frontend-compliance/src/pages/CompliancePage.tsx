@@ -26,9 +26,10 @@ import { RunCheck, type RunOutcome } from "@/components/compliance/RunCheck";
 import { ResultsView } from "@/components/compliance/ResultsView";
 import { RunHistory } from "@/components/compliance/RunHistory";
 import { EmptyState, ErrorState } from "@/components/compliance/shared";
+import { NetworkPanel } from "@/components/network/NetworkPanel";
 
-type Tab = "setup" | "quant" | "qual" | "run" | "history";
-const TABS: Tab[] = ["setup", "quant", "qual", "run", "history"];
+type Tab = "setup" | "quant" | "qual" | "network" | "run" | "history";
+const TABS: Tab[] = ["setup", "quant", "qual", "network", "run", "history"];
 
 const CompliancePage = () => {
   const { toast } = useToast();
@@ -155,7 +156,7 @@ const CompliancePage = () => {
     <div className="p-4 sm:p-6 md:p-10 max-w-6xl mx-auto">
       <h1 className="font-display text-2xl font-bold text-foreground mb-2">Compliance Checker</h1>
       <p className="text-muted-foreground mb-6">
-        Check a bank's reported figures and policy evidence against applicable RBI rules.
+        Check a bank's reported figures, policy evidence and counterparty network against applicable RBI rules.
       </p>
 
       <Card className="p-4 mb-5">
@@ -225,6 +226,7 @@ const CompliancePage = () => {
             <TabsTrigger value="qual" disabled={!selectedBank}>
               Qualitative{qualState ? ` (${qualState.saved})` : ""}
             </TabsTrigger>
+            <TabsTrigger value="network" disabled={!selectedBank}>Network</TabsTrigger>
             <TabsTrigger value="run" disabled={!selectedBank}>Run &amp; Results</TabsTrigger>
             <TabsTrigger value="history" disabled={!selectedBank}>History</TabsTrigger>
           </TabsList>
@@ -251,6 +253,18 @@ const CompliancePage = () => {
             <TabsContent value="qual" forceMount className="mt-0 data-[state=inactive]:hidden">
               <QualitativeEvidence key={contextKey} bankId={bankId} period={periodLabel} onStateChange={setQualState} />
             </TabsContent>
+            <TabsContent value="network" className="mt-0">
+              <NetworkPanel
+                key={contextKey}
+                bank={selectedBank}
+                period={periodLabel}
+                onOpenBank={async (id) => {
+                  await loadBanks();
+                  resetContext();
+                  updateParams({ bank: id, tab: "network" });
+                }}
+              />
+            </TabsContent>
             <TabsContent value="run" className="mt-0 space-y-4">
               <RunCheck key={contextKey} bankId={bankId} period={periodLabel} quant={quantState} qual={qualState} onComplete={onRunComplete} />
               {lastRun && (
@@ -263,6 +277,7 @@ const CompliancePage = () => {
                   quant={lastRun.quant_results}
                   qual={lastRun.qual_results}
                   persisted={lastRun.persisted}
+                  network={lastRun.graph_results ?? null}
                 />
               )}
             </TabsContent>

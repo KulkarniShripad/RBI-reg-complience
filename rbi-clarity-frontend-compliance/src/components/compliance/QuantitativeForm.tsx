@@ -391,6 +391,15 @@ export const QuantitativeForm = ({ bankId, period, onStateChange }: Props) => {
                           Unverified mapping
                         </Badge>
                       )}
+                      {r.computed_by_network && (
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] px-2 py-0 bg-blue-50 text-blue-800 border-blue-200"
+                          title="Aggregated over the counterparty network in the Network tab"
+                        >
+                          Computed by network check
+                        </Badge>
+                      )}
                     </div>
                     {showVariable && (
                       <p className="text-xs text-muted-foreground mt-0.5 break-words">Variable: {r.variable_text}</p>

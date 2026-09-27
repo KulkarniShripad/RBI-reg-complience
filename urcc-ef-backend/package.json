@@ -16,7 +16,8 @@
     "migrate": "node migrations/run_migrations.js",
     "migrate:fts": "node migrations/002_build_fts_index.js",
     "scrape:rbi": "python3 scripts/rbi_scraper.py",
-    "test": "python3 -m unittest scripts/test_pipeline.py && node --test test/*.test.js"
+    "test": "python3 -m unittest scripts/test_pipeline.py && node --test test/*.test.js",
+    "eval:graph": "node scripts/eval_graph.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",

@@ -13,6 +13,9 @@ const routing = require("./routingService");
 const quantService = require("./quantComplianceService");
 const qualService = require("./qualComplianceService");
 const embedding = require("./embeddingService");
+const graphStore = require("./graph/graphStore");
+const graphRules = require("./graph/graphRules");
+const graphService = require("./graph/graphComplianceService");
 
 const OPERATORS = {
   "<=": (v, t) => v <= t,
@@ -52,10 +55,22 @@ async function runRoutedCompliance({ bankId, periodLabel, graphDataAvailable = f
   const sampledUris = new Set(
     qualService.sampleObligations(bank.institution_category, qualSampleLimit).sample.map((c) => c.clause_uri)
   );
+  // Clauses the network check decides (concentration limits, related-party
+  // prohibitions) are always in the pool, sampled or not.
+  const graphCovered = graphRules.coveredClauseUris(bank.institution_category);
+  const graphAvailable = graphDataAvailable || graphStore.hasGraphData(bankId, periodLabel);
+  const graphOut = graphAvailable ? graphService.runGraphCheck({ bankId, periodLabel }) : null;
+  const graphByClause = graphOut?.has_data ? graphService.statusByClause(graphOut.results) : new Map();
+  const seen = new Set();
   const clauses = [
     ...allClauses.filter((clause) => clause.rule_id != null),
-    ...allClauses.filter((clause) => clause.rule_id == null && sampledUris.has(clause.clause_uri)),
-  ];
+    ...allClauses.filter((clause) => clause.rule_id == null && (sampledUris.has(clause.clause_uri) || graphCovered.has(clause.clause_uri))),
+  ].filter((c) => {
+    const key = `${c.clause_uri}|${c.rule_id ?? ""}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 
   const evidenceRows = db
     .prepare(`SELECT evidence_text FROM bank_qual_evidence WHERE bank_id = ?`)
@@ -91,7 +106,10 @@ async function runRoutedCompliance({ bankId, periodLabel, graphDataAvailable = f
     // --- gather routing signals ---
     let evidenceAvailable = false;
     let reportedValue = null;
-    if (ruleAtom) {
+    const graphCovers = graphCovered.has(clause.clause_uri);
+    if (graphCovers && graphOut?.has_data) {
+      evidenceAvailable = true;
+    } else if (ruleAtom) {
       const sub = db
         .prepare(
           `SELECT reported_value FROM bank_quant_submissions WHERE bank_id = ? AND rule_id = ? AND period_label = ?`
@@ -137,7 +155,8 @@ async function runRoutedCompliance({ bankId, periodLabel, graphDataAvailable = f
       ruleAtom,
       {
         evidenceAvailable,
-        graphDataAvailable,
+        graphDataAvailable: !!graphOut?.has_data,
+        graphCovers,
         retrievalTopScore,
         retrievalSecondScore,
         evidencePoolSize: evidenceRows.length,
@@ -159,7 +178,17 @@ async function runRoutedCompliance({ bankId, periodLabel, graphDataAvailable = f
       finalStatus = match?.status ?? "NEEDS_REVIEW";
       detail = { llm_judgment: match?.llm_judgment ?? null, best_evidence_text: match?.best_evidence_text ?? null };
     } else if (decision.route === routing.ROUTES.GRAPH) {
-      finalStatus = "NOT_IMPLEMENTED"; // design-only per blueprint §7 - never reached while graphDataAvailable stays false
+      // No row for a clause = nothing in the network triggers it (e.g. no
+      // exposure to a director-linked party), which is a pass.
+      const hit = graphByClause.get(clause.clause_uri);
+      finalStatus = hit?.status ?? "PASS";
+      detail = {
+        network_findings: (hit?.results || [])
+          .filter((r) => !["PASS", "INFO"].includes(r.status))
+          .slice(0, 20)
+          .map((r) => ({ rule: r.rule_label, subject: r.subject?.name, status: r.status, exposure_pct: r.exposure_pct, limit_pct: r.limit_pct })),
+        network_rows: hit?.results.length ?? 0,
+      };
     }
     // HUMAN and INSUFFICIENT_DATA already have finalStatus set from decision.decision
 

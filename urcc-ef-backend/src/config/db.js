@@ -60,4 +60,19 @@ if (!version || parseFloat(version) < 2) {
   else throw new Error(msg);
 }
 
+// Operational tables (banks, runs, the counterparty network, ...) are plain
+// CREATE TABLE IF NOT EXISTS migrations; applying them on start means a
+// database built before a new migration existed gets the new tables too.
+if (version) {
+  const path = require("path");
+  const dir = path.join(__dirname, "..", "..", "migrations");
+  for (const f of fs.readdirSync(dir).filter((x) => x.endsWith(".sql")).sort()) {
+    try {
+      db.exec(fs.readFileSync(path.join(dir, f), "utf8"));
+    } catch (err) {
+      console.warn(`[db] could not apply ${f}: ${err.message}`);
+    }
+  }
+}
+
 module.exports = db;
