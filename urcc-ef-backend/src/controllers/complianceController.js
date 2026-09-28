@@ -10,6 +10,8 @@ const quantService = require("../services/quantComplianceService");
 const qualService = require("../services/qualComplianceService");
 const reportService = require("../services/reportService");
 const routedService = require("../services/routedComplianceService");
+const graphStore = require("../services/graph/graphStore");
+const graphService = require("../services/graph/graphComplianceService");
 
 async function runComplianceCheck(req, res) {
   const { bankId } = req.params;
@@ -19,6 +21,7 @@ async function runComplianceCheck(req, res) {
     submitted_field_labels = {}, // { [rule_id]: "human label of what was submitted" }
     qual_sample_limit = 40,
     persist = true,
+    include_flagged_links = true,
   } = req.body;
 
   if (!period_label) return res.status(400).json({ error: "period_label is required" });
@@ -37,14 +40,21 @@ async function runComplianceCheck(req, res) {
     sampleLimit: qual_sample_limit,
   });
 
-  const report = reportService.generateReport(bank, quantResults, qualResults);
+  // Subsystem 3: the counterparty network, when the bank has entered one
+  // for this period (deterministic graph algorithms, no LLM).
+  const graphResults = graphStore.hasGraphData(bankId, period_label)
+    ? graphService.runGraphCheck({ bankId, periodLabel: period_label, includeFlagged: include_flagged_links })
+    : null;
+
+  const report = reportService.generateReport(bank, quantResults, qualResults, graphResults);
 
   let runId = null;
   if (persist) {
     runId = reportService.persistRun({ bankId, periodLabel: period_label, report, quantResults, qualResults });
+    if (graphResults) graphResults.graph_run_id = graphService.persistGraphRun(graphResults, runId);
   }
 
-  res.json({ run_id: runId, report, quant_results: quantResults, qual_results: qualResults });
+  res.json({ run_id: runId, report, quant_results: quantResults, qual_results: qualResults, graph_results: graphResults });
 }
 
 function listRuns(req, res) {
@@ -109,6 +119,11 @@ async function compareRoutingStrategies(req, res) {
   const fixedByUri = new Map(
     [...quantResults.map((r) => [r.clause_uri, r.status]), ...qualResults.map((r) => [r.clause_uri, r.status])]
   );
+  // The fixed pipeline also runs the network check when network data exists.
+  if (graphStore.hasGraphData(bankId, period_label)) {
+    const g = graphService.runGraphCheck({ bankId, periodLabel: period_label });
+    for (const [uri, v] of graphService.statusByClause(g.results)) if (!fixedByUri.has(uri)) fixedByUri.set(uri, v.status);
+  }
 
   const routedResults = await routedService.runRoutedCompliance({
     bankId,

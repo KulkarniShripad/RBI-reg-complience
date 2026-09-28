@@ -133,6 +133,12 @@ export const STATUS_STYLES: Record<string, string> = {
   EVIDENCE_FOUND: BLUE,
   ATTENTION: ORANGE,
   INSUFFICIENT_DATA: NEUTRAL,
+  // network check (graph subsystem)
+  PROHIBITED: BAD,
+  POTENTIAL_BREACH: WARN,
+  ASSESSMENT_REQUIRED: WARN,
+  REPORTABLE: "bg-blue-50 text-blue-800 border-blue-200",
+  INFO: NEUTRAL,
 };
 
 export const statusClass = (status: string | null | undefined) =>
@@ -159,6 +165,11 @@ export const STATUS_LABELS: Record<string, string> = {
   EVIDENCE_FOUND: "Evidence found",
   ATTENTION: "Needs attention",
   INSUFFICIENT_DATA: "Insufficient data",
+  PROHIBITED: "Prohibited",
+  POTENTIAL_BREACH: "Potential breach",
+  ASSESSMENT_REQUIRED: "Assessment required",
+  REPORTABLE: "Reportable",
+  INFO: "Info",
 };
 
 export const statusLabel = (s: string | null | undefined) =>

@@ -1,4 +1,5 @@
 const db = require("../config/db");
+const graphRules = require("../services/graph/graphRules");
 const quantService = require("../services/quantComplianceService");
 const qualService = require("../services/qualComplianceService");
 const anomalyService = require("../services/anomalyCheckService");
@@ -137,7 +138,12 @@ function applicableQuantRules(req, res) {
   // the raw heuristic variable_text with an explicit warning so the UI can
   // visually flag "this field hasn't been curated yet, verify manually" -
   // see rule_mapping curation workflow in ruleMappingController.js.
+  // Concentration limits and related-party rules are computed from the
+  // counterparty network (Network tab) - the form marks them so nobody types
+  // a single figure for "exposure to a group of connected counterparties".
+  const networkCovered = graphRules.coveredClauseUris(bank.institution_category);
   for (const r of rules) {
+    r.computed_by_network = networkCovered.has(r.clause_uri);
     if (!r.approved_by) {
       r.form_label = r.variable_text;
       r.mapping_status = "unverified";

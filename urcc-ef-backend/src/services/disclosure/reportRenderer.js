@@ -26,6 +26,11 @@ const STATUS = {
   NOT_DEMONSTRATED: ["Not demonstrated", "#9a3412", "#ffedd5"],
   EVIDENCE_FOUND: ["Evidence found", "#1e40af", "#dbeafe"],
   ATTENTION: ["Needs attention", "#9a3412", "#ffedd5"],
+  PROHIBITED: ["Prohibited", "#991b1b", "#fee2e2"],
+  POTENTIAL_BREACH: ["Potential breach", "#854d0e", "#fef9c3"],
+  ASSESSMENT_REQUIRED: ["Assessment required", "#854d0e", "#fef9c3"],
+  REPORTABLE: ["Reportable", "#1e40af", "#dbeafe"],
+  INFO: ["Info", "#475569", "#f1f5f9"],
   INSUFFICIENT_DATA: ["Insufficient data", "#475569", "#f1f5f9"],
 };
 
@@ -101,6 +106,13 @@ ${figures ? `<table><thead><tr><th>Figure</th><th class="num">Value</th><th>Basi
 ${disc ? `<table><thead><tr><th>Status</th><th>Item</th><th>Found</th><th>Required by</th></tr></thead><tbody>${disc}</tbody></table>` : `<p class="muted">${esc(report.disclosures.reason || "Not applicable.")}</p>`}
 <h2>Obligations the document addresses</h2>
 ${qual ? `<table><thead><tr><th>Status</th><th>RBI obligation</th><th>Passage in the document</th></tr></thead><tbody>${qual}</tbody></table>` : `<p class="muted">${esc(report.qualitative.reason || "None matched.")}</p>`}
+${report.network ? `<h2>Counterparty network (exposure and related-party limits)</h2>
+${(report.network.results || []).filter((r) => r.status !== "PASS").length
+  ? `<table><thead><tr><th>Status</th><th>Rule</th><th>Counterparty / group</th><th class="num">Exposure</th><th class="num">Limit</th><th>RBI source</th></tr></thead><tbody>${report.network.results
+      .filter((r) => r.status !== "PASS")
+      .map((r) => `<tr><td>${badge(r.status)}</td><td>${esc(r.rule_label)}</td><td>${esc(r.subject?.name || "")}</td><td class="num">${r.exposure_pct === null || r.exposure_pct === undefined ? "—" : `${esc(Number(r.exposure_pct).toFixed(2))}%`}</td><td class="num">${r.limit_pct === null || r.limit_pct === undefined ? "—" : `${esc(r.limit_pct)}%`}</td><td>${ref(r.source)}</td></tr>`)
+      .join("")}</tbody></table>`
+  : '<p class="muted">Every network check passed.</p>'}` : ""}
 <h2>Notes and method</h2>
 <ul>${report.notes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>
 <p class="muted">Deterministic: ${esc(report.method.deterministic.join("; "))}.<br>LLM (${report.method.llm_configured && report.method.llm_requested ? "used where needed" : "not used"}): ${esc(report.method.llm.join("; "))}.</p>

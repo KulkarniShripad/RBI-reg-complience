@@ -4,6 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { ComplianceReport, QualitativeResult, QuantitativeResult } from "@/lib/api";
+import type { NetworkCheck } from "@/lib/network";
+import { NetworkResults } from "@/components/network/NetworkResults";
+import { Network } from "lucide-react";
 import {
   formatConfidence,
   formatDateTime,
@@ -25,6 +28,7 @@ interface Props {
   quant: QuantitativeResult[];
   qual: QualitativeResult[];
   persisted?: boolean;
+  network?: NetworkCheck | null;
 }
 
 const QUANT_ORDER = ["BREACH", "NOT_REPORTED", "PASS"];
@@ -78,7 +82,7 @@ const FilterBar = ({
   </div>
 );
 
-export const ResultsView = ({ runId, period, runDate, report, quant, qual, persisted = true }: Props) => {
+export const ResultsView = ({ runId, period, runDate, report, quant, qual, persisted = true, network = null }: Props) => {
   const [section, setSection] = useState<"quant" | "qual">(quant.length || !qual.length ? "quant" : "qual");
   const [quantFilter, setQuantFilter] = useState("ALL");
   const [qualFilter, setQualFilter] = useState("ALL");
@@ -293,6 +297,27 @@ export const ResultsView = ({ runId, period, runDate, report, quant, qual, persi
               })}
             </ul>
           </>
+        )}
+      </Card>
+
+      <Card className="p-4 sm:p-5">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="rounded-lg bg-muted p-2 text-primary shrink-0">
+            <Network className="h-5 w-5" />
+          </div>
+          <div className="min-w-0">
+            <h3 className="font-semibold text-foreground">Counterparty network</h3>
+            <p className="text-xs text-muted-foreground">
+              Groups of connected counterparties, related parties and intra-group exposure, computed over the bank's exposure network.
+            </p>
+          </div>
+        </div>
+        {network ? (
+          <NetworkResults check={network} compact />
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            Not checked: no exposures were entered for {period}. Add them in the Network tab and run the check again.
+          </p>
         )}
       </Card>
 

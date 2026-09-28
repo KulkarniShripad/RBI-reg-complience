@@ -2,12 +2,13 @@
 
 This describes the compliance checking system end to end: what the user does
 on the dashboard, which API each step calls, what the backend computes, where
-the data lives, and what is (and is not) automated. The network/graph
-subsystem is out of scope and not implemented.
+the data lives, and what is (and is not) automated. The counterparty-network
+check (Subsystem 3) is summarised here and described in full in
+[NETWORK_GRAPH.md](NETWORK_GRAPH.md).
 
 > **Automatic mode.** Instead of typing figures per rule (below), a bank's own
 > document — annual report, Basel III Pillar 3 disclosure, results, or an
-> Excel / CSV / JSON of figures — can be uploaded on **Auto Compliance Check**:
+> Excel / CSV / JSON of figures — can be uploaded on **Compliance Check**:
 > the bank, category, period, figures and applicable rules are worked out
 > automatically and a report is produced. See [AUTO_CHECK.md](AUTO_CHECK.md).
 
@@ -25,11 +26,15 @@ subsystem is out of scope and not implemented.
  2 Quantitative form ◄──────────────── GET  /banks/:id/applicable-rules            (reads rule_atoms for the bank's category)
    enter figures ────────────────────► POST /banks/:id/quant-submissions  ──────► bank_quant_submissions  (+ anomaly flags returned)
  3 Qualitative evidence ─────────────► POST /banks/:id/qual-evidence      ──────► bank_qual_evidence
+ 3b Network (counterparties, links,  ► /api/graph/:id/...               ──────► graph_entities, graph_edges,
+    exposures, capital)                                                          graph_exposures, graph_capital
  4 Run check ────────────────────────► POST /compliance/:id/run
                                           ├─ Subsystem 1: deterministic rule engine (no LLM)
                                           ├─ optional: LLM field-mapping warning (advisory only)
                                           ├─ Subsystem 2: embeddings + Gemini judgement
-                                          └─ report + persist ───────────────────► compliance_runs, compliance_run_details
+                                          ├─ Subsystem 3: counterparty network (graph algorithms, no LLM)
+                                          └─ report + persist ───────────────────► compliance_runs, compliance_run_details,
+                                                                                   graph_check_runs, graph_check_results
  5 History ◄───────────────────────── GET  /compliance/:id/runs, /compliance/runs/:runId
 ```
 
@@ -38,7 +43,7 @@ adaptive router) and `compare` (fixed pipeline vs router on the same data).
 
 ## 2. Step by step
 
-### Step 1 — Register the bank (Bank Setup tab)
+### Step 1 — Register the bank (Bank Explorer → Banks)
 `BankSetup.tsx` → `POST /api/banks {bank_id, bank_name, institution_category}`.
 
 The category list comes from the backend (`GET /categories`), and the backend
@@ -47,7 +52,7 @@ normalises whatever it receives (`small financial banks`, `SFB`,
 with the list of valid ones. The category decides which directions (and
 therefore which rules) apply to the bank.
 
-### Step 2 — Enter quantitative figures (Quantitative tab)
+### Step 2 — Enter quantitative figures (Quantitative Rules tab)
 `QuantitativeForm.tsx` → `GET /api/banks/:id/applicable-rules?period_label=Q1-FY2026-27`.
 
 The backend (`bankController.applicableQuantRules`) returns every rule atom
@@ -75,12 +80,22 @@ Saving calls `POST /api/banks/:id/quant-submissions` with
 
 One value is stored per (bank, rule, period); re-saving overwrites it.
 
-### Step 3 — Add qualitative evidence (Qualitative tab)
+### Step 3 — Add qualitative evidence (Qualitative Evidence tab)
 `QualitativeEvidence.tsx` → `POST /api/banks/:id/qual-evidence
 {evidence_text, source_type, period_label}`. This is the bank's own text:
 board minutes, policy manuals, audit notes. Exact duplicates are ignored.
 
-### Step 4 — Run the check (Run & Results tab)
+### Step 3b — Enter the counterparty network (Network tab)
+`NetworkPanel.tsx` → `/api/graph/:bankId/...`. The bank records its
+counterparties, how they are connected (ownership, control, common
+management, economic dependence, directors, relatives, promoters), its
+exposures for the period and its capital base — by hand, from CSV / JSON, or
+by opening a synthetic sample network. Links can be confirmed, flagged
+(suspected) or rebutted (shown to RBI not to create a single risk). The
+network check runs on every change, so the graph and findings are always
+current. Details: [NETWORK_GRAPH.md](NETWORK_GRAPH.md).
+
+### Step 4 — Run the check (Manual Check tab)
 `RunCheck.tsx` → `POST /api/compliance/:id/run {period_label, use_llm_mapping_check, qual_sample_limit, persist}`.
 `complianceController.runComplianceCheck` does four things:
 
@@ -124,16 +139,36 @@ never change PASS/BREACH/NOT_REPORTED.
 | Gemini: none | `LIKELY_GAP` |
 | Gemini call failed / no API key / embeddings unavailable | `NEEDS_REVIEW` (never silently `COVERED`) |
 
+**c2) Subsystem 3 — counterparty network** (`services/graph/`), only when
+the bank has exposures for the period. Groups of connected counterparties are
+built over control and economic-dependence links (with RBI's downstream /
+upstream contagion rules), related parties are found by path from the bank's
+directors, promoters and major shareholders, and the bank's own group is
+derived from ownership. Each is checked against the limit of the bank's
+category — the rule is applied only if its source paragraph is found in the
+corpus with the same number:
+
+| Situation | Status |
+|---|---|
+| within the limit | `PASS` |
+| above the base limit but within Board-approved / infrastructure headroom | `PASS_WITH_CONDITIONS` |
+| above every limit | `BREACH` |
+| a breach only if flagged (unconfirmed) links are real | `POTENTIAL_BREACH` |
+| exposure to a director-, relative-, promoter- or major-shareholder-linked party | `PROHIBITED` |
+| capital base missing, rule source not verified, exception claimed | `NEEDS_REVIEW` |
+| > 5% of capital and no economic-interdependence assessment recorded | `ASSESSMENT_REQUIRED` |
+| ≥ 10% of capital (large exposure) | `REPORTABLE` |
+
 **d) Report and history** (`reportService`). Counts per status, the list of
 breaches (with rule, reported value, clause), mapping warnings, and gaps. With
 `persist=true` the run is stored in `compliance_runs` (summary) and
 `compliance_run_details` (one row per rule/obligation, frozen at run time), so
 later changes to rules do not rewrite history.
 
-### Step 5 — History tab
+### Step 5 — Compliance History tab
 `RunHistory.tsx` → `GET /api/compliance/:id/runs` (list) and
 `GET /api/compliance/runs/:runId` (one run with `report`, `quant_results`,
-`qual_results`).
+`qual_results`, and `graph_results` when the network was checked).
 
 ## 3. The adaptive router (research endpoints)
 
@@ -144,7 +179,7 @@ one of four "routes" and records why (`routingService.js`, logged in
 | Route | When |
 |---|---|
 | `RULE_ENGINE` | a high-confidence requirement rule atom exists and a figure was submitted |
-| `GRAPH` | relational clause **and** ownership/exposure graph data exists — never fires (no graph data; out of scope) |
+| `GRAPH` | the clause is one the network check decides (a concentration limit or related-party prohibition whose paragraph resolved in the corpus) **and** the bank has network data for the period — takes precedence over the rule engine, because the value is an aggregate over the graph |
 | `RAG_LLM` | evidence retrieval is confident (clear gap between best and second-best evidence, or a high absolute score when there are < 3 evidence texts) |
 | `HUMAN` | nothing met its bar |
 | *(no route)* `INSUFFICIENT_DATA` | nothing submitted for that clause |
@@ -170,10 +205,12 @@ human's approved label/code; only then does the form show the rule as
 | `rule_atoms` | extraction pipeline | thresholds; `atom_kind` requirement/condition; `confidence` |
 | `banks` | Bank Setup | bank → category |
 | `bank_quant_submissions` | Quantitative form | one figure per bank/rule/period |
-| `bank_qual_evidence` | Qualitative tab | the bank's governance text |
+| `bank_qual_evidence` | Qualitative Evidence tab | the bank's governance text |
 | `compliance_runs`, `compliance_run_details` | Run check | frozen results |
 | `routing_decisions` | run-routed | audit trail of router choices |
 | `rule_field_mappings` | curation endpoints | approved labels / return codes |
+| `graph_entities`, `graph_edges`, `graph_exposures`, `graph_capital`, `graph_bank_profile` | Network tab | the counterparty network per bank / period |
+| `graph_check_runs`, `graph_check_results` | network check / compliance run | frozen network findings |
 
 A corpus rebuild (`npm run build:corpus`) re-extracts rules, so rule ids can
 change. The build carries bank data over from the previous database and
@@ -209,3 +246,6 @@ Limits to keep in mind:
   calibrated on labelled bank evidence.
 - **Qualitative coverage is a sample** (`qual_sample_limit`), not every
   obligation.
+- **The network check has only been evaluated on synthetic networks**
+  (40 / 40 expected outcomes on 6 scenarios). Ownership, directorship and
+  dependence data must come from the bank; there is no registry feed.

@@ -20,8 +20,8 @@ const features = [
   },
   {
     icon: Shield,
-    title: "Compliance Checker",
-    description: "Validate transactions and accounts against current regulatory rules automatically.",
+    title: "Compliance Check",
+    description: "Upload a bank's report or figures and get a compliance report against the RBI rules that apply.",
   },
 ];
 

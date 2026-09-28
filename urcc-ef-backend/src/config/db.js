@@ -60,20 +60,20 @@ if (!version || parseFloat(version) < 2) {
   else throw new Error(msg);
 }
 
-// Operational tables (banks, submissions, runs, uploaded disclosures) are
-// additive CREATE ... IF NOT EXISTS migrations, so applying them on every
-// start is safe and means a freshly built corpus works without "npm run migrate".
-function applyMigrations() {
-  const dir = require("path").join(__dirname, "..", "..", "migrations");
-  try {
-    if (!db.prepare("SELECT 1 FROM sqlite_master WHERE name = 'clause_registry'").get()) return;
-    for (const f of fs.readdirSync(dir).filter((n) => n.endsWith(".sql")).sort()) {
-      db.exec(fs.readFileSync(require("path").join(dir, f), "utf8"));
+// Operational tables (banks, runs, uploaded documents, the counterparty
+// network, ...) are plain CREATE TABLE IF NOT EXISTS migrations; applying them
+// on start means a database built before a new migration existed gets the new
+// tables too.
+if (version) {
+  const path = require("path");
+  const dir = path.join(__dirname, "..", "..", "migrations");
+  for (const f of fs.readdirSync(dir).filter((x) => x.endsWith(".sql")).sort()) {
+    try {
+      db.exec(fs.readFileSync(path.join(dir, f), "utf8"));
+    } catch (err) {
+      console.warn(`[db] could not apply ${f}: ${err.message}`);
     }
-  } catch (err) {
-    console.warn(`[db] could not apply migrations: ${err.message}`);
   }
 }
-applyMigrations();
 
 module.exports = db;

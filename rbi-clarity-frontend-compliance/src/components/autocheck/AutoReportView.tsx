@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SourceViewer, type SourceTarget } from "@/components/SourceViewer";
 import { StatusBadge } from "@/components/compliance/shared";
+import { NetworkResults } from "@/components/network/NetworkResults";
 import { formatDateTime } from "@/lib/compliance";
 import {
   formatFigure,
@@ -133,9 +134,6 @@ export const AutoReportView = ({ report, runId }: Props) => {
       <div className="rounded-lg bg-muted/50 border border-border p-3">
         <p className="text-sm text-foreground">{OVERALL_TEXT[report.overall] ?? ""}</p>
         <p className="text-sm text-foreground mt-2 whitespace-pre-line">{report.executive_summary}</p>
-        <p className="text-[11px] text-muted-foreground mt-1">
-          Summary written by {report.executive_summary_by === "llm" ? "the LLM from the findings below" : "a template from the findings below"}.
-        </p>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
@@ -154,6 +152,7 @@ export const AutoReportView = ({ report, runId }: Props) => {
             <TabsTrigger value="figures">Figures ({report.figures.length})</TabsTrigger>
             <TabsTrigger value="disclosures">Disclosures ({report.disclosures.items.length})</TabsTrigger>
             <TabsTrigger value="obligations">Obligations ({report.qualitative.results.length})</TabsTrigger>
+            {report.network && <TabsTrigger value="network">Network ({report.network.results.length})</TabsTrigger>}
             <TabsTrigger value="method">Method</TabsTrigger>
           </TabsList>
         </div>
@@ -201,10 +200,6 @@ export const AutoReportView = ({ report, runId }: Props) => {
             <p className="text-sm text-muted-foreground">{report.disclosures.reason}</p>
           ) : (
             <>
-              <p className="text-xs text-muted-foreground mb-2">
-                {report.disclosures.set} required of this category, searched in the document. "Likely missing" can also mean the item is
-                published in another document.
-              </p>
               <div className="divide-y divide-border">
                 {report.disclosures.items.map((d) => (
                   <div key={d.key} className="py-2 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
@@ -223,10 +218,6 @@ export const AutoReportView = ({ report, runId }: Props) => {
             <p className="text-sm text-muted-foreground">{report.qualitative.reason ?? "No governance passage matched an obligation closely."}</p>
           ) : (
             <div className="space-y-3">
-              <p className="text-xs text-muted-foreground">
-                Obligations of the bank's category that a passage of the document speaks to. Obligations the document does not mention are not
-                reported as gaps.
-              </p>
               {report.qualitative.results.map((q) => (
                 <div key={q.clause_uri} className="rounded-lg border border-border p-3">
                   <div className="flex flex-wrap items-center gap-2">
@@ -243,6 +234,12 @@ export const AutoReportView = ({ report, runId }: Props) => {
             </div>
           )}
         </TabsContent>
+
+        {report.network && (
+          <TabsContent value="network" className="mt-3">
+            <NetworkResults check={{ ...report.network, message: report.network.message ?? undefined }} />
+          </TabsContent>
+        )}
 
         <TabsContent value="method" className="mt-3 space-y-3 text-sm">
           <ul className="list-disc pl-5 space-y-1 text-foreground">

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { ArrowLeft, CheckCircle2, FileSearch, FileUp, Loader2, Play, RotateCw, Sparkles } from "lucide-react";
+import { ArrowLeft, CheckCircle2, FileUp, Loader2, Play, RotateCw } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -15,9 +15,7 @@ import {
   ACCEPTED_FILES,
   DOC_TYPES,
   analyseFile,
-  analyseSample,
   formatFigure,
-  getSamples,
   getUpload,
   getUploads,
   periodOfDate,
@@ -25,12 +23,11 @@ import {
   updateUpload,
   uploadFileUrl,
   type AutoReport,
-  type SampleDoc,
   type UploadAnalysis,
   type UploadListItem,
 } from "@/lib/disclosures";
 import { AutoReportView } from "@/components/autocheck/AutoReportView";
-import { ErrorState, LoadingState, SectionHeading } from "@/components/compliance/shared";
+import { ErrorState, SectionHeading } from "@/components/compliance/shared";
 import { cn } from "@/lib/utils";
 
 const PERIOD_RE = /^Q[1-4]-FY\d{4}-\d{2}$/;
@@ -55,17 +52,15 @@ const Steps = ({ step }: { step: 1 | 2 | 3 }) => (
 
 // ── Step 1: upload ──
 
-const UploadStep = ({ onAnalysed, useLlm, setUseLlm }: { onAnalysed: (a: UploadAnalysis) => void; useLlm: boolean; setUseLlm: (v: boolean) => void }) => {
+const UploadStep = ({ onAnalysed }: { onAnalysed: (a: UploadAnalysis) => void }) => {
   const { toast } = useToast();
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [drag, setDrag] = useState(false);
-  const [samples, setSamples] = useState<SampleDoc[] | null>(null);
   const [recent, setRecent] = useState<UploadListItem[]>([]);
 
   useEffect(() => {
-    getSamples().then(setSamples).catch(() => setSamples([]));
     getUploads().then(setRecent).catch(() => setRecent([]));
   }, []);
 
@@ -83,14 +78,13 @@ const UploadStep = ({ onAnalysed, useLlm, setUseLlm }: { onAnalysed: (a: UploadA
     }
   };
 
-  const onFile = (f: File | undefined | null) => f && handle(() => analyseFile(f, useLlm), f.name);
+  const onFile = (f: File | undefined | null) => f && handle(() => analyseFile(f, true), f.name);
 
   return (
     <div className="space-y-4">
       <Card className="p-4 sm:p-5">
         <SectionHeading
           title="Upload a bank document"
-          description="An annual report, Basel III Pillar 3 disclosure, quarterly results, investor presentation, or a spreadsheet / CSV / JSON of figures. The system finds the bank, its category and the period, reads the figures and checks them against the RBI rules that apply."
         />
         <div
           role="button"
@@ -138,49 +132,7 @@ const UploadStep = ({ onAnalysed, useLlm, setUseLlm }: { onAnalysed: (a: UploadA
             }}
           />
         </div>
-        <div className="flex items-center gap-2 mt-3">
-          <Switch id="use-llm" checked={useLlm} onCheckedChange={setUseLlm} />
-          <Label htmlFor="use-llm" className="text-sm font-normal">
-            Use the LLM where the rules-based reader cannot decide <span className="text-muted-foreground">(needs GEMINI_API_KEY on the backend)</span>
-          </Label>
-        </div>
         {error && <div className="mt-3"><ErrorState message={error} /></div>}
-      </Card>
-
-      <Card className="p-4 sm:p-5">
-        <SectionHeading
-          title="Try a sample document"
-          description="Real figures published by Indian banks (source linked) and fictional test cases with known breaches. See sample-data/README.md."
-        />
-        {samples === null ? (
-          <LoadingState label="Loading samples…" />
-        ) : samples.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No sample documents found (sample-data/manifest.json).</p>
-        ) : (
-          <div className="grid gap-2 md:grid-cols-2">
-            {samples.map((s) => (
-              <div key={s.file} data-sample={s.file} className="rounded-lg border border-border p-3 flex flex-col gap-2 min-w-0">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-foreground break-words">{s.title}</p>
-                    <p className="text-xs text-muted-foreground">{s.period} · {s.file.split(".").pop()?.toUpperCase()}</p>
-                  </div>
-                  <Badge variant={s.kind === "public" ? "secondary" : "outline"} className="text-[11px] shrink-0">
-                    {s.kind === "public" ? "real figures" : "test case"}
-                  </Badge>
-                </div>
-                {s.source_url && (
-                  <a className="text-xs text-primary hover:underline truncate" href={s.source_url} target="_blank" rel="noreferrer">
-                    source: {new URL(s.source_url).hostname}
-                  </a>
-                )}
-                <Button size="sm" variant="outline" className="self-start" disabled={!!busy} onClick={() => handle(() => analyseSample(s.file, useLlm, true), s.title)}>
-                  <FileSearch className="h-3.5 w-3.5 mr-1.5" /> Analyse
-                </Button>
-              </div>
-            ))}
-          </div>
-        )}
       </Card>
 
       {recent.length > 0 && (
@@ -217,13 +169,11 @@ const ReviewStep = ({
   onChange,
   onRun,
   running,
-  useLlm,
 }: {
   analysis: UploadAnalysis;
   onChange: (a: UploadAnalysis) => void;
   onRun: (opts: { include_qualitative: boolean }) => void;
   running: boolean;
-  useLlm: boolean;
 }) => {
   const categories = useCategories(false);
   const p = analysis.profile;
@@ -317,7 +267,7 @@ const ReviewStep = ({
       <Card className="p-4 sm:p-5">
         <SectionHeading
           title="Who and when"
-          description={`Detected from ${analysis.file_name} (${analysis.page_count} page${analysis.page_count === 1 ? "" : "s"}${p.detected_by === "rules+llm" ? ", with LLM help" : ""}). Correct anything that is wrong. The bank is registered automatically if it is new.`}
+          description={`${analysis.file_name} · ${analysis.page_count} page${analysis.page_count === 1 ? "" : "s"}`}
           actions={
             analysis.has_file ? (
               <Button asChild variant="outline" size="sm">
@@ -386,7 +336,6 @@ const ReviewStep = ({
                   {[1, 2, 3, 4].map((t) => <SelectItem key={t} value={String(t)}>Tier {t}</SelectItem>)}
                 </SelectContent>
               </Select>
-              <p className="text-[11px] text-muted-foreground">Tier 1 ≤ ₹100 cr deposits, Tier 2 ≤ ₹1,000 cr, Tier 3 ≤ ₹10,000 cr, Tier 4 above.</p>
             </div>
           )}
         </div>
@@ -398,7 +347,6 @@ const ReviewStep = ({
       <Card className="p-4 sm:p-5">
         <SectionHeading
           title="Figures read from the document"
-          description="Each figure shows the page and line it was read from. Correct a wrong value, clear it, or add one the reader missed. Rows marked “checked by a rule” are the ones the applicable RBI requirements need."
         />
         <div className="divide-y divide-border">
           {rows.map(({ key, meta, expected, figure }) => (
@@ -450,7 +398,7 @@ const ReviewStep = ({
                     )}
                   </>
                 ) : (
-                  "Not in this document. Leave empty (reported as “not in document”) or enter the figure from another source."
+                  "Not found in the document"
                 )}
               </div>
             </div>
@@ -475,7 +423,7 @@ const ReviewStep = ({
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
           <div className="flex items-center gap-2">
             <Switch id="qual" checked={qual} onCheckedChange={setQual} />
-            <Label htmlFor="qual" className="font-normal text-sm">Also match governance passages to RBI obligations (slower)</Label>
+            <Label htmlFor="qual" className="font-normal text-sm">Include governance obligations</Label>
           </div>
           <Button onClick={saveAndRun} disabled={running || saving || missing.length > 0 || !!invalid}>
             {running || saving ? <Loader2 className="h-4 w-4 animate-spin mr-1.5" /> : <Play className="h-4 w-4 mr-1.5" />}
@@ -484,7 +432,6 @@ const ReviewStep = ({
         </div>
         {missing.length > 0 && <p className="text-xs text-yellow-800 mt-2">Fill in: {missing.join(", ")}.</p>}
         {invalid && <p className="text-xs text-destructive mt-2">“{invalid[1]}” is not a number.</p>}
-        {!useLlm && <p className="text-xs text-muted-foreground mt-2"><Sparkles className="inline h-3 w-3 mr-1" />LLM help is off: rules found only by text search are listed as “possible rule” for review.</p>}
         {error && <div className="mt-3"><ErrorState message={error} /></div>}
       </Card>
     </div>
@@ -500,7 +447,6 @@ const AutoCheckPage = () => {
   const [running, setRunning] = useState(false);
   const [runError, setRunError] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [useLlm, setUseLlm] = useState(true);
   const uploadParam = params.get("upload");
 
   const loadUpload = useCallback(async (id: number) => {
@@ -527,7 +473,7 @@ const AutoCheckPage = () => {
     setRunning(true);
     setRunError(null);
     try {
-      setReport(await runAutoCheck(analysis.upload_id, { use_llm: useLlm, include_qualitative: opts.include_qualitative }));
+      setReport(await runAutoCheck(analysis.upload_id, { use_llm: true, include_qualitative: opts.include_qualitative }));
     } catch (err) {
       setRunError(getErrorMessage(err, "The compliance check failed."));
     } finally {
@@ -546,23 +492,19 @@ const AutoCheckPage = () => {
 
   return (
     <div className="p-4 sm:p-6 md:p-10 max-w-6xl mx-auto">
-      <h1 className="font-display text-2xl font-bold text-foreground mb-2">Automatic Compliance Check</h1>
-      <p className="text-muted-foreground mb-5">
-        Upload what a bank publishes or reports. The system reads the figures, works out which RBI rules apply to this bank, checks them and writes a
-        report. Every result links to the paragraph of the Master Direction it comes from and the page of the document the figure was read from.
-      </p>
+      <h1 className="font-display text-2xl font-bold text-foreground mb-5">Compliance Check</h1>
       <Steps step={step} />
 
       {loadError && <Card className="p-4 mb-4"><ErrorState message={loadError} onRetry={() => uploadParam && loadUpload(Number(uploadParam))} /></Card>}
 
-      {step === 1 && <UploadStep onAnalysed={onAnalysed} useLlm={useLlm} setUseLlm={setUseLlm} />}
+      {step === 1 && <UploadStep onAnalysed={onAnalysed} />}
 
       {step === 2 && analysis && (
         <>
           <Button variant="outline" size="sm" className="mb-3" onClick={restart}>
             <ArrowLeft className="h-4 w-4 mr-1.5" /> Another document
           </Button>
-          <ReviewStep key={analysis.upload_id} analysis={analysis} onChange={setAnalysis} onRun={run} running={running} useLlm={useLlm} />
+          <ReviewStep key={analysis.upload_id} analysis={analysis} onChange={setAnalysis} onRun={run} running={running} />
           {runError && <Card className="p-4 mt-4"><ErrorState message={runError} /></Card>}
         </>
       )}
@@ -578,7 +520,7 @@ const AutoCheckPage = () => {
             </Button>
             <Button asChild variant="outline" size="sm">
               <Link to={`/dashboard/compliance?bank=${encodeURIComponent(report.report.bank.bank_id)}&period=${encodeURIComponent(report.report.period_label)}&tab=history`}>
-                Open bank in Compliance Checker
+                Open in Bank Explorer
               </Link>
             </Button>
           </div>

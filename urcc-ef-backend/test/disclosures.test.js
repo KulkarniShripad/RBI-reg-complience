@@ -221,3 +221,27 @@ test("LLM-read figures are accepted only when the quoted line and number are in 
     gemini.detectDisclosureProfile = orig.profile;
   }
 });
+
+test("when the bank's counterparty network is entered, the automatic check includes it", { skip: !ready }, async () => {
+  const a = await json("POST", "/api/disclosures/samples/analyze", { file: "test-cases/example-sfb-pillar3-sep-2025.pdf", force: true });
+  const bankId = a.body.profile.bank_id;
+  const imp = await json("POST", `/api/graph/${bankId}/import`, {
+    period_label: a.body.profile.period_label,
+    replace: true,
+    capital: { tier1_capital: 100, tier2_capital: 10 },
+    entities: [
+      { entity_id: "A", name: "Apex Ltd", entity_type: "company" },
+      { entity_id: "B", name: "Apex Subsidiary Ltd", entity_type: "company" },
+    ],
+    edges: [{ from_entity: "A", to_entity: "B", edge_type: "OWNS", ownership_pct: 80 }],
+    exposures: [{ entity_id: "A", amount: 30 }, { entity_id: "B", amount: 20 }],
+  });
+  assert.ok([200, 201].includes(imp.status), JSON.stringify(imp.body));
+  const r = await json("POST", `/api/disclosures/${a.body.upload_id}/run`, {});
+  assert.equal(r.status, 200);
+  assert.ok(r.body.report.network, "network section present");
+  assert.ok(r.body.report.network.results.length > 0);
+  assert.equal(typeof r.body.report.summary.network_checked, "number");
+  const html = await fetch(`${base}/api/disclosures/runs/${r.body.run_id}/report.html`).then((x) => x.text());
+  assert.match(html, /Counterparty network/);
+});

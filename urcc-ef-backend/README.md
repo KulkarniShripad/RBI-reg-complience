@@ -12,6 +12,10 @@ and compliance system:
 - **Compliance**: deterministic checks of a bank's figures against extracted
   thresholds, and LLM-judged checks of its governance evidence against
   qualitative obligations — see [`../docs/COMPLIANCE_FLOW.md`](../docs/COMPLIANCE_FLOW.md).
+- **Counterparty network** (graph subsystem): groups of connected
+  counterparties, related-party lending and intra-group exposure, checked
+  against RBI's concentration-risk and Section 20 rules — see
+  [`../docs/NETWORK_GRAPH.md`](../docs/NETWORK_GRAPH.md).
 
 ## Setup
 
@@ -49,7 +53,8 @@ Other commands:
 |---|---|
 | `npm run audit` | verifies the built DB against the PDFs (coverage, cut-off clauses, numbering gaps, boundary fidelity) |
 | `npm run eval:retrieval` | retrieval quality on `eval/retrieval_eval.json` (Hit@k, MRR) |
-| `npm test` | API tests on a throw-away database (duplicate upload, categories, topics, chat fallback, ...) |
+| `npm run eval:graph` | network check on the synthetic scenarios in `eval/graph_scenarios.json` (expected vs actual) |
+| `npm test` | Python pipeline tests + API tests on throw-away databases (uploads, categories, topics, chat fallback, network check, ...) |
 | `npm run build:vectors:rebuild` | re-embed everything from scratch |
 | `bash scripts/demo/seed_and_test.sh` | end-to-end compliance demo against a running server |
 
@@ -176,6 +181,11 @@ and a table-based threshold.
 | GET | `/api/query?q=&category=` | raw hybrid retrieval with scores and match reasons (debugging) |
 | GET | `/api/health` | corpus version, vector index status, LLM configuration |
 
+### Counterparty network (`/api/graph`)
+Entities, relationships, exposures, capital, import / export, the network
+check and sample networks — full table in
+[`../docs/NETWORK_GRAPH.md`](../docs/NETWORK_GRAPH.md#7-api-apigraph).
+
 ### Banks, compliance, rule mappings, RBI updates
 Unchanged in shape; see [`../docs/COMPLIANCE_FLOW.md`](../docs/COMPLIANCE_FLOW.md) for the full flow.
 
@@ -218,4 +228,6 @@ expected results (142/142, no LLM needed).
 - SQLite stands in for PostgreSQL; the vector index is exact search in memory
   (fine at ~40k chunks; use pgvector/an ANN index at much larger scale).
 - No authentication.
-- The network/graph subsystem is not implemented.
+- The network check is evaluated on synthetic networks only; ownership,
+  directorship and dependence data have to come from the bank (no registry
+  feed). See [`../docs/NETWORK_GRAPH.md`](../docs/NETWORK_GRAPH.md#9-limits).

@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { NetworkCheck } from "@/lib/network";
 
 /** Backend URL. Override with VITE_API_BASE_URL in .env.local (e.g. http://localhost:4000). */
 export const API_BASE_URL: string =
@@ -422,6 +423,8 @@ export interface ApplicableRule {
   rbi_ref?: string | null;
   form_label?: string | null;
   mapping_status?: MappingStatus | null;
+  /** Evaluated by the counterparty-network check (concentration / related-party rule). */
+  computed_by_network?: boolean;
   already_submitted?: boolean;
 }
 
@@ -549,6 +552,8 @@ export interface ComplianceRunResponse {
   report: ComplianceReport;
   quant_results: QuantitativeResult[];
   qual_results: QualitativeResult[];
+  /** Counterparty-network check (graph subsystem); null when no exposures were entered for the period. */
+  graph_results?: NetworkCheck | null;
   error?: string;
 }
 
@@ -565,6 +570,7 @@ export interface ComplianceRun {
 export interface ComplianceRunDetail extends ComplianceRun {
   quant_results: QuantitativeResult[];
   qual_results: QualitativeResult[];
+  graph_results?: NetworkCheck | null;
 }
 
 // ── Response normalisation ──
@@ -668,6 +674,7 @@ export const runComplianceCheck = async (
     report,
     quant_results: d.quant_results ?? report.quant_results ?? [],
     qual_results: d.qual_results ?? report.qual_results ?? [],
+    graph_results: d.graph_results ?? null,
   };
 };
 

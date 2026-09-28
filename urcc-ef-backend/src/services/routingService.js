@@ -8,8 +8,10 @@
  *
  * Four possible routes per clause+bank-data instance:
  *   RULE_ENGINE   - deterministic SQL/operator evaluation (quantService.js)
- *   GRAPH         - connected-counterparty reasoning (design-only stub here,
- *                   see blueprint §7 — not evaluated against real data)
+ *   GRAPH         - counterparty-network reasoning (services/graph/): groups
+ *                   of connected counterparties, related-party paths,
+ *                   intra-group exposure. Evaluated on synthetic networks only
+ *                   (eval/graph_scenarios.json) - no real ownership data.
  *   RAG_LLM       - retrieval + Gemini judgment (qualService.js)
  *   HUMAN         - insufficient confidence anywhere; escalate
  *
@@ -53,6 +55,8 @@ const THRESHOLDS = {
  * @param {object} context
  *   - evidenceAvailable: bool - was a value/evidence actually submitted?
  *   - graphDataAvailable: bool - is there ownership/exposure data for this bank?
+ *   - graphCovers: bool - is this clause one the network check decides
+ *     (a concentration limit or related-party prohibition in graphRules.js)?
  *   - retrievalTopScore, retrievalSecondScore: numbers from vector search
  *   - priorAgreement: 'AGREE' | 'DISAGREE' | 'NO_HISTORY'
  *   - riskTier: 'high' | 'standard'
@@ -68,6 +72,20 @@ function route(clause, ruleAtom, context) {
   if (!context.evidenceAvailable) {
     reasons.push("no bank-submitted value/evidence available for this clause");
     return { route: null, decision: "INSUFFICIENT_DATA", reasons };
+  }
+
+  // Step 1a — clauses whose value is a NETWORK AGGREGATE (exposure to a
+  // group of connected counterparties, to a director's companies, to the
+  // bank's own group). A bank-typed single number cannot answer these: the
+  // aggregate has to be computed over the ownership / dependence graph. So
+  // when the bank has entered its network for the period, the graph route
+  // wins even if a rule_atom exists for the same clause.
+  if (context.graphCovers && context.graphDataAvailable) {
+    reasons.push("counterparty concentration / related-party clause and the bank's exposure network is available - evaluated over the graph");
+    return { route: ROUTES.GRAPH, decision: null, reasons };
+  }
+  if (context.graphCovers) {
+    reasons.push("counterparty concentration / related-party clause but no exposure network entered for this period");
   }
 
   // Step 1 — deterministic gate. Only clean, high-confidence quantitative
@@ -92,16 +110,12 @@ function route(clause, ruleAtom, context) {
     );
   }
 
-  // Step 2 — relational/graph-eligible clauses, only if graph data exists
-  // for this bank. This never fires in the current system (no real
-  // ownership-graph data source - see blueprint §7) but the gate is real:
-  // if graphDataAvailable is ever true, this branch is live, not aspirational.
-  if (clause.clause_type === "relational" && context.graphDataAvailable) {
-    reasons.push("relational clause with available ownership/exposure graph data");
-    return { route: ROUTES.GRAPH, decision: null, reasons };
-  }
+  // Step 2 — other relational clauses (the classifier found relational
+  // keywords) are NOT sent to the graph: the network check only decides the
+  // rules it encodes (graphCovers above); anything else relational goes on
+  // to retrieval / human review.
   if (clause.clause_type === "relational") {
-    reasons.push("relational clause but no graph data source available - falling through");
+    reasons.push("relational clause not encoded in the network check - falling through");
   }
 
   // Step 3 — retrieval + LLM, gated on retrieval confidence. Two distinct

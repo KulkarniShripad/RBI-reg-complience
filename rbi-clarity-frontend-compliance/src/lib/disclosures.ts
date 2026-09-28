@@ -1,4 +1,5 @@
 import api, { API_BASE_URL } from "@/lib/api";
+import type { NetworkCheck } from "@/lib/network";
 
 // ── Automatic compliance check from a bank's published document ──
 
@@ -139,6 +140,8 @@ export interface AutoReport {
   rule_results: RuleResult[];
   disclosures: { applicable: boolean; set?: string; reason?: string | null; items: DisclosureItem[] };
   qualitative: { applicable: boolean; reason?: string | null; results: ObligationResult[] };
+  /** counterparty network check, when the bank's network is entered for the period */
+  network?: (Pick<NetworkCheck, "results" | "groups" | "summary" | "notes"> & { has_data?: boolean; message?: string | null }) | null;
   executive_summary: string;
   executive_summary_by: "llm" | "template";
   method: { llm_configured: boolean; llm_requested: boolean; deterministic: string[]; llm: string[] };

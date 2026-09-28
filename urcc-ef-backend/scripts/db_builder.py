@@ -488,8 +488,11 @@ def seed_categories(conn):
 # ---------------------------------------------------------------------------
 OPERATIONAL_TABLES = ["banks", "bank_qual_evidence", "compliance_runs", "compliance_run_details",
                       "routing_decisions", "rbi_watch_list",
-                      # automatic check from bank documents (migrations/004_disclosures.sql)
-                      "disclosure_uploads", "disclosure_metric_values", "bank_metric_values"]
+                      # automatic check from bank documents (migrations/005_disclosures.sql)
+                      "disclosure_uploads", "disclosure_metric_values", "bank_metric_values",
+                      # counterparty network (graph subsystem) - no rule ids inside, copied as is
+                      "graph_entities", "graph_edges", "graph_exposures", "graph_capital", "graph_bank_profile",
+                      "graph_check_runs", "graph_check_results"]
 
 
 def carry_over(conn, old_path: str) -> dict:

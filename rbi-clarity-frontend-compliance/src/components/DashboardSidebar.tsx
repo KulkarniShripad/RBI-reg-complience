@@ -1,4 +1,4 @@
-import { MessageSquare, Upload, FileText, ShieldCheck, Home, BookOpen, FileSearch } from "lucide-react";
+import { MessageSquare, Upload, FileText, ShieldCheck, Home, BookOpen, Building2 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import {
@@ -18,16 +18,15 @@ const navItems = [
   { title: "Upload Circular", url: "/dashboard/upload", icon: Upload },
   { title: "Browse Topics", url: "/dashboard/circulars", icon: FileText },
   { title: "Rules", url: "/dashboard/rules", icon: BookOpen },
-  { title: "Auto Compliance Check", url: "/dashboard/auto-check", icon: FileSearch },
-  { title: "Compliance Checker", url: "/dashboard/compliance", icon: ShieldCheck },
+  { title: "Compliance Check", url: "/dashboard/auto-check", icon: ShieldCheck },
+  { title: "Bank Explorer", url: "/dashboard/compliance", icon: Building2 },
 ];
 
 export function DashboardSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const location = useLocation();
-  const isActive = (path: string) =>
-    path === "/dashboard" ? location.pathname === path : location.pathname.startsWith(path);
+  const isActive = (url: string) => (url === "/dashboard" ? location.pathname === url : location.pathname.startsWith(url));
 
   return (
     <Sidebar collapsible="icon">
@@ -48,7 +47,7 @@ export function DashboardSidebar() {
                       to={item.url}
                       end={item.url === "/dashboard"}
                       className="hover:bg-sidebar-accent/50"
-                      activeClassName="bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                      activeClassName={isActive(item.url) ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium" : ""}
                     >
                       <item.icon className="mr-2 h-4 w-4" />
                       {!collapsed && <span>{item.title}</span>}

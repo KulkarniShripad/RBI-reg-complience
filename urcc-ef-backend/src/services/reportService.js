@@ -1,6 +1,9 @@
 const db = require("../config/db");
+const graphService = require("./graph/graphComplianceService");
 
-function generateReport(bank, quantResults, qualResults) {
+const GRAPH_FINDINGS = new Set(["BREACH", "PROHIBITED", "POTENTIAL_BREACH"]);
+
+function generateReport(bank, quantResults, qualResults, graphOut = null) {
   const breaches = quantResults.filter((r) => r.status === "BREACH");
   const notReported = quantResults.filter((r) => r.status === "NOT_REPORTED");
   const passes = quantResults.filter((r) => r.status === "PASS");
@@ -26,7 +29,33 @@ function generateReport(bank, quantResults, qualResults) {
       qualitative_partial: partial.length,
       qualitative_likely_gap: gaps.length,
       qualitative_needs_review: needsReview.length,
+      ...(graphOut?.has_data
+        ? {
+            network_checked: graphOut.results.length,
+            network_breach: graphOut.results.filter((r) => r.status === "BREACH").length,
+            network_prohibited: graphOut.results.filter((r) => r.status === "PROHIBITED").length,
+            network_potential_breach: graphOut.results.filter((r) => r.status === "POTENTIAL_BREACH").length,
+            network_needs_review: graphOut.results.filter((r) => ["NEEDS_REVIEW", "ASSESSMENT_REQUIRED"].includes(r.status)).length,
+            network_groups: graphOut.summary.groups,
+          }
+        : {}),
     },
+    network_findings: (graphOut?.results || [])
+      .filter((r) => GRAPH_FINDINGS.has(r.status))
+      .map((r) => ({
+        rule_key: r.rule_key,
+        rule: r.rule_label,
+        status: r.status,
+        subject: r.subject?.name,
+        subject_type: r.subject?.type,
+        exposure: r.exposure,
+        exposure_pct: r.exposure_pct,
+        limit_pct: r.limit_pct,
+        clause_uri: r.clause_uri,
+        rbi_ref: r.source?.rbi_ref,
+        page: r.source?.page_number,
+        reasons: r.reasons,
+      })),
     breaches: breaches.map((r) => ({
       clause_uri: r.clause_uri,
       rbi_ref: r.rbi_ref,
@@ -124,6 +153,7 @@ function getRun(runId) {
     report,
     quant_results: details.filter((d) => d.check_type === "quantitative").map((d) => d.detail_json),
     qual_results: details.filter((d) => d.check_type === "qualitative").map((d) => d.detail_json),
+    graph_results: graphService.getGraphRun({ complianceRunId: Number(runId) }),
     details,
   };
 }

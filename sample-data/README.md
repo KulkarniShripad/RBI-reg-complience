@@ -1,6 +1,6 @@
 # Test data for the automatic compliance check
 
-These documents are inputs for **Compliance Checker → Auto Check (upload a document)**. They are also listed in the app under "Try a sample document". Each one is a document of the kind a bank publishes or sends to RBI. The system reads it, works out which bank and period it is about, finds the figures, picks the rules that apply and writes a compliance report.
+These documents are inputs for **Compliance Check** in the dashboard: upload any of them.
 
 | Folder | What it is |
 |---|---|

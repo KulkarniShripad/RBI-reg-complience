@@ -1,8 +1,15 @@
 # Automatic compliance check from bank documents
 
-**Dashboard → Auto Compliance Check** (`/dashboard/auto-check`), API `/api/disclosures`.
+**Dashboard → Compliance Check** (`/dashboard/auto-check`), API `/api/disclosures`.
 
-The manual Compliance Checker needs a person to type one number per rule. The automatic check starts from what a bank already produces: an annual report, a Basel III Pillar 3 disclosure, quarterly results, an investor presentation, or a spreadsheet / CSV / JSON of figures. It works out the rest itself.
+The dashboard has two compliance pages:
+
+| Page | Purpose |
+|---|---|
+| **Compliance Check** | Upload a document and get the report (this page). |
+| **Bank Explorer** | Browse registered banks: the quantitative rules and qualitative evidence that apply to each, its counterparty network, a manual check, and its compliance history (automatic runs included). |
+
+The manual check in Bank Explorer needs a person to type one number per rule. The automatic check starts from what a bank already produces: an annual report, a Basel III Pillar 3 disclosure, quarterly results, an investor presentation, or a spreadsheet / CSV / JSON of figures. It works out the rest itself.
 
 ```
  document ──► 1 read ──► 2 who / when ──► 3 figures ──► 4 which rules apply ──► 5 check ──► 6 report
@@ -135,7 +142,7 @@ curl -X POST http://localhost:4002/api/disclosures/<upload_id>/run -H 'Content-T
 
 ## Limits
 
-- **Public documents only.** They carry summary figures. Borrower-level limits (single / group exposure, related-party lending) need the bank's internal data (the network / graph check, on the `graph-subsystem` branch).
+- **Public documents only.** They carry summary figures. Borrower-level limits (single / group exposure, related-party lending) need the bank's internal data (Bank Explorer → Network; when entered for the period, the network check is included in this report).
 - **Rule coverage.** Anchored rules cover capital, leverage, liquidity and PSL. Other figure-based rules come from discovery and are only as good as the extracted rule atoms, plus the LLM when configured.
 - **Tested layouts.** Real-bank samples are re-typeset extracts, because bank websites could not be reached from the build environment. Run `sample-data/fetch_originals.sh` and test with the original PDFs; the report shows the page and line of every figure so a misreading is easy to spot and correct.
 - **D-SIB list.** It is kept in code (it isn't part of the corpus) and can be changed on the review screen.

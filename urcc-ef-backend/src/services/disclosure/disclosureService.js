@@ -27,6 +27,8 @@ const rules = require("./regulatoryRules");
 const discovery = require("./ruleDiscovery");
 const checklist = require("./disclosureChecklist");
 const docQual = require("./documentQualitative");
+const graphStore = require("../graph/graphStore");
+const graphService = require("../graph/graphComplianceService");
 
 const STORAGE_DIR = path.resolve(__dirname, "..", "..", "..", "data", "disclosures");
 
@@ -591,6 +593,13 @@ async function run(uploadId, { persist = true, useLlm = true, includeQualitative
   for (const q of qualitative.results) {
     qualService.insertEvidence({ bankId: bank.bank_id, evidenceText: q.evidence_text, sourceType: profile.doc_type, periodLabel: profile.period_label });
   }
+  // Counterparty network (graph subsystem): public documents have no borrower
+  // data, but when the bank's network has been entered for this period the
+  // exposure / related-party limits are checked in the same run.
+  let network = null;
+  if (graphStore.hasGraphData(bank.bank_id, profile.period_label)) {
+    network = graphService.runGraphCheck({ bankId: bank.bank_id, periodLabel: profile.period_label });
+  }
   const backfilled = backfillSubmissions(bank.bank_id, profile.period_label, anchored, upload.file_name);
 
   const count = (arr, st) => arr.filter((r) => r.status === st).length;
@@ -614,10 +623,15 @@ async function run(uploadId, { persist = true, useLlm = true, includeQualitative
     obligations_partial: count(qualitative.results, "PARTIAL"),
     figures_found: Object.keys(metrics).length,
     submissions_backfilled: backfilled,
+    network_checked: network?.results?.length || 0,
+    network_breach: network ? count(network.results || [], "BREACH") + count(network.results || [], "PROHIBITED") : 0,
+    network_attention: network
+      ? ["POTENTIAL_BREACH", "NEEDS_REVIEW", "ASSESSMENT_REQUIRED"].reduce((n, st) => n + count(network.results || [], st), 0)
+      : 0,
   };
-  const overall = summary.breach
+  const overall = summary.breach || summary.network_breach
     ? "BREACH"
-    : summary.buffer_shortfall || summary.target_shortfall || summary.needs_review || summary.disclosures_missing
+    : summary.buffer_shortfall || summary.target_shortfall || summary.needs_review || summary.disclosures_missing || summary.network_attention
       ? "ATTENTION"
       : summary.rules_evaluated
         ? "PASS"
@@ -650,6 +664,7 @@ async function run(uploadId, { persist = true, useLlm = true, includeQualitative
     rule_results: ruleResults,
     disclosures,
     qualitative,
+    network: network ? { summary: network.summary, results: network.results, groups: network.groups, notes: network.notes || [], has_data: network.has_data, message: network.message || null } : null,
     method: {
       llm_configured: gemini.isConfigured(),
       llm_requested: !!useLlm,
@@ -672,7 +687,9 @@ async function run(uploadId, { persist = true, useLlm = true, includeQualitative
       ...(profile.notes || []),
       ...(created ? [`Bank ${bank.bank_id} was registered automatically from the document.`] : []),
       ...(summary.not_disclosed ? ["NOT_DISCLOSED means the figure is not in this document; it is not a finding against the bank."] : []),
-      "Public documents contain summary figures only. Borrower-level limits (single / group exposure, related-party lending) need the bank's internal data.",
+      network
+        ? "Borrower-level limits were checked on the counterparty network entered for this bank and period (Bank Explorer → Network)."
+        : "Public documents contain summary figures only. Borrower-level limits (single / group exposure, related-party lending) are checked when the bank's counterparty network is entered (Bank Explorer → Network).",
     ],
   };
 
@@ -700,6 +717,7 @@ async function run(uploadId, { persist = true, useLlm = true, includeQualitative
 
   let runId = null;
   if (persist) runId = persistRun(bank.bank_id, profile.period_label, report);
+  if (persist && network) report.network.graph_run_id = graphService.persistGraphRun(network, runId);
   db.prepare("UPDATE disclosure_uploads SET status = 'checked' WHERE upload_id = ?").run(uploadId);
   return { run_id: runId, report };
 }
