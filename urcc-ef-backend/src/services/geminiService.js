@@ -318,7 +318,82 @@ async function suggestFieldMapping({ clauseText, variableText, thresholdUnit }) 
   return callGemini(FIELD_MAPPING_PROMPT({ clauseText, variableText, thresholdUnit }));
 }
 
+// ---------------------------------------------------------------------
+// Automatic compliance check from a bank's own documents
+// (src/services/disclosure/). The LLM is only asked what the deterministic
+// code could not settle, and every answer is checked afterwards: an extracted
+// figure must occur in the quoted line, a detected category must be a known
+// one, a rule the LLM says applies is still evaluated by plain arithmetic.
+// ---------------------------------------------------------------------
+
+async function extractDisclosureMetrics({ metrics, lines }) {
+  const prompt = `You are reading lines extracted from a bank's published disclosure (annual report, Basel III Pillar 3 disclosure or financial results).
+For each METRIC below, find the value the BANK ITSELF reports for the latest period in the document (the first / current-period column of a table).
+Ignore regulatory minimums and requirements (e.g. "minimum CRAR of 9%"), peer or industry figures, targets and earlier periods.
+Prefer standalone figures over consolidated ones. Report percentages as numbers without the % sign; report amounts in the unit the line states.
+
+METRICS:
+${metrics.map((m) => `- ${m.key}: ${m.label} (${m.description}; unit ${m.unit})`).join("\n")}
+
+LINES (format "p<page>: <text>"):
+${lines.join("\n")}
+
+Respond in strict JSON only, one key per metric:
+{ "<metric_key>": { "value": <number>, "page": <number>, "quote": "<the exact line the value is taken from>" } | null }
+Use null when the metric is not reported in these lines. Never estimate or compute a value.`;
+  return callGemini(prompt);
+}
+
+async function detectDisclosureProfile({ headText, categories }) {
+  const prompt = `Identify the institution that published this document and the reporting date of its figures.
+
+DOCUMENT START:
+${headText}
+
+Allowed institution categories (use the id): ${categories.map((c) => `${c.id} (${c.label})`).join(", ")}
+
+Respond in strict JSON only:
+{
+  "bank_name": "<legal name as written in the document>" | null,
+  "institution_category": "<one of the ids above>" | null,
+  "as_of_date": "YYYY-MM-DD" | null,
+  "doc_type": "pillar3" | "annual_report" | "financial_results" | "board_minutes" | "policy" | "other",
+  "reasoning": "<one sentence>"
+}
+Use null when the document does not say. Do not guess a date that is not written in the text.`;
+  return callGemini(prompt);
+}
+
+async function judgeMetricRuleApplicability({ metric, value, category, clauseText, operator, threshold, unit, rbiRef }) {
+  const prompt = `A bank of category "${category}" reports ${metric.label} (${metric.description}) = ${value}${metric.unit === "%" ? "%" : ` ${metric.unit}`}.
+
+Candidate requirement (from ${rbiRef || "an RBI Master Direction"}), extracted as: value ${operator} ${threshold}${unit || ""}
+"${clauseText}"
+
+Question: does this paragraph impose that numeric requirement DIRECTLY on the quantity the bank reported (the same measure, same basis), and does it apply to this bank's category?
+Answer "no" when the paragraph constrains a different quantity (e.g. a sub-component, an eligibility condition for some permission, a limit on an instrument), or only defines or illustrates something.
+Do not do any arithmetic and do not say whether the value passes.
+
+Respond in strict JSON only:
+{ "applies": true | false, "reasoning": "<one sentence>", "confidence": "high" | "low" }`;
+  return callGemini(prompt);
+}
+
+async function writeComplianceSummary({ facts }) {
+  const prompt = `Write a short executive summary (at most 180 words, plain prose, no headings) of an automated RBI compliance check for a bank's compliance officer.
+Use ONLY the facts in the JSON below. Mention every BREACH and BUFFER_SHORTFALL with the figure, the requirement and the RBI reference.
+Say which figures could not be found or need review. Do not add figures, rules or advice that are not in the facts. Do not call the bank compliant with anything that was not checked.
+
+FACTS:
+${JSON.stringify(facts)}`;
+  return (await generate(prompt, { temperature: 0.1, maxOutputTokens: 600 })).text;
+}
+
 module.exports = {
+  extractDisclosureMetrics,
+  detectDisclosureProfile,
+  judgeMetricRuleApplicability,
+  writeComplianceSummary,
   generate,
   isConfigured,
   rewriteFollowUp,

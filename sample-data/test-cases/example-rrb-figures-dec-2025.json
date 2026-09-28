@@ -1,0 +1,12 @@
+{
+  "_note": "FICTIONAL TEST DOCUMENT for URCC-EF - the bank and all figures are invented.",
+  "bank_name": "Example Gramin Bank",
+  "institution_category": "regional_rural_banks",
+  "as_of_date": "2025-12-31",
+  "metrics": {
+    "crar": 8.4,
+    "tier1_ratio": 6.9,
+    "gross_npa_pct": 7.8,
+    "net_npa_pct": 3.1
+  }
+}

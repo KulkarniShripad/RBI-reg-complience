@@ -1,0 +1,408 @@
+{
+  "generated_by": "generate_samples.py",
+  "samples": [
+    {
+      "file": "public/idfc-first-bank-pillar3-jun-2025.pdf",
+      "title": "IDFC FIRST Bank - Basel III Pillar 3, 30 Jun 2025 (extract)",
+      "bank": "IDFC FIRST Bank Limited",
+      "category": "commercial_banks",
+      "doc_type": "pillar3",
+      "period": "Q1-FY2025-26",
+      "kind": "public",
+      "source_url": "https://www.idfcfirst.bank.in/content/dam/idfcfirstbank/pdf/regulatory-disclosures/Basel-Pillar-3-Disclosures-as-on-June-30-2025.pdf",
+      "expect": {
+        "crar": "PASS (15.88 vs 9 and 11.5 with CCB)",
+        "cet1_ratio": "PASS",
+        "lcr": "PASS",
+        "tier1_ratio / leverage / nsfr": "NOT_DISCLOSED in this extract"
+      },
+      "checks": {
+        "profile": {
+          "institution_category": "commercial_banks",
+          "period_label": "Q1-FY2025-26",
+          "doc_type": "pillar3"
+        },
+        "rules": {
+          "cb_crar": "PASS",
+          "cb_cet1": "PASS",
+          "cb_crar_ccb": "PASS",
+          "cb_cet1_ccb": "PASS",
+          "cb_lcr": "PASS",
+          "cb_tier1": "NOT_DISCLOSED",
+          "cb_nsfr": "NOT_DISCLOSED"
+        },
+        "figures": {
+          "crar": 15.88,
+          "cet1_ratio": 13.34,
+          "lcr": 118
+        }
+      }
+    },
+    {
+      "file": "public/federal-bank-results-q2-fy26.pdf",
+      "title": "Federal Bank - Q2 FY26 results, 30 Sep 2025 (extract)",
+      "bank": "The Federal Bank Limited",
+      "category": "commercial_banks",
+      "doc_type": "financial_results",
+      "period": "Q2-FY2025-26",
+      "kind": "public",
+      "source_url": "https://www.federal.bank.in/documents/10180/1131213536/Q2FY26+Quarterly+Presentation.pdf",
+      "expect": {
+        "crar": "PASS",
+        "tier1_ratio": "PASS",
+        "lcr": "PASS",
+        "cet1_ratio": "NOT_DISCLOSED"
+      },
+      "checks": {
+        "profile": {
+          "institution_category": "commercial_banks",
+          "period_label": "Q2-FY2025-26",
+          "doc_type": "financial_results"
+        },
+        "rules": {
+          "cb_crar": "PASS",
+          "cb_tier1": "PASS",
+          "cb_lcr": "PASS",
+          "cb_cet1": "NOT_DISCLOSED"
+        },
+        "figures": {
+          "crar": 16.54,
+          "tier1_ratio": 14.15,
+          "gross_npa_pct": 1.83,
+          "net_npa_pct": 0.48,
+          "pcr": 73,
+          "lcr": 121
+        }
+      }
+    },
+    {
+      "file": "public/sbi-results-q1-fy26.pdf",
+      "title": "State Bank of India - Q1 FY26 results, 30 Jun 2025 (extract)",
+      "bank": "State Bank of India",
+      "category": "commercial_banks",
+      "doc_type": "financial_results",
+      "period": "Q1-FY2025-26",
+      "kind": "public",
+      "source_url": "https://sbi.bank.in/documents/17836/53469043/SBI+Analyst+Presentation+Q1FY26.pdf",
+      "expect": {
+        "crar": "PASS (14.63 vs 9; vs 11.5 with CCB)",
+        "d-sib": "detected - leverage 4% rule selected (not disclosed here)"
+      },
+      "checks": {
+        "profile": {
+          "bank_name": "State Bank of India",
+          "is_dsib": true,
+          "period_label": "Q1-FY2025-26"
+        },
+        "rules": {
+          "cb_crar": "PASS",
+          "cb_crar_ccb": "PASS",
+          "cb_leverage_dsib": "NOT_DISCLOSED"
+        },
+        "figures": {
+          "crar": 14.63,
+          "net_npa_pct": 0.47,
+          "pcr": 74.49
+        }
+      }
+    },
+    {
+      "file": "public/equitas-sfb-pillar3-mar-2025.pdf",
+      "title": "Equitas Small Finance Bank - Pillar III, 31 Mar 2025 (extract)",
+      "bank": "Equitas Small Finance Bank Limited",
+      "category": "small_finance_banks",
+      "doc_type": "pillar3",
+      "period": "Q4-FY2024-25",
+      "kind": "public",
+      "source_url": "https://ir.equitas.bank.in/wp-content/uploads/2025/04/Pillar-III-Disclosure-Q4FY25.pdf",
+      "expect": {
+        "crar": "PASS (20.60 vs 15)",
+        "tier1_ratio": "PASS (17.84 vs 7.5)",
+        "lcr": "PASS (156.52 vs 100)"
+      },
+      "checks": {
+        "profile": {
+          "institution_category": "small_finance_banks",
+          "period_label": "Q4-FY2024-25"
+        },
+        "rules": {
+          "sfb_crar": "PASS",
+          "sfb_tier1": "PASS",
+          "sfb_lcr": "PASS"
+        },
+        "figures": {
+          "crar": 20.6,
+          "tier1_ratio": 17.84,
+          "lcr": 156.52,
+          "gross_npa_pct": 2.89,
+          "net_npa_pct": 0.98,
+          "pcr": 66.83
+        }
+      }
+    },
+    {
+      "file": "public/ujjivan-sfb-highlights-sep-2025.pdf",
+      "title": "Ujjivan Small Finance Bank - highlights, 30 Sep 2025 (extract)",
+      "bank": "Ujjivan Small Finance Bank Limited",
+      "category": "small_finance_banks",
+      "doc_type": "pillar3",
+      "period": "Q2-FY2025-26",
+      "kind": "public",
+      "source_url": "https://www.ujjivansfb.bank.in/sites/default/files/2025-11/Pillar-III-disclosures-as-at-September-30-2025-Final.pdf",
+      "expect": {
+        "crar": "PASS (21.4 vs 15)",
+        "tier1_ratio": "PASS",
+        "lcr": "NOT_DISCLOSED"
+      },
+      "checks": {
+        "profile": {
+          "institution_category": "small_finance_banks",
+          "period_label": "Q2-FY2025-26"
+        },
+        "rules": {
+          "sfb_crar": "PASS",
+          "sfb_tier1": "PASS",
+          "sfb_lcr": "NOT_DISCLOSED"
+        },
+        "figures": {
+          "crar": 21.4,
+          "tier1_ratio": 19.9,
+          "gross_npa_pct": 2.45,
+          "net_npa_pct": 0.67,
+          "total_deposits": 39211
+        }
+      }
+    },
+    {
+      "file": "public/saraswat-cooperative-bank-annual-report-2024-25.pdf",
+      "title": "Saraswat Co-operative Bank - Annual Report 2024-25 (key figures extract)",
+      "bank": "Saraswat Co-operative Bank Limited",
+      "category": "urban_cooperative_banks",
+      "doc_type": "annual_report",
+      "period": "Q4-FY2024-25",
+      "kind": "public",
+      "source_url": "https://www.saraswat.bank.in/Assets/Annual%20Report%20-%202024-25_15072025_0537.pdf",
+      "expect": {
+        "crar": "PASS (17.43 is above both 9% and 12%, so the tier does not matter)",
+        "net_worth": "NOT_DISCLOSED",
+        "disclosures": "most Notes-to-Accounts items LIKELY_MISSING because this is only an extract"
+      },
+      "checks": {
+        "profile": {
+          "institution_category": "urban_cooperative_banks",
+          "period_label": "Q4-FY2024-25",
+          "doc_type": "annual_report"
+        },
+        "rules": {
+          "ucb_crar": "PASS",
+          "ucb_net_worth": "NOT_DISCLOSED"
+        },
+        "figures": {
+          "crar": 17.43,
+          "gross_npa_pct": 2.25,
+          "net_npa_pct": 0
+        }
+      }
+    },
+    {
+      "file": "test-cases/example-sfb-pillar3-sep-2025.pdf",
+      "title": "Example SFB - Pillar 3 KM1 with breaches (fictional)",
+      "bank": "Example Small Finance Bank Limited",
+      "category": "small_finance_banks",
+      "doc_type": "pillar3",
+      "period": "Q2-FY2025-26",
+      "kind": "test",
+      "expect": {
+        "crar": "BREACH (14.20 < 15)",
+        "cet1_ratio": "PASS (11.90 >= 6)",
+        "tier1_ratio": "PASS",
+        "leverage_ratio": "BREACH (4.20 < 4.5)",
+        "lcr": "BREACH (96.40 < 100)",
+        "nsfr": "PASS",
+        "note": "first column (current quarter) must be read, not the earlier quarters; the 15% minimum in the text must not be read as the bank's CRAR"
+      },
+      "checks": {
+        "profile": {
+          "institution_category": "small_finance_banks",
+          "period_label": "Q2-FY2025-26"
+        },
+        "overall": "BREACH",
+        "rules": {
+          "sfb_crar": "BREACH",
+          "sfb_cet1": "PASS",
+          "sfb_tier1": "PASS",
+          "sfb_leverage": "BREACH",
+          "sfb_lcr": "BREACH",
+          "sfb_nsfr": "PASS"
+        },
+        "figures": {
+          "crar": 14.2,
+          "cet1_ratio": 11.9,
+          "tier1_ratio": 13.1,
+          "leverage_ratio": 4.2,
+          "lcr": 96.4,
+          "nsfr": 108.3
+        }
+      }
+    },
+    {
+      "file": "test-cases/example-commercial-bank-annual-report-2025-26.pdf",
+      "title": "Example Commercial Bank - Annual Report 2025-26 (fictional)",
+      "bank": "Example Commercial Bank Limited",
+      "category": "commercial_banks",
+      "doc_type": "annual_report",
+      "period": "Q4-FY2025-26",
+      "kind": "test",
+      "expect": {
+        "crar": "PASS vs 9%, BUFFER_SHORTFALL vs 11.5% (10.80)",
+        "cet1_ratio": "PASS vs 5.5%, BUFFER_SHORTFALL vs 8% (7.60)",
+        "tier1_ratio": "PASS",
+        "leverage_ratio": "PASS (3.90 >= 3.5, not a D-SIB)",
+        "lcr": "PASS",
+        "nsfr": "PASS",
+        "psl_anbc_pct": "TARGET_SHORTFALL (38.20 < 40)",
+        "disclosures": "LIKELY_MISSING: divergence, frauds, securitisation, DEA Fund, remuneration, bancassurance, provisions and contingencies",
+        "qualitative": "KYC, grievance / Internal Ombudsman, outsourcing, audit committee passages matched to obligations"
+      },
+      "checks": {
+        "profile": {
+          "institution_category": "commercial_banks",
+          "period_label": "Q4-FY2025-26",
+          "doc_type": "annual_report",
+          "is_dsib": false
+        },
+        "overall": "ATTENTION",
+        "rules": {
+          "cb_crar": "PASS",
+          "cb_crar_ccb": "BUFFER_SHORTFALL",
+          "cb_cet1": "PASS",
+          "cb_cet1_ccb": "BUFFER_SHORTFALL",
+          "cb_tier1": "PASS",
+          "cb_leverage": "PASS",
+          "cb_lcr": "PASS",
+          "cb_nsfr": "PASS",
+          "cb_psl": "TARGET_SHORTFALL"
+        },
+        "disclosures_missing": [
+          "divergence",
+          "securitisation",
+          "dea_fund",
+          "remuneration",
+          "bancassurance",
+          "provisions"
+        ],
+        "disclosures_present": [
+          "regulatory_capital",
+          "lcr",
+          "nsfr",
+          "concentration",
+          "complaints",
+          "penalties",
+          "business_ratios",
+          "dicgc"
+        ],
+        "figures": {
+          "crar": 10.8,
+          "cet1_ratio": 7.6,
+          "tier1_ratio": 8.9,
+          "leverage_ratio": 3.9,
+          "lcr": 104.2,
+          "nsfr": 101.5,
+          "gross_npa_pct": 4.1,
+          "net_npa_pct": 1.6,
+          "pcr": 71.2,
+          "psl_anbc_pct": 38.2
+        }
+      }
+    },
+    {
+      "file": "test-cases/example-ucb-figures-mar-2026.xlsx",
+      "title": "Example Urban Co-operative Bank - key figures spreadsheet (fictional)",
+      "bank": "Example Urban Co-operative Bank Limited",
+      "category": "urban_cooperative_banks",
+      "doc_type": "figures",
+      "period": "Q4-FY2025-26",
+      "kind": "test",
+      "expect": {
+        "ucb_tier": "2 (deposits Rs. 850 crore)",
+        "crar": "BREACH (11.2 < 12 for Tier 2)",
+        "net_worth": "PASS_WITH_CONDITIONS (4.1 < 5 but above the 50% interim level due 31 Mar 2026)"
+      },
+      "checks": {
+        "profile": {
+          "institution_category": "urban_cooperative_banks",
+          "period_label": "Q4-FY2025-26",
+          "ucb_tier": 2
+        },
+        "overall": "BREACH",
+        "rules": {
+          "ucb_crar": "BREACH",
+          "ucb_net_worth": "PASS_WITH_CONDITIONS"
+        },
+        "figures": {
+          "crar": 11.2,
+          "net_worth": 4.1,
+          "total_deposits": 850
+        }
+      }
+    },
+    {
+      "file": "test-cases/example-payments-bank-figures-sep-2025.csv",
+      "title": "Example Payments Bank - figures CSV (fictional)",
+      "bank": "Example Payments Bank Limited",
+      "category": "payments_banks",
+      "doc_type": "figures",
+      "period": "Q2-FY2025-26",
+      "kind": "test",
+      "expect": {
+        "crar": "PASS (38.5 vs 15)",
+        "leverage_ratio": "BREACH (2.6 < 3)"
+      },
+      "checks": {
+        "profile": {
+          "institution_category": "payments_banks",
+          "period_label": "Q2-FY2025-26"
+        },
+        "overall": "BREACH",
+        "rules": {
+          "pb_crar": "PASS",
+          "pb_cet1": "PASS",
+          "pb_tier1": "PASS",
+          "pb_leverage": "BREACH"
+        },
+        "figures": {
+          "crar": 38.5,
+          "leverage_ratio": 2.6
+        }
+      }
+    },
+    {
+      "file": "test-cases/example-rrb-figures-dec-2025.json",
+      "title": "Example Gramin Bank (RRB) - figures JSON (fictional)",
+      "bank": "Example Gramin Bank",
+      "category": "regional_rural_banks",
+      "doc_type": "figures",
+      "period": "Q3-FY2025-26",
+      "kind": "test",
+      "expect": {
+        "crar": "BREACH (8.4 < 9)",
+        "tier1_ratio": "BREACH (6.9 < 7)"
+      },
+      "checks": {
+        "profile": {
+          "institution_category": "regional_rural_banks",
+          "period_label": "Q3-FY2025-26"
+        },
+        "overall": "BREACH",
+        "rules": {
+          "rrb_crar": "BREACH",
+          "rrb_tier1": "BREACH"
+        },
+        "figures": {
+          "crar": 8.4,
+          "tier1_ratio": 6.9
+        }
+      }
+    }
+  ]
+}

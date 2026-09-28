@@ -96,8 +96,11 @@ function persistRun({ bankId, periodLabel, report, quantResults, qualResults }) 
 
 function listRuns(bankId) {
   return db
-    .prepare(`SELECT run_id, period_label, run_at, quant_checked, quant_breach, qual_checked, qual_gap
-              FROM compliance_runs WHERE bank_id = ? ORDER BY run_at DESC`)
+    .prepare(`SELECT run_id, period_label, run_at, quant_checked, quant_breach, qual_checked, qual_gap,
+                     COALESCE(json_extract(summary_json, '$.mode'), 'manual') AS mode,
+                     json_extract(summary_json, '$.overall') AS overall,
+                     json_extract(summary_json, '$.document.file_name') AS document
+              FROM compliance_runs WHERE bank_id = ? ORDER BY run_at DESC, run_id DESC`)
     .all(bankId);
 }
 
@@ -109,6 +112,10 @@ function getRun(runId) {
     .all(runId)
     .map((d) => ({ ...d, detail_json: JSON.parse(d.detail_json) }));
   const report = JSON.parse(run.summary_json);
+  if (report.mode === "auto") {
+    // automatic document check: the report object carries every section
+    return { ...run, summary_json: report, report, auto_report: report, mode: "auto", quant_results: [], qual_results: [], details };
+  }
   // The dashboard's history view reads report / quant_results / qual_results
   // (the same shape POST .../run returns); details stay for API users.
   return {

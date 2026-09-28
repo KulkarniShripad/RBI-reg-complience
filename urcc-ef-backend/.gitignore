@@ -10,3 +10,6 @@ data/*.building-*
 data/*.tfidf-legacy
 data/*-wal
 data/*-shm
+
+# uploaded bank documents (automatic compliance check)
+data/disclosures/

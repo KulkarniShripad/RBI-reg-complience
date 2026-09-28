@@ -487,7 +487,9 @@ def seed_categories(conn):
 # Carry-over of bank / operational data from a previous database
 # ---------------------------------------------------------------------------
 OPERATIONAL_TABLES = ["banks", "bank_qual_evidence", "compliance_runs", "compliance_run_details",
-                      "routing_decisions", "rbi_watch_list"]
+                      "routing_decisions", "rbi_watch_list",
+                      # automatic check from bank documents (migrations/004_disclosures.sql)
+                      "disclosure_uploads", "disclosure_metric_values", "bank_metric_values"]
 
 
 def carry_over(conn, old_path: str) -> dict:
