@@ -10,6 +10,7 @@ import UploadPage from "./pages/UploadPage";
 import CircularsPage from "./pages/CircularsPage";
 import RulesPage from "./pages/RulesPage";
 import CompliancePage from "./pages/CompliancePage";
+import AutoCheckPage from "./pages/AutoCheckPage";
 import NotFound from "./pages/NotFound";
 import { ChatProvider } from "./context/ChatContext";
 
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="circulars" element={<CircularsPage />} />
             <Route path="rules" element={<RulesPage />} />
             <Route path="compliance" element={<CompliancePage />} />
+            <Route path="auto-check" element={<AutoCheckPage />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -110,6 +110,9 @@ const WARN = "bg-yellow-100 text-yellow-800 border-yellow-300";
 const BAD = "bg-red-100 text-red-800 border-red-300";
 const NEUTRAL = "bg-muted text-muted-foreground border-border";
 
+const ORANGE = "bg-orange-100 text-orange-800 border-orange-300";
+const BLUE = "bg-blue-100 text-blue-800 border-blue-300";
+
 export const STATUS_STYLES: Record<string, string> = {
   PASS: GOOD,
   COVERED: GOOD,
@@ -118,6 +121,18 @@ export const STATUS_STYLES: Record<string, string> = {
   PARTIAL: WARN,
   NOT_REPORTED: NEUTRAL,
   NEEDS_REVIEW: NEUTRAL,
+  // automatic document check
+  PASS_WITH_CONDITIONS: GOOD,
+  BUFFER_SHORTFALL: ORANGE,
+  TARGET_SHORTFALL: ORANGE,
+  NOT_DISCLOSED: NEUTRAL,
+  CANDIDATE: NEUTRAL,
+  PRESENT: GOOD,
+  LIKELY_MISSING: ORANGE,
+  NOT_DEMONSTRATED: ORANGE,
+  EVIDENCE_FOUND: BLUE,
+  ATTENTION: ORANGE,
+  INSUFFICIENT_DATA: NEUTRAL,
 };
 
 export const statusClass = (status: string | null | undefined) =>
@@ -133,6 +148,17 @@ export const STATUS_LABELS: Record<string, string> = {
   PARTIAL: "Partial",
   LIKELY_GAP: "Likely gap",
   NEEDS_REVIEW: "Needs review",
+  PASS_WITH_CONDITIONS: "Pass (conditions)",
+  BUFFER_SHORTFALL: "Buffer shortfall",
+  TARGET_SHORTFALL: "Target shortfall",
+  NOT_DISCLOSED: "Not in document",
+  CANDIDATE: "Possible rule",
+  PRESENT: "Present",
+  LIKELY_MISSING: "Likely missing",
+  NOT_DEMONSTRATED: "Not demonstrated",
+  EVIDENCE_FOUND: "Evidence found",
+  ATTENTION: "Needs attention",
+  INSUFFICIENT_DATA: "Insufficient data",
 };
 
 export const statusLabel = (s: string | null | undefined) =>

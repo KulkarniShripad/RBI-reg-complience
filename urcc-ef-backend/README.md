@@ -189,6 +189,21 @@ Unchanged in shape; see [`../docs/COMPLIANCE_FLOW.md`](../docs/COMPLIANCE_FLOW.m
 | GET/POST/PUT | `/api/rule-mappings`, `/:ruleId/suggest`, `/:ruleId/approve` |
 | GET/POST | `/api/ingest/watch-list`, `/pending-updates`, `/scan?apply=` (needs rbi.org.in reachable) |
 
+### Automatic check from bank documents
+Upload an annual report, Pillar 3 disclosure, results, or an xlsx / csv / json of
+figures; the bank, category, period, figures and applicable rules are detected
+and a report is produced. Full description: [`../docs/AUTO_CHECK.md`](../docs/AUTO_CHECK.md).
+
+| Method | Path |
+|---|---|
+| POST | `/api/disclosures/analyze` (multipart `file`), `/api/disclosures/samples/analyze` `{file}` |
+| GET/PATCH | `/api/disclosures/:id` (review / correct profile and figures) |
+| POST | `/api/disclosures/:id/run` → `{run_id, report}` |
+| GET | `/api/disclosures/samples`, `/api/disclosures/:id/file`, `/api/disclosures/runs/:runId/report.html` |
+
+`npm run eval:disclosures` runs every document in `../sample-data/` against its
+expected results (142/142, no LLM needed).
+
 ## Known limitations
 
 - Scanned (image-only) PDFs are rejected; there is no OCR step.

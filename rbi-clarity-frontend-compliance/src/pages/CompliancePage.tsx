@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { Building2 } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
+import { Building2, FileSearch } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -154,9 +154,18 @@ const CompliancePage = () => {
   return (
     <div className="p-4 sm:p-6 md:p-10 max-w-6xl mx-auto">
       <h1 className="font-display text-2xl font-bold text-foreground mb-2">Compliance Checker</h1>
-      <p className="text-muted-foreground mb-6">
+      <p className="text-muted-foreground mb-3">
         Check a bank's reported figures and policy evidence against applicable RBI rules.
       </p>
+      <Card className="p-3 mb-5 flex flex-col sm:flex-row sm:items-center gap-2 justify-between bg-primary/5 border-primary/20">
+        <p className="text-sm text-foreground">
+          Have an annual report, Pillar 3 disclosure or a spreadsheet of figures? Upload it and the figures, rules and report are worked out
+          automatically.
+        </p>
+        <Button asChild size="sm" className="shrink-0">
+          <Link to="/dashboard/auto-check"><FileSearch className="h-4 w-4 mr-1.5" />Auto Compliance Check</Link>
+        </Button>
+      </Card>
 
       <Card className="p-4 mb-5">
         <div className="grid grid-cols-2 lg:grid-cols-[minmax(0,1fr)_160px_170px] gap-3 items-end">

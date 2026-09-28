@@ -5,6 +5,12 @@ on the dashboard, which API each step calls, what the backend computes, where
 the data lives, and what is (and is not) automated. The network/graph
 subsystem is out of scope and not implemented.
 
+> **Automatic mode.** Instead of typing figures per rule (below), a bank's own
+> document — annual report, Basel III Pillar 3 disclosure, results, or an
+> Excel / CSV / JSON of figures — can be uploaded on **Auto Compliance Check**:
+> the bank, category, period, figures and applicable rules are worked out
+> automatically and a report is produced. See [AUTO_CHECK.md](AUTO_CHECK.md).
+
 ## 1. The big picture
 
 ```

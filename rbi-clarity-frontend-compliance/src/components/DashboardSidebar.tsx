@@ -1,4 +1,4 @@
-import { MessageSquare, Upload, FileText, ShieldCheck, Home, BookOpen } from "lucide-react";
+import { MessageSquare, Upload, FileText, ShieldCheck, Home, BookOpen, FileSearch } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import {
@@ -18,6 +18,7 @@ const navItems = [
   { title: "Upload Circular", url: "/dashboard/upload", icon: Upload },
   { title: "Browse Topics", url: "/dashboard/circulars", icon: FileText },
   { title: "Rules", url: "/dashboard/rules", icon: BookOpen },
+  { title: "Auto Compliance Check", url: "/dashboard/auto-check", icon: FileSearch },
   { title: "Compliance Checker", url: "/dashboard/compliance", icon: ShieldCheck },
 ];
 

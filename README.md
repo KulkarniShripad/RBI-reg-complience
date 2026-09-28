@@ -6,6 +6,8 @@
 | `urcc-ef-backend/` | extraction pipeline (Python) + API (Node): search, grounded chat, uploads, compliance checks — see its [README](urcc-ef-backend/README.md) |
 | `rbi-clarity-frontend-compliance/` | the dashboard (React/Vite): chat, upload, topics, rules, compliance checker |
 | `docs/COMPLIANCE_FLOW.md` | how the compliance checker works end to end |
+| `docs/AUTO_CHECK.md` | **automatic compliance check**: upload a bank's annual report / Pillar 3 disclosure / figures file, get a compliance report |
+| `sample-data/` | test documents: real published bank figures (with sources) and fictional test cases with known results — see its [README](sample-data/README.md) |
 
 ## Run it
 
@@ -22,6 +24,9 @@ cd ../rbi-clarity-frontend-compliance
 npm install
 npm run dev                     # http://localhost:8080 (set VITE_API_BASE_URL if the API is not on :4002)
 ```
+
+Then open **Auto Compliance Check** in the dashboard and pick a sample document (or upload a
+bank's Pillar 3 disclosure / annual report). `npm run eval:disclosures` checks all samples.
 
 Rebuilding the database keeps your banks, submitted figures, evidence and run
 history. Check extraction quality any time with `npm run audit` and retrieval

@@ -8,8 +8,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { getComplianceRun, getComplianceRuns, type ComplianceRun, type ComplianceRunDetail } from "@/lib/api";
 import { formatDateTime, getErrorMessage, resolveSummary } from "@/lib/compliance";
 import { cn } from "@/lib/utils";
-import { EmptyState, ErrorState, LoadingState, SectionHeading } from "./shared";
+import { EmptyState, ErrorState, LoadingState, SectionHeading, StatusBadge } from "./shared";
 import { ResultsView } from "./ResultsView";
+import { AutoReportView } from "@/components/autocheck/AutoReportView";
+import type { AutoReport } from "@/lib/disclosures";
 
 interface Props {
   bankId: string;
@@ -63,6 +65,9 @@ export const RunHistory = ({ bankId, period, refreshKey }: Props) => {
     }
   }, []);
 
+  // automatic document checks carry their whole report
+  const autoReport = detail ? (detail as unknown as { auto_report?: AutoReport }).auto_report : undefined;
+
   if (openId !== null) {
     return (
       <div className="space-y-4">
@@ -73,6 +78,8 @@ export const RunHistory = ({ bankId, period, refreshKey }: Props) => {
           <Card className="p-5"><LoadingState label={`Loading run #${openId}…`} /></Card>
         ) : detailError ? (
           <Card className="p-5"><ErrorState message={detailError} onRetry={() => openRun(openId)} /></Card>
+        ) : autoReport ? (
+          <AutoReportView report={autoReport} runId={detail?.run_id} />
         ) : detail ? (
           <ResultsView
             runId={detail.run_id}
@@ -137,7 +144,17 @@ export const RunHistory = ({ bankId, period, refreshKey }: Props) => {
                 const s = resolveSummary([r, r.report]);
                 return (
                   <TableRow key={r.run_id} className="cursor-pointer" onClick={() => openRun(r.run_id)}>
-                    <TableCell className="font-medium">#{r.run_id}</TableCell>
+                    <TableCell className="font-medium">
+                      #{r.run_id}
+                      {r.mode === "auto" && (
+                        <div className="flex flex-wrap items-center gap-1 mt-1">
+                          <StatusBadge status={String(r.overall ?? "")} />
+                          <span className="text-[11px] text-muted-foreground font-normal truncate max-w-[180px]" title={String(r.document ?? "")}>
+                            auto · {String(r.document ?? "")}
+                          </span>
+                        </div>
+                      )}
+                    </TableCell>
                     <TableCell>{r.period_label}</TableCell>
                     <TableCell className="text-muted-foreground whitespace-nowrap">{formatDateTime(runDate(r))}</TableCell>
                     <TableCell className="text-right tabular-nums">{cell(s.quant_checked)}</TableCell>
