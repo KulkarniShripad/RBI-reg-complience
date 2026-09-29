@@ -616,5 +616,46 @@
    "expected": "<= 35%",
    "value_recovered": false
   }
- ]
+ ],
+ "corpus_taxonomy": {
+  "n": 14838,
+  "by_type": {
+   "D": 1341,
+   "E": 11741,
+   "F": 815,
+   "A": 438,
+   "C": 39,
+   "B": 399,
+   "G": 65
+  },
+  "by_risk": {
+   "high": 6110,
+   "medium": 3177,
+   "low": 5551
+  },
+  "requires_semantic_interpretation": 12692
+ },
+ "corpus": {
+  "documents": 264,
+  "clauses": 21632,
+  "rule_atoms": 4544,
+  "requirement_atoms": 1222,
+  "definitions": 2433,
+  "cross_references": 7516
+ },
+ "before_fixes": {
+  "overall": {
+   "n": 62,
+   "exact_recall": 0.452
+  },
+  "figures": {
+   "n": 26,
+   "exact_recall": 0.846
+  },
+  "network": {
+   "n": 36,
+   "exact_recall": 0.167
+  },
+  "atom_precision_lower_bound": 0.714
+ }
 }

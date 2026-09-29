@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 360" width="820" height="360" font-family="Helvetica, Arial, sans-serif" role="img" aria-label="Ablation study">
+<title>Ablation study</title>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#111111"/></marker>
+  <marker id="arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a8a8a"/></marker>
+  <pattern id="hatch45" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><rect width="6" height="6" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#111111" stroke-width="2"/></pattern>
+  <pattern id="hatch135" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(135)"><rect width="6" height="6" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#8a8a8a" stroke-width="2"/></pattern>
+</defs>
+<rect width="820" height="360" fill="#ffffff"/>
+<rect x="300" y="10" width="12" height="12" rx="2" fill="#111111"/>
+<text x="318" y="20" font-size="11.5" fill="#222222">Automated accuracy</text>
+<rect x="449.7" y="10" width="12" height="12" rx="2" fill="#8a8a8a"/>
+<text x="467.7" y="20" font-size="11.5" fill="#222222">End-to-end accuracy</text>
+<line x1="300" y1="44" x2="300" y2="324" stroke="#e2e2e2" stroke-width="1"/>
+<text x="300" y="340" font-size="11" text-anchor="middle" fill="#555555">0%</text>
+<line x1="412.5" y1="44" x2="412.5" y2="324" stroke="#e2e2e2" stroke-width="1"/>
+<text x="412.5" y="340" font-size="11" text-anchor="middle" fill="#555555">25%</text>
+<line x1="525" y1="44" x2="525" y2="324" stroke="#e2e2e2" stroke-width="1"/>
+<text x="525" y="340" font-size="11" text-anchor="middle" fill="#555555">50%</text>
+<line x1="637.5" y1="44" x2="637.5" y2="324" stroke="#e2e2e2" stroke-width="1"/>
+<text x="637.5" y="340" font-size="11" text-anchor="middle" fill="#555555">75%</text>
+<line x1="750" y1="44" x2="750" y2="324" stroke="#e2e2e2" stroke-width="1"/>
+<text x="750" y="340" font-size="11" text-anchor="middle" fill="#555555">100%</text>
+<line x1="300" y1="324" x2="750" y2="324" stroke="#9a9a9a" stroke-width="1"/>
+<text x="290" y="67" font-size="12" font-weight="700" text-anchor="end" fill="#111111">Full system (R4)</text>
+<path d="M300,50 H711.8 Q714.8,50 714.8,53 V60 Q714.8,63 711.8,63 H300 z" fill="#111111"/>
+<path d="M300,65 H733.2 Q736.2,65 736.2,68 V75 Q736.2,78 733.2,78 H300 z" fill="#8a8a8a"/>
+<text x="719.8" y="61" font-size="10.5" fill="#111111">92.2%</text>
+<text x="741.2" y="76" font-size="10.5" fill="#555555">96.9%</text>
+<text x="290" y="107" font-size="12" text-anchor="end" fill="#111111">− adaptive routing (→ B4)</text>
+<path d="M300,90 H681.2 Q684.2,90 684.2,93 V100 Q684.2,103 681.2,103 H300 z" fill="#111111"/>
+<path d="M300,105 H681.2 Q684.2,105 684.2,108 V115 Q684.2,118 681.2,118 H300 z" fill="#8a8a8a"/>
+<text x="689.2" y="101" font-size="10.5" fill="#111111">85.4%</text>
+<text x="689.2" y="116" font-size="10.5" fill="#555555">85.4%</text>
+<text x="290" y="147" font-size="12" text-anchor="end" fill="#111111">− rule engine (→ B3)</text>
+<path d="M300,130 H623 Q626,130 626,133 V140 Q626,143 623,143 H300 z" fill="#111111"/>
+<path d="M300,145 H623 Q626,145 626,148 V155 Q626,158 623,158 H300 z" fill="#8a8a8a"/>
+<text x="631" y="141" font-size="10.5" fill="#111111">72.5%</text>
+<text x="631" y="156" font-size="10.5" fill="#555555">72.5%</text>
+<text x="290" y="187" font-size="12" text-anchor="end" fill="#111111">− evidence grounding (→ B2)</text>
+<path d="M300,170 H552.6 Q555.6,170 555.6,173 V180 Q555.6,183 552.6,183 H300 z" fill="#111111"/>
+<path d="M300,185 H552.6 Q555.6,185 555.6,188 V195 Q555.6,198 552.6,198 H300 z" fill="#8a8a8a"/>
+<text x="560.6" y="181" font-size="10.5" fill="#111111">56.8%</text>
+<text x="560.6" y="196" font-size="10.5" fill="#555555">56.8%</text>
+<text x="290" y="227" font-size="12" text-anchor="end" fill="#111111">− hard override</text>
+<path d="M300,210 H711.8 Q714.8,210 714.8,213 V220 Q714.8,223 711.8,223 H300 z" fill="#111111"/>
+<path d="M300,225 H733.2 Q736.2,225 736.2,228 V235 Q736.2,238 733.2,238 H300 z" fill="#8a8a8a"/>
+<text x="719.8" y="221" font-size="10.5" fill="#111111">92.2%</text>
+<text x="741.2" y="236" font-size="10.5" fill="#555555">96.9%</text>
+<text x="290" y="267" font-size="12" text-anchor="end" fill="#111111">− learned error model (historical accuracy only)</text>
+<path d="M300,250 H676.6 Q679.6,250 679.6,253 V260 Q679.6,263 676.6,263 H300 z" fill="#111111"/>
+<path d="M300,265 H722.5 Q725.5,265 725.5,268 V275 Q725.5,278 722.5,278 H300 z" fill="#8a8a8a"/>
+<text x="684.6" y="261" font-size="10.5" fill="#111111">84.4%</text>
+<text x="730.5" y="276" font-size="10.5" fill="#555555">94.6%</text>
+<text x="290" y="307" font-size="12" text-anchor="end" fill="#111111">− evidence-completeness gate</text>
+<path d="M300,290 H710.3 Q713.3,290 713.3,293 V300 Q713.3,303 710.3,303 H300 z" fill="#111111"/>
+<path d="M300,305 H731.7 Q734.7,305 734.7,308 V315 Q734.7,318 731.7,318 H300 z" fill="#8a8a8a"/>
+<text x="718.3" y="301" font-size="10.5" fill="#111111">91.8%</text>
+<text x="739.7" y="316" font-size="10.5" fill="#555555">96.6%</text>
+</svg>

@@ -514,6 +514,22 @@ async function main() {
     modality_accuracy_by_rule_type: modalityAcc,
     error_model_weights: Object.fromEntries(Object.entries(errorModels).filter(([, m]) => m.kind === "logistic").map(([k, m]) => [k, Object.fromEntries(R.FEATURE_NAMES.map((f, i) => [f, r4(m.w[i])]).concat([["bias", r4(m.b)]]))])),
     significance: significanceTests,
+    // for the figures: decision confusion (expected vs produced; an escalation
+    // counts as REQUIRES_HUMAN_REVIEW) and the route mix per category, test split
+    confusion: Object.fromEntries(["R4 Proposed adaptive", "R0 Earlier heuristic router", "B3 RAG+LLM"].map((name) => {
+      const m = Object.fromEntries(DECISIONS.map((d) => [d, Object.fromEntries(DECISIONS.map((e) => [e, 0]))]));
+      for (const r of rowsBy[name]) m[r.p.c.expected_decision][r.route === "HUMAN" ? "REQUIRES_HUMAN_REVIEW" : r.decision || "INSUFFICIENT_DATA"]++;
+      return [name, m];
+    })),
+    route_mix_by_rule_type: Object.fromEntries(["R4 Proposed adaptive", "R0 Earlier heuristic router"].map((name) => {
+      const g = {};
+      for (const r of rowsBy[name]) {
+        const t = r.p.rule.rule_type;
+        g[t] = g[t] || { DETERMINISTIC: 0, RAG_LLM: 0, HUMAN: 0, NONE: 0 };
+        g[t][r.route] = (g[t][r.route] || 0) + 1;
+      }
+      return [name, g];
+    })),
     adopted_in_system: adopt,
     adopted_operating_point: adoptedPoint ? adoptedPoint.name : null,
     r0_validation: r0Val,

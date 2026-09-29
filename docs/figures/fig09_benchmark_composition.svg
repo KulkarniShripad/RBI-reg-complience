@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 334" width="900" height="334" font-family="Helvetica, Arial, sans-serif" role="img" aria-label="Benchmark composition">
+<title>Benchmark composition</title>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#111111"/></marker>
+  <marker id="arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a8a8a"/></marker>
+  <pattern id="hatch45" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><rect width="6" height="6" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#111111" stroke-width="2"/></pattern>
+  <pattern id="hatch135" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(135)"><rect width="6" height="6" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#8a8a8a" stroke-width="2"/></pattern>
+</defs>
+<rect width="900" height="334" fill="#ffffff"/>
+<text x="20" y="24" font-size="13" font-weight="700" fill="#111111">(a) by case type</text>
+<line x1="130" y1="40" x2="130" y2="274" stroke="#e2e2e2" stroke-width="1"/>
+<text x="130" y="290" font-size="11" text-anchor="middle" fill="#555555">0</text>
+<line x1="265" y1="40" x2="265" y2="274" stroke="#e2e2e2" stroke-width="1"/>
+<text x="265" y="290" font-size="11" text-anchor="middle" fill="#555555">150</text>
+<line x1="400" y1="40" x2="400" y2="274" stroke="#e2e2e2" stroke-width="1"/>
+<text x="400" y="290" font-size="11" text-anchor="middle" fill="#555555">300</text>
+<line x1="130" y1="274" x2="400" y2="274" stroke="#9a9a9a" stroke-width="1"/>
+<text x="120" y="58" font-size="11.5" text-anchor="end" fill="#111111">Non-compliant</text>
+<path d="M130,46 H313.3 Q316.3,46 316.3,49 V59 Q316.3,62 313.3,62 H130 z" fill="#111111"/>
+<text x="322.3" y="58" font-size="11" fill="#111111">207</text>
+<text x="120" y="84" font-size="11.5" text-anchor="end" fill="#111111">Compliant</text>
+<path d="M130,72 H309.7 Q312.7,72 312.7,75 V85 Q312.7,88 309.7,88 H130 z" fill="#111111"/>
+<text x="318.7" y="84" font-size="11" fill="#111111">203</text>
+<text x="120" y="110" font-size="11.5" text-anchor="end" fill="#111111">Missing data</text>
+<path d="M130,98 H298 Q301,98 301,101 V111 Q301,114 298,114 H130 z" fill="#111111"/>
+<text x="307" y="110" font-size="11" fill="#111111">190</text>
+<text x="120" y="136" font-size="11.5" text-anchor="end" fill="#111111">Adversarial</text>
+<path d="M130,124 H297.1 Q300.1,124 300.1,127 V137 Q300.1,140 297.1,140 H130 z" fill="#111111"/>
+<text x="306.1" y="136" font-size="11" fill="#111111">189</text>
+<text x="120" y="162" font-size="11.5" text-anchor="end" fill="#111111">Contradictory</text>
+<path d="M130,150 H282.7 Q285.7,150 285.7,153 V163 Q285.7,166 282.7,166 H130 z" fill="#111111"/>
+<text x="291.7" y="162" font-size="11" fill="#111111">173</text>
+<text x="120" y="188" font-size="11.5" text-anchor="end" fill="#111111">Ambiguous</text>
+<path d="M130,176 H262 Q265,176 265,179 V189 Q265,192 262,192 H130 z" fill="#111111"/>
+<text x="271" y="188" font-size="11" fill="#111111">150</text>
+<text x="120" y="214" font-size="11.5" text-anchor="end" fill="#111111">Near-boundary</text>
+<path d="M130,202 H258.4 Q261.4,202 261.4,205 V215 Q261.4,218 258.4,218 H130 z" fill="#111111"/>
+<text x="267.4" y="214" font-size="11" fill="#111111">146</text>
+<text x="120" y="240" font-size="11.5" text-anchor="end" fill="#111111">Boundary</text>
+<path d="M130,228 H207.1 Q210.1,228 210.1,231 V241 Q210.1,244 207.1,244 H130 z" fill="#111111"/>
+<text x="216.1" y="240" font-size="11" fill="#111111">89</text>
+<text x="120" y="266" font-size="11.5" text-anchor="end" fill="#111111">Cross-version</text>
+<path d="M130,254 H168.4 Q171.4,254 171.4,257 V267 Q171.4,270 168.4,270 H130 z" fill="#111111"/>
+<text x="177.4" y="266" font-size="11" fill="#111111">46</text>
+<text x="470" y="24" font-size="13" font-weight="700" fill="#111111">(b) by requirement category</text>
+<line x1="630" y1="40" x2="630" y2="222" stroke="#e2e2e2" stroke-width="1"/>
+<text x="630" y="238" font-size="11" text-anchor="middle" fill="#555555">0</text>
+<line x1="740" y1="40" x2="740" y2="222" stroke="#e2e2e2" stroke-width="1"/>
+<text x="740" y="238" font-size="11" text-anchor="middle" fill="#555555">250</text>
+<line x1="850" y1="40" x2="850" y2="222" stroke="#e2e2e2" stroke-width="1"/>
+<text x="850" y="238" font-size="11" text-anchor="middle" fill="#555555">500</text>
+<line x1="630" y1="222" x2="850" y2="222" stroke="#9a9a9a" stroke-width="1"/>
+<text x="620" y="58" font-size="11.5" text-anchor="end" fill="#111111">A  Quantitative</text>
+<path d="M630,46 H841.3 Q844.3,46 844.3,49 V59 Q844.3,62 841.3,62 H630 z" fill="#111111"/>
+<text x="850.3" y="58" font-size="11" fill="#111111">487</text>
+<text x="620" y="84" font-size="11.5" text-anchor="end" fill="#111111">B  Boolean / procedural</text>
+<path d="M630,72 H722 Q725,72 725,75 V85 Q725,88 722,88 H630 z" fill="#111111"/>
+<text x="731" y="84" font-size="11" fill="#111111">216</text>
+<text x="620" y="110" font-size="11.5" text-anchor="end" fill="#111111">C  Conditional</text>
+<path d="M630,98 H662.2 Q665.2,98 665.2,101 V111 Q665.2,114 662.2,114 H630 z" fill="#111111"/>
+<text x="671.2" y="110" font-size="11" fill="#111111">80</text>
+<text x="620" y="136" font-size="11.5" text-anchor="end" fill="#111111">D  Temporal</text>
+<path d="M630,124 H711.5 Q714.5,124 714.5,127 V137 Q714.5,140 711.5,140 H630 z" fill="#111111"/>
+<text x="720.5" y="136" font-size="11" fill="#111111">192</text>
+<text x="620" y="162" font-size="11.5" text-anchor="end" fill="#111111">E  Qualitative</text>
+<path d="M630,150 H753.7 Q756.7,150 756.7,153 V163 Q756.7,166 753.7,166 H630 z" fill="#111111"/>
+<text x="762.7" y="162" font-size="11" fill="#111111">288</text>
+<text x="620" y="188" font-size="11.5" text-anchor="end" fill="#111111">F  Relational</text>
+<path d="M630,176 H669.2 Q672.2,176 672.2,179 V189 Q672.2,192 669.2,192 H630 z" fill="#111111"/>
+<text x="678.2" y="188" font-size="11" fill="#111111">96</text>
+<text x="620" y="214" font-size="11.5" text-anchor="end" fill="#111111">G  Multi-entity</text>
+<path d="M630,202 H642 Q645,202 645,205 V215 Q645,218 642,218 H630 z" fill="#111111"/>
+<text x="651" y="214" font-size="11" fill="#111111">34</text>
+<text x="450" y="324" font-size="11.5" text-anchor="middle" fill="#555555">1,393 cases from 215 rules · train 840 / validation 259 / test 294 (split by rule)</text>
+</svg>

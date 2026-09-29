@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1300 890" width="1300" height="890" font-family="Helvetica, Arial, sans-serif" role="img" aria-label="Network (graph) compliance subsystem">
+<title>Network (graph) compliance subsystem</title>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#111111"/></marker>
+  <marker id="arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a8a8a"/></marker>
+  <pattern id="hatch45" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><rect width="6" height="6" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#111111" stroke-width="2"/></pattern>
+  <pattern id="hatch135" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(135)"><rect width="6" height="6" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#8a8a8a" stroke-width="2"/></pattern>
+</defs>
+<rect width="1300" height="890" fill="#ffffff"/>
+<path d="M60,39 a136,9 0 0,0 272,0 a136,9 0 0,0 -272,0 v92 a136,9 0 0,0 272,0 v-92" fill="#ffffff" stroke="#111111" stroke-width="1.4"/>
+<text x="196" y="76" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Entities</text>
+<text x="196" y="99.4" font-size="11" text-anchor="middle" fill="#222222">borrowers, firms, persons,</text>
+<text x="196" y="116" font-size="11" text-anchor="middle" fill="#222222">the bank and its group</text>
+<path d="M196,140 L196,176" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M362.7,39 a136,9 0 0,0 272,0 a136,9 0 0,0 -272,0 v92 a136,9 0 0,0 272,0 v-92" fill="#ffffff" stroke="#111111" stroke-width="1.4"/>
+<text x="498.7" y="67.7" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Edges</text>
+<text x="498.7" y="91.2" font-size="11" text-anchor="middle" fill="#222222">ownership %, control, economic</text>
+<text x="498.7" y="107.7" font-size="11" text-anchor="middle" fill="#222222">dependence, director, relative,</text>
+<text x="498.7" y="124.2" font-size="11" text-anchor="middle" fill="#222222">promoter (rebutted / flagged)</text>
+<path d="M498.7,140 L498.7,176" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M665.3,39 a136,9 0 0,0 272,0 a136,9 0 0,0 -272,0 v92 a136,9 0 0,0 272,0 v-92" fill="#ffffff" stroke="#111111" stroke-width="1.4"/>
+<text x="801.3" y="76" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Exposures</text>
+<text x="801.3" y="99.4" font-size="11" text-anchor="middle" fill="#222222">funded + non-funded,</text>
+<text x="801.3" y="116" font-size="11" text-anchor="middle" fill="#222222">per counterparty and period</text>
+<path d="M801.3,140 L801.3,176" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M968,39 a136,9 0 0,0 272,0 a136,9 0 0,0 -272,0 v92 a136,9 0 0,0 272,0 v-92" fill="#ffffff" stroke="#111111" stroke-width="1.4"/>
+<text x="1104" y="76" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Capital &amp; profile</text>
+<text x="1104" y="99.4" font-size="11" text-anchor="middle" fill="#222222">Tier 1 / eligible capital base,</text>
+<text x="1104" y="116" font-size="11" text-anchor="middle" fill="#222222">NBFC layer, IFC, UCB rating</text>
+<path d="M1104,140 L1104,176" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="60" y="180" width="1180" height="70" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="650" y="206.9" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Graph store (graphStore.js)</text>
+<text x="650" y="230.9" font-size="11.5" text-anchor="middle" fill="#222222">validation with row-level errors · CSV / JSON import and export · synthetic sample scenarios</text>
+<rect x="44" y="270" width="1212" height="184" rx="8" fill="none" stroke="#111111" stroke-width="1" stroke-dasharray="3 4"/>
+<text x="450" y="292" font-size="12.5" font-weight="700" text-anchor="middle" fill="#111111">Graph engine (graphEngine.js)</text>
+<rect x="60" y="308" width="380" height="130" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="250" y="340.5" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Connected-counterparty groups</text>
+<text x="250" y="364" font-size="11" text-anchor="middle" fill="#222222">control: &gt; 50% voting rights (automatic),</text>
+<text x="250" y="380.5" font-size="11" text-anchor="middle" fill="#222222">direct or indirect</text>
+<text x="250" y="397" font-size="11" text-anchor="middle" fill="#222222">economic interdependence: one-way /</text>
+<text x="250" y="413.5" font-size="11" text-anchor="middle" fill="#222222">two-way dependence, contagion</text>
+<path d="M250,250 L250,304" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="460" y="308" width="380" height="130" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="650" y="340.5" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Related-party paths</text>
+<text x="650" y="364" font-size="11" text-anchor="middle" fill="#222222">director, firm or company the director</text>
+<text x="650" y="380.5" font-size="11" text-anchor="middle" fill="#222222">is interested in (Sec. 20, BR Act),</text>
+<text x="650" y="397" font-size="11" text-anchor="middle" fill="#222222">relative, promoter, ≥ 10% shareholder,</text>
+<text x="650" y="413.5" font-size="11" text-anchor="middle" fill="#222222">entities they control</text>
+<path d="M650,250 L650,304" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="860" y="308" width="380" height="130" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="1050" y="340.5" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Bank's own group</text>
+<text x="1050" y="364" font-size="11" text-anchor="middle" fill="#222222">subsidiaries, associates,</text>
+<text x="1050" y="380.5" font-size="11" text-anchor="middle" fill="#222222">parents / promoters and</text>
+<text x="1050" y="397" font-size="11" text-anchor="middle" fill="#222222">entities they control</text>
+<text x="1050" y="413.5" font-size="11" text-anchor="middle" fill="#222222">(intra-group exposure)</text>
+<path d="M1050,250 L1050,304" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M60,503 a180,9 0 0,0 360,0 a180,9 0 0,0 -360,0 v102 a180,9 0 0,0 360,0 v-102" fill="#ffffff" stroke="#111111" stroke-width="1.4"/>
+<text x="240" y="536.7" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Network rules (graphRules.js)</text>
+<text x="240" y="560.2" font-size="11" text-anchor="middle" fill="#222222">53 rules: single / group limits,</text>
+<text x="240" y="576.7" font-size="11" text-anchor="middle" fill="#222222">intra-group, related party, reporting</text>
+<text x="240" y="593.2" font-size="11" text-anchor="middle" fill="#222222">each resolved to its RBI paragraph</text>
+<rect x="470" y="494" width="770" height="120" rx="6" fill="#ffffff" stroke="#111111" stroke-width="2.4"/>
+<text x="855" y="529.7" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Evaluator (graphEvaluator.js)</text>
+<text x="855" y="553.2" font-size="11" text-anchor="middle" fill="#222222">aggregate exposure per counterparty / group vs. limit × capital base</text>
+<text x="855" y="569.7" font-size="11" text-anchor="middle" fill="#222222">headroom the rule allows (Board-approved excess, infrastructure)</text>
+<text x="855" y="586.2" font-size="11" text-anchor="middle" fill="#222222">PASS · PASS_WITH_CONDITIONS · BREACH · PROHIBITED · REPORTABLE · ASSESSMENT_REQUIRED</text>
+<path d="M420,554 L466,554" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M250,438 L250,470 L560,470 L560,490" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M650,438 L650,490" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M1050,438 L1050,490" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="60" y="664" width="1180" height="70" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="650" y="690.9" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Graph compliance service (graphComplianceService.js)</text>
+<text x="650" y="714.9" font-size="11.5" text-anchor="middle" fill="#222222">run per bank and period · flagged links only on request (results then provisional) · frozen result snapshots</text>
+<path d="M855,614 L855,660" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="60" y="784" width="272" height="80" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="196" y="808" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Findings</text>
+<text x="196" y="831.5" font-size="11" text-anchor="middle" fill="#222222">per counterparty / group:</text>
+<text x="196" y="848" font-size="11" text-anchor="middle" fill="#222222">exposure %, limit %, status</text>
+<path d="M196,734 L196,780" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="362.7" y="784" width="272" height="80" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="498.7" y="808" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Decisions</text>
+<text x="498.7" y="831.5" font-size="11" text-anchor="middle" fill="#222222">five labels + recommended</text>
+<text x="498.7" y="848" font-size="11" text-anchor="middle" fill="#222222">reduction for each breach</text>
+<path d="M498.7,734 L498.7,780" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="665.3" y="784" width="272" height="80" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="801.3" y="808" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Network view</text>
+<text x="801.3" y="831.5" font-size="11" text-anchor="middle" fill="#222222">groups and paths for the</text>
+<text x="801.3" y="848" font-size="11" text-anchor="middle" fill="#222222">Bank Explorer dashboard</text>
+<path d="M801.3,734 L801.3,780" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="968" y="784" width="272" height="80" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="1104" y="808" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Router route G</text>
+<text x="1104" y="831.5" font-size="11" text-anchor="middle" fill="#222222">DETERMINISTIC for multi-</text>
+<text x="1104" y="848" font-size="11" text-anchor="middle" fill="#222222">entity (category G) rules</text>
+<path d="M1104,734 L1104,780" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+</svg>

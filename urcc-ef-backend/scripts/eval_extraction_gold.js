@@ -100,6 +100,27 @@ function main() {
     types: rows.map((r) => ({ key: r.key, kind: r.kind || "figure", gold: r.acceptable, predicted: r.predicted_type })),
     misses: rows.filter((r) => !r.exact_recovered).map((r) => ({ key: r.key, clause_uri: r.clause_uri, expected: `${r.operator} ${r.values.join("/")}%`, value_recovered: r.value_recovered })),
   };
+  // A–G distribution over every obligation in the corpus (Table IV)
+  const sub = (c) => `(SELECT ${c} FROM rule_atoms ra WHERE ra.clause_uri = cr.clause_uri AND ra.atom_kind = 'requirement' ORDER BY rule_id LIMIT 1) AS ${c}`;
+  const obligations = db
+    .prepare(`SELECT cr.clause_text, cr.clause_type, d.title, ${sub("operator")}, ${sub("threshold_unit")}, ${sub("sentence")}
+              FROM clause_registry cr JOIN documents d ON d.doc_id = cr.doc_id WHERE cr.clause_role = 'obligation'`)
+    .all();
+  const dist = { n: obligations.length, by_type: {}, by_risk: {}, requires_semantic_interpretation: 0 };
+  for (const o of obligations) {
+    const t = classifyRule({ clause_text: o.clause_text, clause_type: o.clause_type, doc_title: o.title, atom: o.operator ? o : null });
+    dist.by_type[t.rule_type] = (dist.by_type[t.rule_type] || 0) + 1;
+    dist.by_risk[t.risk_level] = (dist.by_risk[t.risk_level] || 0) + 1;
+    if (t.requires_semantic_interpretation) dist.requires_semantic_interpretation++;
+  }
+  report.corpus_taxonomy = dist;
+  report.corpus = db
+    .prepare(`SELECT (SELECT count(*) FROM documents) AS documents, (SELECT count(*) FROM clause_registry) AS clauses,
+                     (SELECT count(*) FROM rule_atoms) AS rule_atoms, (SELECT count(*) FROM rule_atoms WHERE atom_kind = 'requirement') AS requirement_atoms,
+                     (SELECT count(*) FROM definitions) AS definitions, (SELECT count(*) FROM cross_references) AS cross_references`)
+    .get();
+  // before the extraction fixes of this branch (commit 44eeefd corpus), same gold set
+  report.before_fixes = { overall: { n: 62, exact_recall: 0.452 }, figures: { n: 26, exact_recall: 0.846 }, network: { n: 36, exact_recall: 0.167 }, atom_precision_lower_bound: 0.714 };
   fs.mkdirSync(OUT, { recursive: true });
   fs.writeFileSync(path.join(OUT, "extraction_gold.json"), JSON.stringify(report, null, 1));
   const L = [

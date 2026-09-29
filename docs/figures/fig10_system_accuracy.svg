@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 528" width="820" height="528" font-family="Helvetica, Arial, sans-serif" role="img" aria-label="Compliance accuracy of baselines and routers">
+<title>Compliance accuracy of baselines and routers</title>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#111111"/></marker>
+  <marker id="arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a8a8a"/></marker>
+  <pattern id="hatch45" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><rect width="6" height="6" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#111111" stroke-width="2"/></pattern>
+  <pattern id="hatch135" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(135)"><rect width="6" height="6" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#8a8a8a" stroke-width="2"/></pattern>
+</defs>
+<rect width="820" height="528" fill="#ffffff"/>
+<rect x="200" y="10" width="12" height="12" rx="2" fill="#111111"/>
+<text x="218" y="20" font-size="11.5" fill="#222222">Automated accuracy (escalations count as undecided)</text>
+<rect x="550.8" y="10" width="12" height="12" rx="2" fill="#8a8a8a"/>
+<text x="568.8" y="20" font-size="11.5" fill="#222222">End-to-end accuracy</text>
+<line x1="200" y1="44" x2="200" y2="484" stroke="#e2e2e2" stroke-width="1"/>
+<text x="200" y="500" font-size="11" text-anchor="middle" fill="#555555">0%</text>
+<line x1="337.5" y1="44" x2="337.5" y2="484" stroke="#e2e2e2" stroke-width="1"/>
+<text x="337.5" y="500" font-size="11" text-anchor="middle" fill="#555555">25%</text>
+<line x1="475" y1="44" x2="475" y2="484" stroke="#e2e2e2" stroke-width="1"/>
+<text x="475" y="500" font-size="11" text-anchor="middle" fill="#555555">50%</text>
+<line x1="612.5" y1="44" x2="612.5" y2="484" stroke="#e2e2e2" stroke-width="1"/>
+<text x="612.5" y="500" font-size="11" text-anchor="middle" fill="#555555">75%</text>
+<line x1="750" y1="44" x2="750" y2="484" stroke="#e2e2e2" stroke-width="1"/>
+<text x="750" y="500" font-size="11" text-anchor="middle" fill="#555555">100%</text>
+<line x1="200" y1="484" x2="750" y2="484" stroke="#9a9a9a" stroke-width="1"/>
+<text x="190" y="67" font-size="12" text-anchor="end" fill="#111111">B1 Rule-only</text>
+<path d="M200,50 H559.9 Q562.9,50 562.9,53 V60 Q562.9,63 559.9,63 H200 z" fill="#111111"/>
+<path d="M200,65 H559.9 Q562.9,65 562.9,68 V75 Q562.9,78 559.9,78 H200 z" fill="#8a8a8a"/>
+<text x="567.9" y="61" font-size="10.5" fill="#111111">66.0%</text>
+<text x="567.9" y="76" font-size="10.5" fill="#555555">66.0%</text>
+<text x="190" y="107" font-size="12" text-anchor="end" fill="#111111">B2 LLM-only</text>
+<path d="M200,90 H509.4 Q512.4,90 512.4,93 V100 Q512.4,103 509.4,103 H200 z" fill="#111111"/>
+<path d="M200,105 H509.4 Q512.4,105 512.4,108 V115 Q512.4,118 509.4,118 H200 z" fill="#8a8a8a"/>
+<text x="517.4" y="101" font-size="10.5" fill="#111111">56.8%</text>
+<text x="517.4" y="116" font-size="10.5" fill="#555555">56.8%</text>
+<text x="190" y="147" font-size="12" text-anchor="end" fill="#111111">B3 RAG + LLM</text>
+<path d="M200,130 H595.5 Q598.5,130 598.5,133 V140 Q598.5,143 595.5,143 H200 z" fill="#111111"/>
+<path d="M200,145 H595.5 Q598.5,145 598.5,148 V155 Q598.5,158 595.5,158 H200 z" fill="#8a8a8a"/>
+<text x="603.5" y="141" font-size="10.5" fill="#111111">72.5%</text>
+<text x="603.5" y="156" font-size="10.5" fill="#555555">72.5%</text>
+<text x="190" y="187" font-size="12" text-anchor="end" fill="#111111">B4 Fixed hybrid</text>
+<path d="M200,170 H666.5 Q669.5,170 669.5,173 V180 Q669.5,183 666.5,183 H200 z" fill="#111111"/>
+<path d="M200,185 H666.5 Q669.5,185 669.5,188 V195 Q669.5,198 666.5,198 H200 z" fill="#8a8a8a"/>
+<text x="674.5" y="181" font-size="10.5" fill="#111111">85.4%</text>
+<text x="674.5" y="196" font-size="10.5" fill="#555555">85.4%</text>
+<text x="190" y="227" font-size="12" text-anchor="end" fill="#111111">R0 Heuristic router</text>
+<path d="M200,210 H655.3 Q658.3,210 658.3,213 V220 Q658.3,223 655.3,223 H200 z" fill="#111111"/>
+<path d="M200,225 H707.7 Q710.7,225 710.7,228 V235 Q710.7,238 707.7,238 H200 z" fill="#8a8a8a"/>
+<text x="663.3" y="221" font-size="10.5" fill="#111111">83.3%</text>
+<text x="715.7" y="236" font-size="10.5" fill="#555555">92.9%</text>
+<text x="190" y="267" font-size="12" text-anchor="end" fill="#111111">R1 Static rule-first</text>
+<path d="M200,250 H672.1 Q675.1,250 675.1,253 V260 Q675.1,263 672.1,263 H200 z" fill="#111111"/>
+<path d="M200,265 H672.1 Q675.1,265 675.1,268 V275 Q675.1,278 672.1,278 H200 z" fill="#8a8a8a"/>
+<text x="680.1" y="261" font-size="10.5" fill="#111111">86.4%</text>
+<text x="680.1" y="276" font-size="10.5" fill="#555555">86.4%</text>
+<text x="190" y="307" font-size="12" text-anchor="end" fill="#111111">R2 Threshold</text>
+<path d="M200,290 H591.7 Q594.7,290 594.7,293 V300 Q594.7,303 591.7,303 H200 z" fill="#111111"/>
+<path d="M200,305 H722.7 Q725.7,305 725.7,308 V315 Q725.7,318 722.7,318 H200 z" fill="#8a8a8a"/>
+<text x="599.7" y="301" font-size="10.5" fill="#111111">71.8%</text>
+<text x="730.7" y="316" font-size="10.5" fill="#555555">95.6%</text>
+<text x="190" y="347" font-size="12" font-weight="700" text-anchor="end" fill="#111111">R4 Adaptive (proposed)</text>
+<path d="M200,330 H704 Q707,330 707,333 V340 Q707,343 704,343 H200 z" fill="#111111"/>
+<path d="M200,345 H730.2 Q733.2,345 733.2,348 V355 Q733.2,358 730.2,358 H200 z" fill="#8a8a8a"/>
+<text x="712" y="341" font-size="10.5" fill="#111111">92.2%</text>
+<text x="738.2" y="356" font-size="10.5" fill="#555555">96.9%</text>
+<text x="190" y="387" font-size="12" text-anchor="end" fill="#111111">R4 at R0's cost</text>
+<path d="M200,370 H672.1 Q675.1,370 675.1,373 V380 Q675.1,383 672.1,383 H200 z" fill="#111111"/>
+<path d="M200,385 H741.4 Q744.4,385 744.4,388 V395 Q744.4,398 741.4,398 H200 z" fill="#8a8a8a"/>
+<text x="680.1" y="381" font-size="10.5" fill="#111111">86.4%</text>
+<text x="749.4" y="396" font-size="10.5" fill="#555555">99.0%</text>
+<text x="190" y="427" font-size="12" text-anchor="end" fill="#111111">R4 Fully automated</text>
+<path d="M200,410 H679.7 Q682.7,410 682.7,413 V420 Q682.7,423 679.7,423 H200 z" fill="#111111"/>
+<path d="M200,425 H679.7 Q682.7,425 682.7,428 V435 Q682.7,438 679.7,438 H200 z" fill="#8a8a8a"/>
+<text x="687.7" y="421" font-size="10.5" fill="#111111">87.8%</text>
+<text x="687.7" y="436" font-size="10.5" fill="#555555">87.8%</text>
+<text x="190" y="467" font-size="12" text-anchor="end" fill="#111111">Oracle</text>
+<path d="M200,450 H715.2 Q718.2,450 718.2,453 V460 Q718.2,463 715.2,463 H200 z" fill="#111111"/>
+<path d="M200,465 H747 Q750,465 750,468 V475 Q750,478 747,478 H200 z" fill="#8a8a8a"/>
+<text x="723.2" y="461" font-size="10.5" fill="#111111">94.2%</text>
+<text x="755" y="476" font-size="10.5" fill="#555555">100.0%</text>
+<text x="475" y="520" font-size="11.5" text-anchor="middle" fill="#555555">test split, n = 294 cases on rules never seen in training or tuning</text>
+</svg>

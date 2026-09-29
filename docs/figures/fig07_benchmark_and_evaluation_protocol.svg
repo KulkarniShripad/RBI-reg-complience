@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1300 760" width="1300" height="760" font-family="Helvetica, Arial, sans-serif" role="img" aria-label="Benchmark construction and evaluation protocol">
+<title>Benchmark construction and evaluation protocol</title>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#111111"/></marker>
+  <marker id="arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a8a8a"/></marker>
+  <pattern id="hatch45" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><rect width="6" height="6" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#111111" stroke-width="2"/></pattern>
+  <pattern id="hatch135" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(135)"><rect width="6" height="6" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#8a8a8a" stroke-width="2"/></pattern>
+</defs>
+<rect width="1300" height="760" fill="#ffffff"/>
+<rect x="60" y="30" width="216" height="62" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="168" y="52.9" font-size="13" font-weight="700" text-anchor="middle" fill="#111111">Anchored figure rules</text>
+<text x="168" y="76.1" font-size="11" text-anchor="middle" fill="#222222">26 verified</text>
+<path d="M168,92 L168,128" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="301" y="30" width="216" height="62" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="409" y="52.9" font-size="13" font-weight="700" text-anchor="middle" fill="#111111">Rule atoms</text>
+<text x="409" y="76.1" font-size="11" text-anchor="middle" fill="#222222">A · C · D</text>
+<path d="M409,92 L409,128" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="542" y="30" width="216" height="62" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="650" y="52.9" font-size="13" font-weight="700" text-anchor="middle" fill="#111111">Obligations</text>
+<text x="650" y="76.1" font-size="11" text-anchor="middle" fill="#222222">B · E · F</text>
+<path d="M650,92 L650,128" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="783" y="30" width="216" height="62" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="891" y="52.9" font-size="13" font-weight="700" text-anchor="middle" fill="#111111">Versioned rules</text>
+<text x="891" y="76.1" font-size="11" text-anchor="middle" fill="#222222">CRR · UCB NW</text>
+<path d="M891,92 L891,128" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="1024" y="30" width="216" height="62" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="1132" y="52.9" font-size="13" font-weight="700" text-anchor="middle" fill="#111111">Network scenarios</text>
+<text x="1132" y="76.1" font-size="11" text-anchor="middle" fill="#222222">G (hand-authored)</text>
+<path d="M1132,92 L1132,128" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="60" y="132" width="1180" height="84" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="650" y="158" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Case generator (build_benchmark.js, seed 7)</text>
+<text x="650" y="181.5" font-size="11" text-anchor="middle" fill="#222222">compliant · non-compliant · boundary · near-boundary · missing data · adversarial · contradictory · ambiguous · cross-version</text>
+<text x="650" y="198" font-size="11" text-anchor="middle" fill="#222222">each case: entity, rule + clause, structured fields, sources, narrative, expected and acceptable decisions, reason</text>
+<path d="M430,265 a220,9 0 0,0 440,0 a220,9 0 0,0 -440,0 v66 a220,9 0 0,0 440,0 v-66" fill="#ffffff" stroke="#111111" stroke-width="1.4"/>
+<text x="650" y="296.9" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Benchmark</text>
+<text x="650" y="320.9" font-size="11.5" text-anchor="middle" fill="#222222">1,393 cases · 215 rules</text>
+<path d="M650,216 L650,258" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<text x="664" y="356" font-size="11.5" font-style="italic" fill="#555555">split by rule (hash of the rule key): no test rule is seen in training or tuning</text>
+<rect x="60" y="392" width="360" height="100" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="240" y="426" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Train · 840 cases</text>
+<text x="240" y="449.5" font-size="11" text-anchor="middle" fill="#222222">error models P̂(error | m, f)</text>
+<text x="240" y="466" font-size="11" text-anchor="middle" fill="#222222">historical accuracy (leave-one-out)</text>
+<path d="M650,340 L650,366 L240,366 L240,388" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="470" y="392" width="360" height="100" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="650" y="417.7" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Validation · 259 cases</text>
+<text x="650" y="441.2" font-size="11" text-anchor="middle" fill="#222222">estimator choice (log-loss)</text>
+<text x="650" y="457.7" font-size="11" text-anchor="middle" fill="#222222">α, β, γ, MIN_EVIDENCE; R2 θ</text>
+<text x="650" y="474.2" font-size="11" text-anchor="middle" fill="#222222">error analysis → new features</text>
+<path d="M650,340 L650,366 L650,366 L650,388" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="880" y="392" width="360" height="100" rx="6" fill="#ffffff" stroke="#111111" stroke-width="2.4"/>
+<text x="1060" y="426" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Test · 294 cases</text>
+<text x="1060" y="449.5" font-size="11" text-anchor="middle" fill="#222222">all systems, once</text>
+<text x="1060" y="466" font-size="11" text-anchor="middle" fill="#222222">B1–B4 · R0–R2 · R4 · Oracle</text>
+<path d="M650,340 L650,366 L1060,366 L1060,388" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M420,442 L466,442" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M830,442 L876,442" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="60" y="540" width="1180" height="84" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="650" y="566" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Measures</text>
+<text x="650" y="589.4" font-size="11" text-anchor="middle" fill="#222222">accuracy (acceptable set) · end-to-end accuracy · macro-F1 · FPR / FNR · escalation · LLM calls · citation accuracy</text>
+<text x="650" y="605.9" font-size="11" text-anchor="middle" fill="#222222">hallucination rate · USD and latency per case · cluster-bootstrap CI and McNemar test · ablations · Pareto frontier</text>
+<path d="M1060,492 L1060,536" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="60" y="664" width="570" height="70" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="345" y="691.2" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Separate real-data evaluations</text>
+<text x="345" y="714.7" font-size="11" text-anchor="middle" fill="#222222">11 public bank disclosures · 62-rule extraction gold set</text>
+<rect x="670" y="664" width="570" height="70" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="955" y="691.2" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Comprehension evaluations</text>
+<text x="955" y="714.7" font-size="11" text-anchor="middle" fill="#222222">115 retrieval questions vs. fixed windows · 272-clause simplification</text>
+</svg>

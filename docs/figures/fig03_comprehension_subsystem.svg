@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1300 900" width="1300" height="900" font-family="Helvetica, Arial, sans-serif" role="img" aria-label="Regulatory comprehension subsystem">
+<title>Regulatory comprehension subsystem</title>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#111111"/></marker>
+  <marker id="arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a8a8a"/></marker>
+  <pattern id="hatch45" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><rect width="6" height="6" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#111111" stroke-width="2"/></pattern>
+  <pattern id="hatch135" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(135)"><rect width="6" height="6" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#8a8a8a" stroke-width="2"/></pattern>
+</defs>
+<rect width="1300" height="900" fill="#ffffff"/>
+<rect x="520" y="26" width="260" height="28" rx="14" fill="#ffffff" stroke="#111111" stroke-width="1.2"/><text x="650" y="44" font-size="11.5" font-weight="700" text-anchor="middle" fill="#111111">User question (chat)</text>
+<rect x="390" y="84" width="520" height="84" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="650" y="109.2" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Query analysis</text>
+<text x="650" y="133.2" font-size="11.5" text-anchor="middle" fill="#222222">follow-up rewritten as a stand-alone question</text>
+<text x="650" y="150.5" font-size="11.5" text-anchor="middle" fill="#222222">institution category · abbreviation expansion (corpus glossary) · intent</text>
+<path d="M650,54 L650,80" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="190" y="222" width="400" height="84" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="390" y="247.2" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Keyword search</text>
+<text x="390" y="271.2" font-size="11.5" text-anchor="middle" fill="#222222">SQLite FTS5 over clause-aligned chunks</text>
+<text x="390" y="288.5" font-size="11.5" text-anchor="middle" fill="#222222">expanded query terms</text>
+<rect x="710" y="222" width="400" height="84" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="910" y="247.2" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Semantic search</text>
+<text x="910" y="271.2" font-size="11.5" text-anchor="middle" fill="#222222">BGE-small query embedding</text>
+<text x="910" y="288.5" font-size="11.5" text-anchor="middle" fill="#222222">cosine similarity over chunk vectors</text>
+<path d="M520,168 L520,195 L390,195 L390,218" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M780,168 L780,195 L910,195 L910,218" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="330" y="356" width="640" height="96" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="650" y="378.6" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Fusion and ranking</text>
+<text x="650" y="402.6" font-size="11.5" text-anchor="middle" fill="#222222">reciprocal-rank fusion of both lists</text>
+<text x="650" y="419.9" font-size="11.5" text-anchor="middle" fill="#222222">boosts: detected category, paragraph role · one result per clause, capped per document</text>
+<text x="650" y="437.1" font-size="11.5" text-anchor="middle" fill="#222222">fallbacks: retry without category filter, then the definitions table</text>
+<path d="M390,306 L390,352" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M910,306 L910,352" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M40,365 a115,9 0 0,0 230,0 a115,9 0 0,0 -230,0 v78 a115,9 0 0,0 230,0 v-78" fill="#ffffff" stroke="#111111" stroke-width="1.4"/>
+<text x="155" y="394.2" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Knowledge base</text>
+<text x="155" y="418.2" font-size="11.5" text-anchor="middle" fill="#222222">clauses · chunks</text>
+<text x="155" y="435.5" font-size="11.5" text-anchor="middle" fill="#222222">FTS5 · vectors</text>
+<path d="M270,404 L326,404" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+<rect x="330" y="502" width="640" height="96" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="650" y="524.6" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Grounded answer</text>
+<text x="650" y="548.6" font-size="11.5" text-anchor="middle" fill="#222222">LLM writes from the full text of the top clauses, citing [1], [2], …</text>
+<text x="650" y="565.9" font-size="11.5" text-anchor="middle" fill="#222222">retry with wider context if the model reports insufficient sources</text>
+<text x="650" y="583.1" font-size="11.5" text-anchor="middle" fill="#222222">no LLM available → extractive answer from the best sentences (labelled)</text>
+<path d="M650,452 L650,498" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="1030" y="502" width="230" height="96" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="1145" y="541.9" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Gemini</text>
+<text x="1145" y="565.9" font-size="11.5" text-anchor="middle" fill="#222222">optional</text>
+<path d="M1030,550 L974,550" fill="none" stroke="#111111" stroke-width="1.3" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+<rect x="330" y="648" width="640" height="70" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="650" y="674.9" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Answer + sources</text>
+<text x="650" y="698.9" font-size="11.5" text-anchor="middle" fill="#222222">clause text, document, RBI reference, paragraph and page for every citation</text>
+<path d="M650,598 L650,644" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="130" y="768" width="500" height="110" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="144" y="797.6" font-size="14" font-weight="700" fill="#111111">Source viewer</text>
+<text x="144" y="821.6" font-size="11.5" fill="#222222">full provision with the cited passage highlighted</text>
+<text x="144" y="838.9" font-size="11.5" fill="#222222">original PDF at the page · extracted rule atoms</text>
+<text x="144" y="856.1" font-size="11.5" fill="#222222">cross-references (navigable) · neighbouring paragraphs</text>
+<rect x="670" y="768" width="500" height="110" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="684" y="797.6" font-size="14" font-weight="700" fill="#111111">Plain-language restatement</text>
+<text x="684" y="821.6" font-size="11.5" fill="#222222">legalese replaced, provisions split into short sentences</text>
+<text x="684" y="838.9" font-size="11.5" fill="#222222">meaning guard: numbers, obligation / prohibition,</text>
+<text x="684" y="856.1" font-size="11.5" fill="#222222">exceptions must survive, else the original is kept</text>
+<path d="M520,718 L520,740 L380,740 L380,764" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M630,823 L666,823" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+</svg>

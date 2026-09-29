@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1300 980" width="1300" height="980" font-family="Helvetica, Arial, sans-serif" role="img" aria-label="Adaptive reasoning-modality router (Algorithm 1)">
+<title>Adaptive reasoning-modality router (Algorithm 1)</title>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#111111"/></marker>
+  <marker id="arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a8a8a"/></marker>
+  <pattern id="hatch45" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><rect width="6" height="6" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#111111" stroke-width="2"/></pattern>
+  <pattern id="hatch135" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(135)"><rect width="6" height="6" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#8a8a8a" stroke-width="2"/></pattern>
+</defs>
+<rect width="1300" height="980" fill="#ffffff"/>
+<rect x="350" y="22" width="240" height="28" rx="14" fill="#ffffff" stroke="#111111" stroke-width="1.2"/><text x="470" y="40" font-size="11.5" font-weight="700" text-anchor="middle" fill="#111111">rule r , evidence E</text>
+<rect x="210" y="72" width="520" height="118" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="470" y="90.2" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Feature vector f (Table V)</text>
+<text x="470" y="113.7" font-size="11" text-anchor="middle" fill="#222222">category A–G · semantic interpretation · risk level</text>
+<text x="470" y="130.2" font-size="11" text-anchor="middle" fill="#222222">structured-field availability · evidence completeness</text>
+<text x="470" y="146.7" font-size="11" text-anchor="middle" fill="#222222">rule-engine applicability · retrieval confidence (BGE)</text>
+<text x="470" y="163.2" font-size="11" text-anchor="middle" fill="#222222">historical accuracy per route · source conflict</text>
+<text x="470" y="179.7" font-size="11" text-anchor="middle" fill="#222222">text–structured conflict · uncertainty cue</text>
+<path d="M470,50 L470,68" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M470,224 L610,262 L470,300 L330,262 z" fill="#ffffff" stroke="#111111" stroke-width="1.4"/>
+<text x="470" y="258.5" font-size="11.5" text-anchor="middle" fill="#111111">evidence</text>
+<text x="470" y="273.5" font-size="11.5" text-anchor="middle" fill="#111111">completeness = 0 ?</text>
+<path d="M470,344 L610,382 L470,420 L330,382 z" fill="#ffffff" stroke="#111111" stroke-width="1.4"/>
+<text x="470" y="378.5" font-size="11.5" text-anchor="middle" fill="#111111">completeness</text>
+<text x="470" y="393.5" font-size="11.5" text-anchor="middle" fill="#111111">&lt; MIN_EVIDENCE ?</text>
+<path d="M470,464 L630,512 L470,560 L310,512 z" fill="#ffffff" stroke="#111111" stroke-width="1.4"/>
+<text x="470" y="501" font-size="11.5" text-anchor="middle" fill="#111111">rule-engine applicable</text>
+<text x="470" y="516" font-size="11.5" text-anchor="middle" fill="#111111">∧ completeness = 1</text>
+<text x="470" y="531" font-size="11.5" text-anchor="middle" fill="#111111">∧ no text conflict ?</text>
+<path d="M470,190 L470,222" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M470,300 L470,342" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<text x="478" y="320" font-size="10.5" font-style="italic" fill="#333333">no</text>
+<path d="M470,420 L470,462" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<text x="478" y="444" font-size="10.5" font-style="italic" fill="#333333">no</text>
+<rect x="775" y="248" width="290" height="28" rx="14" fill="#ffffff" stroke="#111111" stroke-width="1.2"/><text x="920" y="266" font-size="11.5" font-weight="700" text-anchor="middle" fill="#111111">INSUFFICIENT_DATA (declined)</text>
+<rect x="775" y="368" width="290" height="28" rx="14" fill="#ffffff" stroke="#111111" stroke-width="1.2"/><text x="920" y="386" font-size="11.5" font-weight="700" text-anchor="middle" fill="#111111">HUMAN REVIEW</text>
+<rect x="775" y="498" width="290" height="28" rx="14" fill="#ffffff" stroke="#111111" stroke-width="2"/><text x="920" y="516" font-size="11.5" font-weight="700" text-anchor="middle" fill="#111111">DETERMINISTIC (hard override)</text>
+<path d="M610,262 L771,262" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<text x="620" y="254" font-size="10.5" font-style="italic" fill="#333333">yes</text>
+<path d="M610,382 L771,382" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<text x="620" y="374" font-size="10.5" font-style="italic" fill="#333333">yes</text>
+<path d="M630,512 L771,512" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<text x="640" y="504" font-size="10.5" font-style="italic" fill="#333333">yes</text>
+<rect x="140" y="616" width="660" height="120" rx="6" fill="#ffffff" stroke="#111111" stroke-width="2.4"/>
+<text x="470" y="648.4" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Cost-aware selection</text>
+<text x="470" y="673.4" font-size="12.5" text-anchor="middle" fill="#222222">for m ∈ {DETERMINISTIC, RAG + LLM, HUMAN}:</text>
+<text x="470" y="692.2" font-size="12.5" text-anchor="middle" fill="#222222">C(m) = α · P̂(error | m, f) · risk(r) + β · USD(m) + γ · latency(m)</text>
+<text x="470" y="710.9" font-size="12.5" text-anchor="middle" fill="#222222">m* = argmin C(m)</text>
+<path d="M470,560 L470,612" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<text x="478" y="584" font-size="10.5" font-style="italic" fill="#333333">no</text>
+<rect x="40" y="800" width="420" height="150" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="250" y="842.5" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Error model (offline)</text>
+<text x="250" y="866" font-size="11" text-anchor="middle" fill="#222222">P̂(error | m, f): logistic regression or decision</text>
+<text x="250" y="882.5" font-size="11" text-anchor="middle" fill="#222222">tree per modality, chosen by validation log-loss</text>
+<text x="250" y="899" font-size="11" text-anchor="middle" fill="#222222">trained on the benchmark's training rules</text>
+<text x="250" y="915.5" font-size="11" text-anchor="middle" fill="#222222">human error rate from the cost model</text>
+<rect x="480" y="800" width="420" height="150" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="690" y="842.5" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Tuning (offline, validation split)</text>
+<text x="690" y="866" font-size="11" text-anchor="middle" fill="#222222">grid over β, γ, MIN_EVIDENCE (α = 1)</text>
+<text x="690" y="882.5" font-size="11" text-anchor="middle" fill="#222222">cheapest setting with end-to-end</text>
+<text x="690" y="899" font-size="11" text-anchor="middle" fill="#222222">accuracy ≥ τ = 0.95</text>
+<text x="690" y="915.5" font-size="11" text-anchor="middle" fill="#222222">adopted only if it beats the heuristic router</text>
+<path d="M250,800 L250,740" fill="none" stroke="#111111" stroke-width="1.3" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+<path d="M690,800 L690,740" fill="none" stroke="#111111" stroke-width="1.3" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+<rect x="960" y="616" width="300" height="120" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="1110" y="650.6" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Execute m*</text>
+<text x="1110" y="674.6" font-size="11.5" text-anchor="middle" fill="#222222">DETERMINISTIC → rule engine,</text>
+<text x="1110" y="691.9" font-size="11.5" text-anchor="middle" fill="#222222">or graph evaluator for G</text>
+<text x="1110" y="709.1" font-size="11.5" text-anchor="middle" fill="#222222">RAG + LLM · HUMAN</text>
+<path d="M800,676 L956,676" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M1065,512 L1110,512 L1110,612" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="960" y="800" width="300" height="150" rx="6" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<text x="1110" y="832.4" font-size="14" font-weight="700" text-anchor="middle" fill="#111111">Output</text>
+<text x="1110" y="856.4" font-size="11.5" text-anchor="middle" fill="#222222">one of five decisions</text>
+<text x="1110" y="873.6" font-size="11.5" text-anchor="middle" fill="#222222">cited paragraph</text>
+<text x="1110" y="890.9" font-size="11.5" text-anchor="middle" fill="#222222">routing reasons and</text>
+<text x="1110" y="908.1" font-size="11.5" text-anchor="middle" fill="#222222">expected costs logged</text>
+<text x="1110" y="925.4" font-size="11.5" text-anchor="middle" fill="#222222">(routing_decisions)</text>
+<path d="M1110,736 L1110,796" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#arrow)"/>
+</svg>

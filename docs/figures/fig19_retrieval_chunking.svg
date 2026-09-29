@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 352" width="900" height="352" font-family="Helvetica, Arial, sans-serif" role="img" aria-label="Clause-aligned vs fixed-window retrieval">
+<title>Clause-aligned vs fixed-window retrieval</title>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#111111"/></marker>
+  <marker id="arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a8a8a"/></marker>
+  <pattern id="hatch45" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><rect width="6" height="6" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#111111" stroke-width="2"/></pattern>
+  <pattern id="hatch135" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(135)"><rect width="6" height="6" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#8a8a8a" stroke-width="2"/></pattern>
+</defs>
+<rect width="900" height="352" fill="#ffffff"/>
+<rect x="20" y="10" width="12" height="12" rx="2" fill="#111111"/>
+<text x="38" y="20" font-size="11.5" fill="#222222">Top-5 recall</text>
+<rect x="133.1" y="10" width="12" height="12" rx="2" fill="#8a8a8a"/>
+<text x="151.1" y="20" font-size="11.5" fill="#222222">MRR@10</text>
+<text x="20" y="48" font-size="12.5" font-weight="700" fill="#111111">(a) questions generated from gold rules (n = 79)</text>
+<line x1="170" y1="64" x2="170" y2="292" stroke="#e2e2e2" stroke-width="1"/>
+<text x="170" y="308" font-size="11" text-anchor="middle" fill="#555555">0.0</text>
+<line x1="280" y1="64" x2="280" y2="292" stroke="#e2e2e2" stroke-width="1"/>
+<text x="280" y="308" font-size="11" text-anchor="middle" fill="#555555">0.5</text>
+<line x1="390" y1="64" x2="390" y2="292" stroke="#e2e2e2" stroke-width="1"/>
+<text x="390" y="308" font-size="11" text-anchor="middle" fill="#555555">1.0</text>
+<line x1="170" y1="292" x2="390" y2="292" stroke="#9a9a9a" stroke-width="1"/>
+<text x="162" y="85" font-size="11.5" text-anchor="end" fill="#111111">Clause-aligned keyword</text>
+<path d="M170,69 H334 Q337,69 337,72 V78 Q337,81 334,81 H170 z" fill="#111111"/>
+<path d="M170,83 H297.5 Q300.5,83 300.5,86 V92 Q300.5,95 297.5,95 H170 z" fill="#8a8a8a"/>
+<text x="341" y="79" font-size="10" fill="#111111">0.76</text>
+<text x="304.5" y="93" font-size="10" fill="#555555">0.59</text>
+<text x="162" y="123" font-size="11.5" text-anchor="end" fill="#111111">Clause-aligned semantic</text>
+<path d="M170,107 H328.5 Q331.5,107 331.5,110 V116 Q331.5,119 328.5,119 H170 z" fill="#111111"/>
+<path d="M170,121 H285.6 Q288.6,121 288.6,124 V130 Q288.6,133 285.6,133 H170 z" fill="#8a8a8a"/>
+<text x="335.5" y="117" font-size="10" fill="#111111">0.73</text>
+<text x="292.6" y="131" font-size="10" fill="#555555">0.54</text>
+<text x="162" y="161" font-size="11.5" font-weight="700" text-anchor="end" fill="#111111">Clause-aligned hybrid ★</text>
+<path d="M170,145 H345.2 Q348.2,145 348.2,148 V154 Q348.2,157 345.2,157 H170 z" fill="#111111"/>
+<path d="M170,159 H306.7 Q309.7,159 309.7,162 V168 Q309.7,171 306.7,171 H170 z" fill="#8a8a8a"/>
+<text x="352.2" y="155" font-size="10" fill="#111111">0.81</text>
+<text x="313.7" y="169" font-size="10" fill="#555555">0.64</text>
+<text x="162" y="199" font-size="11.5" text-anchor="end" fill="#111111">Fixed windows BM25</text>
+<path d="M170,183 H272.8 Q275.8,183 275.8,186 V192 Q275.8,195 272.8,195 H170 z" fill="#111111"/>
+<path d="M170,197 H236.5 Q239.5,197 239.5,200 V206 Q239.5,209 236.5,209 H170 z" fill="#8a8a8a"/>
+<text x="279.8" y="193" font-size="10" fill="#111111">0.48</text>
+<text x="243.5" y="207" font-size="10" fill="#555555">0.32</text>
+<text x="162" y="237" font-size="11.5" text-anchor="end" fill="#111111">Fixed windows semantic</text>
+<path d="M170,221 H244.9 Q247.9,221 247.9,224 V230 Q247.9,233 244.9,233 H170 z" fill="#111111"/>
+<path d="M170,235 H221.1 Q224.1,235 224.1,238 V244 Q224.1,247 221.1,247 H170 z" fill="#8a8a8a"/>
+<text x="251.9" y="231" font-size="10" fill="#111111">0.35</text>
+<text x="228.1" y="245" font-size="10" fill="#555555">0.25</text>
+<text x="162" y="275" font-size="11.5" text-anchor="end" fill="#111111">Fixed windows hybrid</text>
+<path d="M170,259 H264.5 Q267.5,259 267.5,262 V268 Q267.5,271 264.5,271 H170 z" fill="#111111"/>
+<path d="M170,273 H235 Q238,273 238,276 V282 Q238,285 235,285 H170 z" fill="#8a8a8a"/>
+<text x="271.5" y="269" font-size="10" fill="#111111">0.44</text>
+<text x="242" y="283" font-size="10" fill="#555555">0.31</text>
+<line x1="10" y1="178" x2="410" y2="178" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="480" y="48" font-size="12.5" font-weight="700" fill="#111111">(b) hand-written questions (n = 36)</text>
+<line x1="630" y1="64" x2="630" y2="292" stroke="#e2e2e2" stroke-width="1"/>
+<text x="630" y="308" font-size="11" text-anchor="middle" fill="#555555">0.0</text>
+<line x1="740" y1="64" x2="740" y2="292" stroke="#e2e2e2" stroke-width="1"/>
+<text x="740" y="308" font-size="11" text-anchor="middle" fill="#555555">0.5</text>
+<line x1="850" y1="64" x2="850" y2="292" stroke="#e2e2e2" stroke-width="1"/>
+<text x="850" y="308" font-size="11" text-anchor="middle" fill="#555555">1.0</text>
+<line x1="630" y1="292" x2="850" y2="292" stroke="#9a9a9a" stroke-width="1"/>
+<text x="622" y="85" font-size="11.5" text-anchor="end" fill="#111111">Clause-aligned keyword</text>
+<path d="M630,69 H810.3 Q813.3,69 813.3,72 V78 Q813.3,81 810.3,81 H630 z" fill="#111111"/>
+<path d="M630,83 H785.6 Q788.6,83 788.6,86 V92 Q788.6,95 785.6,95 H630 z" fill="#8a8a8a"/>
+<text x="817.3" y="79" font-size="10" fill="#111111">0.83</text>
+<text x="792.6" y="93" font-size="10" fill="#555555">0.72</text>
+<text x="622" y="123" font-size="11.5" text-anchor="end" fill="#111111">Clause-aligned semantic</text>
+<path d="M630,107 H804.3 Q807.3,107 807.3,110 V116 Q807.3,119 804.3,119 H630 z" fill="#111111"/>
+<path d="M630,121 H775.5 Q778.5,121 778.5,124 V130 Q778.5,133 775.5,133 H630 z" fill="#8a8a8a"/>
+<text x="811.3" y="117" font-size="10" fill="#111111">0.81</text>
+<text x="782.5" y="131" font-size="10" fill="#555555">0.68</text>
+<text x="622" y="161" font-size="11.5" font-weight="700" text-anchor="end" fill="#111111">Clause-aligned hybrid ★</text>
+<path d="M630,145 H810.3 Q813.3,145 813.3,148 V154 Q813.3,157 810.3,157 H630 z" fill="#111111"/>
+<path d="M630,159 H796 Q799,159 799,162 V168 Q799,171 796,171 H630 z" fill="#8a8a8a"/>
+<text x="817.3" y="155" font-size="10" fill="#111111">0.83</text>
+<text x="803" y="169" font-size="10" fill="#555555">0.77</text>
+<text x="622" y="199" font-size="11.5" text-anchor="end" fill="#111111">Fixed windows BM25</text>
+<path d="M630,183 H761.4 Q764.4,183 764.4,186 V192 Q764.4,195 761.4,195 H630 z" fill="#111111"/>
+<path d="M630,197 H729.3 Q732.3,197 732.3,200 V206 Q732.3,209 729.3,209 H630 z" fill="#8a8a8a"/>
+<text x="768.4" y="193" font-size="10" fill="#111111">0.61</text>
+<text x="736.3" y="207" font-size="10" fill="#555555">0.47</text>
+<text x="622" y="237" font-size="11.5" text-anchor="end" fill="#111111">Fixed windows semantic</text>
+<path d="M630,221 H785.8 Q788.8,221 788.8,224 V230 Q788.8,233 785.8,233 H630 z" fill="#111111"/>
+<path d="M630,235 H766.7 Q769.7,235 769.7,238 V244 Q769.7,247 766.7,247 H630 z" fill="#8a8a8a"/>
+<text x="792.8" y="231" font-size="10" fill="#111111">0.72</text>
+<text x="773.7" y="245" font-size="10" fill="#555555">0.64</text>
+<text x="622" y="275" font-size="11.5" text-anchor="end" fill="#111111">Fixed windows hybrid</text>
+<path d="M630,259 H792 Q795,259 795,262 V268 Q795,271 792,271 H630 z" fill="#111111"/>
+<path d="M630,273 H760.5 Q763.5,273 763.5,276 V282 Q763.5,285 760.5,285 H630 z" fill="#8a8a8a"/>
+<text x="799" y="269" font-size="10" fill="#111111">0.75</text>
+<text x="767.5" y="283" font-size="10" fill="#555555">0.61</text>
+<line x1="470" y1="178" x2="870" y2="178" stroke="#9a9a9a" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="450" y="340" font-size="11" text-anchor="middle" fill="#555555">fixed windows: 800 characters, 200 overlap (33,907 windows); a passage counts only if it contains the whole provision; ★ = proposed</text>
+</svg>

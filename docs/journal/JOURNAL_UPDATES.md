@@ -24,7 +24,7 @@ Every number below comes from a script in the repository and can be regenerated 
 | Structure-aware vs generic chunking (RQ2, baseline C3) | Not measured | Clause-aligned hybrid retrieval: MRR@10 0.635 vs 0.309 for fixed 800-character windows (Top-5 recall 81% vs 48%) on 79 gold-rule questions; also 36 hand-written questions | `scripts/eval_chunking.js` |
 | Plain-language simplification (RQ4) | Not present | Guarded rule-based simplifier (Gemini optional), API endpoint and source-viewer toggle; meaning preservation measured | `src/services/simplifyService.js`; `scripts/eval_simplification.js` |
 | Significance testing | – | Paired cluster bootstrap (by rule) and exact McNemar for every headline comparison | `eval/results/router_eval.md` |
-| Architecture diagram | v2 (partly aspirational) | v3, drawn from the code as it is | `urcc-ef-backend/urcc-architecture-v3.svg` |
+| Architecture diagram and figures | v2 (partly aspirational) | Black-and-white system diagram (= `urcc-ef-backend/urcc-architecture-v3.svg`), five subsystem diagrams and 13 evaluation charts, all generated from the code and results | `docs/figures/` (captions in `docs/figures/README.md`) |
 
 ---
 
@@ -38,7 +38,7 @@ Every number below comes from a script in the repository and can be regenerated 
 
 ## 3. System architecture (Sec. V): corrections to the draft
 
-Use `urcc-architecture-v3.svg`. Changes relative to the v2 diagram and text:
+Use `docs/figures/fig01_system_architecture.svg` (the same diagram as `urcc-ef-backend/urcc-architecture-v3.svg`) and the subsystem diagrams Figs. 2–7. Changes relative to the v2 diagram and text:
 
 - **Storage.** The system uses SQLite for everything: documents, clause registry, rule atoms, definitions, cross-references, FTS5 keyword index, routing log, bank data, and the graph store as relational tables. A SQLite vector table holds the BGE-small (384-d) embeddings. There is no separate graph database or vector server.
 - **Four modalities, not three.** DETERMINISTIC is two engines. The *rule engine* handles categories A, C and D, and B when a structured flag exists. The *graph evaluator* handles category G: connected-counterparty grouping following RBI's own illustrations (Concentration Risk Management Directions, paras 20–30), aggregate exposure limits, and Section 20 related-party prohibitions. The other two modalities are RAG+LLM and HUMAN.
@@ -365,7 +365,34 @@ Run `npm run eval:simplification -- --llm` with a Gemini key to report the LLM v
 
 ---
 
-## 11. Reproducing every number
+## 11. Figures
+
+`docs/figures/` holds 20 SVG figures; captions are in `docs/figures/README.md`.
+
+| Figure | Paper section |
+|---|---|
+| 1 | V (architecture) |
+| 2 | V (rule extraction) |
+| 3 | V (comprehension) |
+| 4 | V (compliance checking) |
+| 5 | VIII (Algorithm 1) |
+| 6 | V (graph subsystem) |
+| 7 | VII / IX (benchmark and protocol) |
+| 8 | VI.A (Table IV) |
+| 9 | VII |
+| 10 | X (Tables VII / XI) |
+| 11 | X (cost) |
+| 12 | X (Table X) |
+| 13 | X |
+| 14 | X (Table XV) |
+| 15 | X (significance) |
+| 16 | X |
+| 17 | X |
+| 18 | X (RQ3) |
+| 19 | X (RQ2) |
+| 20 | X (RQ4) |
+
+## 12. Reproducing every number
 
 From `urcc-ef-backend/`. The numbers were produced on a corpus re-extracted with this branch's `classifier.py`, so rebuild the corpus first; the committed `data/urcc_ef.db` predates the extraction fixes:
 
@@ -378,6 +405,7 @@ npm run eval:chunking          # chunking_eval.{json,md}   (embeds the fixed win
 npm run eval:simplification    # simplification_eval.{json,md}
 npm run eval:graph && npm run eval:disclosures
 npm test
+npm run figures               # docs/figures/*.svg from the results above
 
 # with a Gemini key: the real LLM instead of the surrogate judge
 GEMINI_API_KEY=... npm run eval:router:gemini

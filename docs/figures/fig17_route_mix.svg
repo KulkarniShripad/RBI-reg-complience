@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 328" width="820" height="328" font-family="Helvetica, Arial, sans-serif" role="img" aria-label="Where the adaptive router sends each requirement category">
+<title>Where the adaptive router sends each requirement category</title>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#111111"/></marker>
+  <marker id="arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a8a8a"/></marker>
+  <pattern id="hatch45" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><rect width="6" height="6" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#111111" stroke-width="2"/></pattern>
+  <pattern id="hatch135" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(135)"><rect width="6" height="6" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#8a8a8a" stroke-width="2"/></pattern>
+</defs>
+<rect width="820" height="328" fill="#ffffff"/>
+<rect x="190" y="12" width="12" height="12" rx="2" fill="#111111"/>
+<text x="208" y="22" font-size="11.5" fill="#222222">Rule engine / graph</text>
+<rect x="345.8" y="12" width="12" height="12" rx="2" fill="#8a8a8a"/>
+<text x="363.8" y="22" font-size="11.5" fill="#222222">RAG + LLM</text>
+<rect x="440.7" y="12" width="12" height="12" rx="2" fill="url(#hatch45)" stroke="#111111" stroke-width="0.6"/>
+<text x="458.7" y="22" font-size="11.5" fill="#222222">Human review</text>
+<rect x="553.8" y="12" width="12" height="12" rx="2" fill="url(#hatch135)" stroke="#111111" stroke-width="0.6"/>
+<text x="571.8" y="22" font-size="11.5" fill="#222222">Declined (no evidence)</text>
+<line x1="190" y1="50" x2="190" y2="288" stroke="#e2e2e2" stroke-width="1"/>
+<text x="190" y="304" font-size="11" text-anchor="middle" fill="#555555">0%</text>
+<line x1="330" y1="50" x2="330" y2="288" stroke="#e2e2e2" stroke-width="1"/>
+<text x="330" y="304" font-size="11" text-anchor="middle" fill="#555555">25%</text>
+<line x1="470" y1="50" x2="470" y2="288" stroke="#e2e2e2" stroke-width="1"/>
+<text x="470" y="304" font-size="11" text-anchor="middle" fill="#555555">50%</text>
+<line x1="610" y1="50" x2="610" y2="288" stroke="#e2e2e2" stroke-width="1"/>
+<text x="610" y="304" font-size="11" text-anchor="middle" fill="#555555">75%</text>
+<line x1="750" y1="50" x2="750" y2="288" stroke="#e2e2e2" stroke-width="1"/>
+<text x="750" y="304" font-size="11" text-anchor="middle" fill="#555555">100%</text>
+<line x1="190" y1="288" x2="750" y2="288" stroke="#9a9a9a" stroke-width="1"/>
+<text x="180" y="71" font-size="12" text-anchor="end" fill="#111111">A  Quantitative</text>
+<rect x="190" y="58" width="445" height="18" fill="#111111"/>
+<rect x="637" y="58" width="39.1" height="18" fill="url(#hatch45)"/>
+<rect x="678.1" y="58" width="71.9" height="18" fill="url(#hatch135)"/>
+<text x="758" y="71" font-size="11" fill="#555555">n = 109</text>
+<text x="180" y="105" font-size="12" text-anchor="end" fill="#111111">B  Boolean / procedural</text>
+<rect x="190" y="92" width="278" height="18" fill="#111111"/>
+<rect x="470" y="92" width="91.3" height="18" fill="#8a8a8a"/>
+<rect x="563.3" y="92" width="91.3" height="18" fill="url(#hatch45)"/>
+<rect x="656.7" y="92" width="93.3" height="18" fill="url(#hatch135)"/>
+<text x="758" y="105" font-size="11" fill="#555555">n = 12</text>
+<text x="180" y="139" font-size="12" text-anchor="end" fill="#111111">C  Conditional</text>
+<rect x="190" y="126" width="560" height="18" fill="#111111"/>
+<text x="758" y="139" font-size="11" fill="#555555">n = 15</text>
+<text x="180" y="173" font-size="12" text-anchor="end" fill="#111111">D  Temporal</text>
+<rect x="190" y="160" width="488" height="18" fill="#111111"/>
+<rect x="680" y="160" width="70" height="18" fill="url(#hatch135)"/>
+<text x="758" y="173" font-size="11" fill="#555555">n = 48</text>
+<text x="180" y="207" font-size="12" text-anchor="end" fill="#111111">E  Qualitative</text>
+<rect x="190" y="194" width="318" height="18" fill="#8a8a8a"/>
+<rect x="510" y="194" width="144.7" height="18" fill="url(#hatch45)"/>
+<rect x="656.7" y="194" width="93.3" height="18" fill="url(#hatch135)"/>
+<text x="758" y="207" font-size="11" fill="#555555">n = 84</text>
+<text x="180" y="241" font-size="12" text-anchor="end" fill="#111111">F  Relational</text>
+<rect x="190" y="228" width="278" height="18" fill="#8a8a8a"/>
+<rect x="470" y="228" width="184.7" height="18" fill="url(#hatch45)"/>
+<rect x="656.7" y="228" width="93.3" height="18" fill="url(#hatch135)"/>
+<text x="758" y="241" font-size="11" fill="#555555">n = 18</text>
+<text x="180" y="275" font-size="12" text-anchor="end" fill="#111111">G  Multi-entity</text>
+<rect x="190" y="262" width="560" height="18" fill="#111111"/>
+<text x="758" y="275" font-size="11" fill="#555555">n = 8</text>
+<text x="470" y="320" font-size="11.5" text-anchor="middle" fill="#555555">share of test cases routed to each modality by R4</text>
+</svg>

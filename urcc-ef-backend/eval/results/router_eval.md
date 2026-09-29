@@ -10,17 +10,17 @@ Benchmark: 1393 cases from 215 rules; splits train 840 / validation 259 / test 2
 
 | System | Accuracy | End-to-end acc. | Macro-F1 | NC F1 | FPR | FNR | Escalated | LLM calls | Citation acc. | Halluc. rate | USD / case | Mean latency (ms) |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| B1 Rule-only | 66% | 66% | 0.554 | 0.787 | 0% | 35% | 0% | 0% | 100% | 0% | 0.00000 | 0.1 |
+| B1 Rule-only | 66% | 66% | 0.554 | 0.787 | 0% | 35% | 0% | 0% | 100% | 0% | 0.00000 | 0 |
 | B2 LLM-only (no retrieval) | 56.8% | 56.8% | 0.522 | 0.575 | 16.5% | 46.4% | 0% | 100% | 37.4% | 62.6% | 0.00130 | 2700 |
 | B3 RAG+LLM | 72.5% | 72.5% | 0.711 | 0.623 | 11% | 41.2% | 0% | 100% | 100% | 0% | 0.00050 | 1860 |
-| B4 / R3 Fixed hybrid | 85.4% | 85.4% | 0.779 | 0.851 | 0% | 17.5% | 0% | 34.7% | 100% | 0% | 0.00020 | 645.4 |
+| B4 / R3 Fixed hybrid | 85.4% | 85.4% | 0.779 | 0.851 | 0% | 17.5% | 0% | 34.7% | 100% | 0% | 0.00020 | 645.3 |
 | R0 Earlier heuristic router | 83.3% | 92.9% | 0.811 | 0.791 | 0% | 11.3% | 19.1% | 17% | 100% | 0% | 0.28580 | 114602.1 |
 | R1 Static rule-first | 86.4% | 86.4% | 0.823 | 0.829 | 0% | 17.5% | 0% | 46.6% | 100% | 0% | 0.00020 | 866.8 |
-| R2 Confidence threshold (θ=0.85) | 71.8% | 95.6% | 0.613 | 0.793 | 0% | 9.3% | 34.7% | 11.9% | 100% | 0% | 0.52050 | 208384.8 |
+| R2 Confidence threshold (θ=0.85) | 71.8% | 95.6% | 0.613 | 0.793 | 0% | 9.3% | 34.7% | 11.9% | 100% | 0% | 0.52050 | 208384.7 |
 | R4 Proposed adaptive | 92.2% | 96.9% | 0.907 | 0.889 | 0% | 3.1% | 12.9% | 20.1% | 100% | 0% | 0.19400 | 77924.3 |
-| R4 at R0's cost budget | 86.4% | 99% | 0.871 | 0.838 | 0% | 0% | 25.2% | 7.8% | 100% | 0% | 0.37760 | 151166 |
+| R4 at R0's cost budget | 86.4% | 99% | 0.871 | 0.838 | 0% | 0% | 25.2% | 7.8% | 100% | 0% | 0.37760 | 151165.9 |
 | R4 fully automated (no human) | 87.8% | 87.8% | 0.834 | 0.842 | 0% | 17.5% | 0% | 33% | 100% | 0% | 0.00020 | 613.7 |
-| Oracle (cheapest correct route) | 94.2% | 100% | 0.943 | 0.904 | 0% | 0% | 11.9% | 22.1% | 100% | 0% | 0.17870 | 71839.9 |
+| Oracle (cheapest correct route) | 94.2% | 100% | 0.943 | 0.904 | 0% | 0% | 11.9% | 22.1% | 100% | 0% | 0.17870 | 71839.8 |
 
 LLM calls avoided by R4 relative to B3: **79.9%**.
 
@@ -73,7 +73,7 @@ Accuracy = the decision is in the case's acceptable set; end-to-end accuracy add
 | Configuration | Accuracy | End-to-end acc. | Halluc. rate | USD / case | Mean latency (ms) |
 |---|---|---|---|---|---|
 | Full proposed system | 92.2% | 96.9% | 0% | 0.19400 | 77924.3 |
-| − adaptive routing (→ B4) | 85.4% | 85.4% | 0% | 0.00020 | 645.4 |
+| − adaptive routing (→ B4) | 85.4% | 85.4% | 0% | 0.00020 | 645.3 |
 | − rule engine (→ B3) | 72.5% | 72.5% | 0% | 0.00050 | 1860 |
 | − evidence grounding (→ B2) | 56.8% | 56.8% | 62.6% | 0.00130 | 2700 |
 | − hard override | 92.2% | 96.9% | 0% | 0.19400 | 77924.3 |

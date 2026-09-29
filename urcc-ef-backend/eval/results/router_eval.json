@@ -18,11 +18,11 @@
   },
   "rule_engine": {
    "usd_per_case": 0,
-   "latency_ms": 0.0305
+   "latency_ms": 0.0177
   },
   "graph": {
    "usd_per_case": 0,
-   "latency_ms": 1.3962
+   "latency_ms": 0.5324
   },
   "human": {
    "usd_per_case": 1.5,
@@ -128,8 +128,8 @@
   "hallucination_rate": 0,
   "usd_per_case": 0.1391,
   "usd_per_case_automated": 0.0001,
-  "mean_latency_ms": 55914.6,
-  "median_latency_automated_ms": 0.02,
+  "mean_latency_ms": 55914.5,
+  "median_latency_automated_ms": 0.01,
   "route_mix": {
    "DETERMINISTIC": 161,
    "NONE": 30,
@@ -154,7 +154,7 @@
    "hallucination_rate": 0,
    "usd_per_case": 0,
    "usd_per_case_automated": 0,
-   "mean_latency_ms": 0.1,
+   "mean_latency_ms": 0,
    "median_latency_automated_ms": 0.01,
    "route_mix": {
     "DETERMINISTIC": 294
@@ -220,8 +220,8 @@
    "hallucination_rate": 0,
    "usd_per_case": 0.0002,
    "usd_per_case_automated": 0.0002,
-   "mean_latency_ms": 645.4,
-   "median_latency_automated_ms": 0.03,
+   "mean_latency_ms": 645.3,
+   "median_latency_automated_ms": 0.02,
    "route_mix": {
     "DETERMINISTIC": 192,
     "RAG_LLM": 102
@@ -269,7 +269,7 @@
    "usd_per_case": 0.0002,
    "usd_per_case_automated": 0.0002,
    "mean_latency_ms": 866.8,
-   "median_latency_automated_ms": 0.07,
+   "median_latency_automated_ms": 0.04,
    "route_mix": {
     "DETERMINISTIC": 157,
     "RAG_LLM": 137
@@ -291,7 +291,7 @@
    "hallucination_rate": 0,
    "usd_per_case": 0.5205,
    "usd_per_case_automated": 0.0001,
-   "mean_latency_ms": 208384.8,
+   "mean_latency_ms": 208384.7,
    "median_latency_automated_ms": 0.02,
    "route_mix": {
     "DETERMINISTIC": 157,
@@ -340,8 +340,8 @@
    "hallucination_rate": 0,
    "usd_per_case": 0.3776,
    "usd_per_case_automated": 0,
-   "mean_latency_ms": 151166,
-   "median_latency_automated_ms": 0.02,
+   "mean_latency_ms": 151165.9,
+   "median_latency_automated_ms": 0.01,
    "route_mix": {
     "DETERMINISTIC": 158,
     "NONE": 39,
@@ -389,7 +389,7 @@
    "hallucination_rate": 0,
    "usd_per_case": 0.1787,
    "usd_per_case_automated": 0.0001,
-   "mean_latency_ms": 71839.9,
+   "mean_latency_ms": 71839.8,
    "median_latency_automated_ms": 0.02,
    "route_mix": {
     "DETERMINISTIC": 194,
@@ -454,8 +454,8 @@
    "hallucination_rate": 0,
    "usd_per_case": 0.0002,
    "usd_per_case_automated": 0.0002,
-   "mean_latency_ms": 645.4,
-   "median_latency_automated_ms": 0.03,
+   "mean_latency_ms": 645.3,
+   "median_latency_automated_ms": 0.02,
    "route_mix": {
     "DETERMINISTIC": 192,
     "RAG_LLM": 102
@@ -1304,6 +1304,209 @@
    }
   }
  ],
+ "confusion": {
+  "R4 Proposed adaptive": {
+   "COMPLIANT": {
+    "COMPLIANT": 91,
+    "NON_COMPLIANT": 0,
+    "INSUFFICIENT_DATA": 0,
+    "AMBIGUOUS": 0,
+    "REQUIRES_HUMAN_REVIEW": 0
+   },
+   "NON_COMPLIANT": {
+    "COMPLIANT": 0,
+    "NON_COMPLIANT": 80,
+    "INSUFFICIENT_DATA": 0,
+    "AMBIGUOUS": 3,
+    "REQUIRES_HUMAN_REVIEW": 14
+   },
+   "INSUFFICIENT_DATA": {
+    "COMPLIANT": 0,
+    "NON_COMPLIANT": 0,
+    "INSUFFICIENT_DATA": 39,
+    "AMBIGUOUS": 0,
+    "REQUIRES_HUMAN_REVIEW": 0
+   },
+   "AMBIGUOUS": {
+    "COMPLIANT": 0,
+    "NON_COMPLIANT": 3,
+    "INSUFFICIENT_DATA": 3,
+    "AMBIGUOUS": 0,
+    "REQUIRES_HUMAN_REVIEW": 24
+   },
+   "REQUIRES_HUMAN_REVIEW": {
+    "COMPLIANT": 0,
+    "NON_COMPLIANT": 0,
+    "INSUFFICIENT_DATA": 0,
+    "AMBIGUOUS": 19,
+    "REQUIRES_HUMAN_REVIEW": 18
+   }
+  },
+  "R0 Earlier heuristic router": {
+   "COMPLIANT": {
+    "COMPLIANT": 84,
+    "NON_COMPLIANT": 0,
+    "INSUFFICIENT_DATA": 0,
+    "AMBIGUOUS": 0,
+    "REQUIRES_HUMAN_REVIEW": 7
+   },
+   "NON_COMPLIANT": {
+    "COMPLIANT": 0,
+    "NON_COMPLIANT": 68,
+    "INSUFFICIENT_DATA": 0,
+    "AMBIGUOUS": 11,
+    "REQUIRES_HUMAN_REVIEW": 18
+   },
+   "INSUFFICIENT_DATA": {
+    "COMPLIANT": 0,
+    "NON_COMPLIANT": 0,
+    "INSUFFICIENT_DATA": 36,
+    "AMBIGUOUS": 0,
+    "REQUIRES_HUMAN_REVIEW": 3
+   },
+   "AMBIGUOUS": {
+    "COMPLIANT": 0,
+    "NON_COMPLIANT": 7,
+    "INSUFFICIENT_DATA": 3,
+    "AMBIGUOUS": 5,
+    "REQUIRES_HUMAN_REVIEW": 15
+   },
+   "REQUIRES_HUMAN_REVIEW": {
+    "COMPLIANT": 0,
+    "NON_COMPLIANT": 0,
+    "INSUFFICIENT_DATA": 0,
+    "AMBIGUOUS": 6,
+    "REQUIRES_HUMAN_REVIEW": 31
+   }
+  },
+  "B3 RAG+LLM": {
+   "COMPLIANT": {
+    "COMPLIANT": 81,
+    "NON_COMPLIANT": 10,
+    "INSUFFICIENT_DATA": 0,
+    "AMBIGUOUS": 0,
+    "REQUIRES_HUMAN_REVIEW": 0
+   },
+   "NON_COMPLIANT": {
+    "COMPLIANT": 17,
+    "NON_COMPLIANT": 57,
+    "INSUFFICIENT_DATA": 5,
+    "AMBIGUOUS": 18,
+    "REQUIRES_HUMAN_REVIEW": 0
+   },
+   "INSUFFICIENT_DATA": {
+    "COMPLIANT": 0,
+    "NON_COMPLIANT": 3,
+    "INSUFFICIENT_DATA": 36,
+    "AMBIGUOUS": 0,
+    "REQUIRES_HUMAN_REVIEW": 0
+   },
+   "AMBIGUOUS": {
+    "COMPLIANT": 3,
+    "NON_COMPLIANT": 13,
+    "INSUFFICIENT_DATA": 2,
+    "AMBIGUOUS": 12,
+    "REQUIRES_HUMAN_REVIEW": 0
+   },
+   "REQUIRES_HUMAN_REVIEW": {
+    "COMPLIANT": 6,
+    "NON_COMPLIANT": 3,
+    "INSUFFICIENT_DATA": 1,
+    "AMBIGUOUS": 27,
+    "REQUIRES_HUMAN_REVIEW": 0
+   }
+  }
+ },
+ "route_mix_by_rule_type": {
+  "R4 Proposed adaptive": {
+   "A": {
+    "DETERMINISTIC": 87,
+    "RAG_LLM": 0,
+    "HUMAN": 8,
+    "NONE": 14
+   },
+   "D": {
+    "DETERMINISTIC": 42,
+    "RAG_LLM": 0,
+    "HUMAN": 0,
+    "NONE": 6
+   },
+   "C": {
+    "DETERMINISTIC": 15,
+    "RAG_LLM": 0,
+    "HUMAN": 0,
+    "NONE": 0
+   },
+   "B": {
+    "DETERMINISTIC": 6,
+    "RAG_LLM": 2,
+    "HUMAN": 2,
+    "NONE": 2
+   },
+   "E": {
+    "DETERMINISTIC": 0,
+    "RAG_LLM": 48,
+    "HUMAN": 22,
+    "NONE": 14
+   },
+   "F": {
+    "DETERMINISTIC": 0,
+    "RAG_LLM": 9,
+    "HUMAN": 6,
+    "NONE": 3
+   },
+   "G": {
+    "DETERMINISTIC": 8,
+    "RAG_LLM": 0,
+    "HUMAN": 0,
+    "NONE": 0
+   }
+  },
+  "R0 Earlier heuristic router": {
+   "A": {
+    "DETERMINISTIC": 87,
+    "RAG_LLM": 0,
+    "HUMAN": 8,
+    "NONE": 14
+   },
+   "D": {
+    "DETERMINISTIC": 42,
+    "RAG_LLM": 0,
+    "HUMAN": 0,
+    "NONE": 6
+   },
+   "C": {
+    "DETERMINISTIC": 12,
+    "RAG_LLM": 0,
+    "HUMAN": 3,
+    "NONE": 0
+   },
+   "B": {
+    "DETERMINISTIC": 0,
+    "RAG_LLM": 6,
+    "HUMAN": 4,
+    "NONE": 2
+   },
+   "E": {
+    "DETERMINISTIC": 0,
+    "RAG_LLM": 41,
+    "HUMAN": 29,
+    "NONE": 14
+   },
+   "F": {
+    "DETERMINISTIC": 0,
+    "RAG_LLM": 3,
+    "HUMAN": 12,
+    "NONE": 3
+   },
+   "G": {
+    "DETERMINISTIC": 8,
+    "RAG_LLM": 0,
+    "HUMAN": 0,
+    "NONE": 0
+   }
+  }
+ },
  "adopted_in_system": true,
  "adopted_operating_point": "tau",
  "r0_validation": {
@@ -1322,7 +1525,7 @@
   "hallucination_rate": 0,
   "usd_per_case": 0.307,
   "usd_per_case_automated": 0.0001,
-  "mean_latency_ms": 123081.7,
+  "mean_latency_ms": 123081.6,
   "median_latency_automated_ms": 0.02,
   "route_mix": {
    "DETERMINISTIC": 134,

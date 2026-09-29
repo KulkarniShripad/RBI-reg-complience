@@ -25,7 +25,8 @@
     "eval:extraction": "node scripts/eval_extraction_gold.js",
     "eval:chunking": "node scripts/eval_chunking.js",
     "eval:simplification": "node scripts/eval_simplification.js",
-    "eval:journal": "npm run eval:extraction && npm run eval:router && npm run eval:chunking && npm run eval:simplification && npm run eval:graph && npm run eval:disclosures"
+    "eval:journal": "npm run eval:extraction && npm run eval:router && npm run eval:chunking && npm run eval:simplification && npm run eval:graph && npm run eval:disclosures && npm run figures",
+    "figures": "node scripts/figures/make_figures.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",

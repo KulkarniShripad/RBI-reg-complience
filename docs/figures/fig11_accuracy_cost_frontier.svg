@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 520" width="820" height="520" font-family="Helvetica, Arial, sans-serif" role="img" aria-label="Accuracy–cost trade-off">
+<title>Accuracy–cost trade-off</title>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#111111"/></marker>
+  <marker id="arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a8a8a"/></marker>
+  <pattern id="hatch45" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><rect width="6" height="6" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#111111" stroke-width="2"/></pattern>
+  <pattern id="hatch135" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(135)"><rect width="6" height="6" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#8a8a8a" stroke-width="2"/></pattern>
+</defs>
+<rect width="820" height="520" fill="#ffffff"/>
+<line x1="70" y1="30" x2="70" y2="450" stroke="#e2e2e2" stroke-width="1"/>
+<text x="70" y="466" font-size="11" text-anchor="middle" fill="#555555">0</text>
+<line x1="120.4" y1="30" x2="120.4" y2="450" stroke="#e2e2e2" stroke-width="1"/>
+<text x="120.4" y="466" font-size="11" text-anchor="middle" fill="#555555">$1e−4</text>
+<line x1="287.8" y1="30" x2="287.8" y2="450" stroke="#e2e2e2" stroke-width="1"/>
+<text x="287.8" y="466" font-size="11" text-anchor="middle" fill="#555555">$1e−3</text>
+<line x1="455.2" y1="30" x2="455.2" y2="450" stroke="#e2e2e2" stroke-width="1"/>
+<text x="455.2" y="466" font-size="11" text-anchor="middle" fill="#555555">$0.01</text>
+<line x1="622.6" y1="30" x2="622.6" y2="450" stroke="#e2e2e2" stroke-width="1"/>
+<text x="622.6" y="466" font-size="11" text-anchor="middle" fill="#555555">$0.1</text>
+<line x1="790" y1="30" x2="790" y2="450" stroke="#e2e2e2" stroke-width="1"/>
+<text x="790" y="466" font-size="11" text-anchor="middle" fill="#555555">$1</text>
+<line x1="70" y1="450" x2="790" y2="450" stroke="#9a9a9a" stroke-width="1"/>
+<line x1="70" y1="450" x2="790" y2="450" stroke="#e2e2e2" stroke-width="1"/>
+<text x="62" y="454" font-size="11" text-anchor="end" fill="#555555">50%</text>
+<line x1="70" y1="366" x2="790" y2="366" stroke="#e2e2e2" stroke-width="1"/>
+<text x="62" y="370" font-size="11" text-anchor="end" fill="#555555">60%</text>
+<line x1="70" y1="282" x2="790" y2="282" stroke="#e2e2e2" stroke-width="1"/>
+<text x="62" y="286" font-size="11" text-anchor="end" fill="#555555">70%</text>
+<line x1="70" y1="198" x2="790" y2="198" stroke="#e2e2e2" stroke-width="1"/>
+<text x="62" y="202" font-size="11" text-anchor="end" fill="#555555">80%</text>
+<line x1="70" y1="114" x2="790" y2="114" stroke="#e2e2e2" stroke-width="1"/>
+<text x="62" y="118" font-size="11" text-anchor="end" fill="#555555">90%</text>
+<line x1="70" y1="30" x2="790" y2="30" stroke="#e2e2e2" stroke-width="1"/>
+<text x="62" y="34" font-size="11" text-anchor="end" fill="#555555">100%</text>
+<line x1="70" y1="450" x2="790" y2="450" stroke="#9a9a9a" stroke-width="1"/>
+<text x="430" y="490" font-size="12" text-anchor="middle" fill="#555555">cost per case (US$, log scale; 0 plotted at the left edge)</text>
+<text transform="translate(18 240) rotate(-90)" font-size="12" text-anchor="middle" fill="#555555">end-to-end accuracy</text>
+<circle cx="738.1" cy="38.6" r="3" fill="#b5b5b5"/>
+<circle cx="738.1" cy="38.6" r="3" fill="#b5b5b5"/>
+<circle cx="740.3" cy="38.6" r="3" fill="#b5b5b5"/>
+<circle cx="734.2" cy="38.6" r="3" fill="#b5b5b5"/>
+<circle cx="734.2" cy="38.6" r="3" fill="#b5b5b5"/>
+<circle cx="736.6" cy="38.6" r="3" fill="#b5b5b5"/>
+<circle cx="666.9" cy="58.6" r="3" fill="#b5b5b5"/>
+<circle cx="670.8" cy="55.7" r="3" fill="#b5b5b5"/>
+<circle cx="676.3" cy="55.7" r="3" fill="#b5b5b5"/>
+<circle cx="170.8" cy="132.8" r="3" fill="#b5b5b5"/>
+<circle cx="573.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="592.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="718.2" cy="38.6" r="3" fill="#b5b5b5"/>
+<circle cx="719.2" cy="38.6" r="3" fill="#b5b5b5"/>
+<circle cx="722.1" cy="38.6" r="3" fill="#b5b5b5"/>
+<circle cx="717.2" cy="41.4" r="3" fill="#b5b5b5"/>
+<circle cx="719.2" cy="38.6" r="3" fill="#b5b5b5"/>
+<circle cx="722.1" cy="38.6" r="3" fill="#b5b5b5"/>
+<circle cx="664.8" cy="61.4" r="3" fill="#b5b5b5"/>
+<circle cx="670.8" cy="55.7" r="3" fill="#b5b5b5"/>
+<circle cx="676.3" cy="55.7" r="3" fill="#b5b5b5"/>
+<circle cx="170.8" cy="132.8" r="3" fill="#b5b5b5"/>
+<circle cx="573.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="592.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="624.2" cy="90" r="3" fill="#b5b5b5"/>
+<circle cx="653.6" cy="75.7" r="3" fill="#b5b5b5"/>
+<circle cx="660.5" cy="75.7" r="3" fill="#b5b5b5"/>
+<circle cx="624.2" cy="90" r="3" fill="#b5b5b5"/>
+<circle cx="653.6" cy="75.7" r="3" fill="#b5b5b5"/>
+<circle cx="660.5" cy="75.7" r="3" fill="#b5b5b5"/>
+<circle cx="170.8" cy="132.8" r="3" fill="#b5b5b5"/>
+<circle cx="573.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="592.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="170.8" cy="132.8" r="3" fill="#b5b5b5"/>
+<circle cx="573.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="592.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="170.8" cy="132.8" r="3" fill="#b5b5b5"/>
+<circle cx="573.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="592.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="170.8" cy="132.8" r="3" fill="#b5b5b5"/>
+<circle cx="573.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="592.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="170.8" cy="132.8" r="3" fill="#b5b5b5"/>
+<circle cx="573.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="592.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="170.8" cy="132.8" r="3" fill="#b5b5b5"/>
+<circle cx="573.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="592.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="170.8" cy="132.8" r="3" fill="#b5b5b5"/>
+<circle cx="573.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="592.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="170.8" cy="132.8" r="3" fill="#b5b5b5"/>
+<circle cx="573.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="592.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="170.8" cy="132.8" r="3" fill="#b5b5b5"/>
+<circle cx="573.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="592.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="170.8" cy="132.8" r="3" fill="#b5b5b5"/>
+<circle cx="573.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="592.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="170.8" cy="132.8" r="3" fill="#b5b5b5"/>
+<circle cx="573.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="592.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="170.8" cy="132.8" r="3" fill="#b5b5b5"/>
+<circle cx="573.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="592.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="170.8" cy="132.8" r="3" fill="#b5b5b5"/>
+<circle cx="573.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="592.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="170.8" cy="132.8" r="3" fill="#b5b5b5"/>
+<circle cx="573.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<circle cx="592.9" cy="118.5" r="3" fill="#b5b5b5"/>
+<path d="M70,315.7 L170.8,132.8 L573.9,118.5 L624.2,90 L653.6,75.7 L664.8,61.4 L666.9,58.6 L670.8,55.7 L717.2,41.4 L718.2,38.6" fill="none" stroke="#111111" stroke-width="1.5" stroke-dasharray="4 3"/>
+<path d="M70,309.2 L76.5,315.7 L70,322.2 L63.5,315.7 z" fill="#ffffff" stroke="#111111" stroke-width="1.6"/>
+<text x="78" y="329.7" font-size="11" fill="#111111">B1  66.0%</text>
+<path d="M306.9,386.4 L313.4,392.9 L306.9,399.4 L300.4,392.9 z" fill="#ffffff" stroke="#111111" stroke-width="1.6"/>
+<text x="314.9" y="396.9" font-size="11" fill="#111111">B2  56.8%</text>
+<path d="M237.4,254.9 L243.9,261.4 L237.4,267.9 L230.9,261.4 z" fill="#ffffff" stroke="#111111" stroke-width="1.6"/>
+<text x="245.4" y="265.4" font-size="11" fill="#111111">B3  72.5%</text>
+<path d="M170.8,146.4 L177.3,152.9 L170.8,159.4 L164.3,152.9 z" fill="#ffffff" stroke="#111111" stroke-width="1.6"/>
+<text x="162.8" y="168.9" font-size="11" text-anchor="end" fill="#111111">B4  85.4%</text>
+<path d="M698.9,83.5 L705.4,90 L698.9,96.5 L692.4,90 z" fill="#ffffff" stroke="#111111" stroke-width="1.6"/>
+<text x="706.9" y="106" font-size="11" fill="#111111">R0  92.9%</text>
+<path d="M170.8,137.8 L177.3,144.3 L170.8,150.8 L164.3,144.3 z" fill="#ffffff" stroke="#111111" stroke-width="1.6"/>
+<text x="162.8" y="136.3" font-size="11" text-anchor="end" fill="#111111">R1  86.4%</text>
+<path d="M742.5,60.6 L749,67.1 L742.5,73.6 L736,67.1 z" fill="#ffffff" stroke="#111111" stroke-width="1.6"/>
+<text x="750.5" y="71.1" font-size="11" fill="#111111">R2  95.6%</text>
+<circle cx="670.8" cy="55.7" r="5.5" fill="#111111" stroke="#ffffff" stroke-width="2"/>
+<text x="662.8" y="45.7" font-size="11" font-weight="700" text-anchor="end" fill="#111111">R4 (τ)  96.9%</text>
+<circle cx="719.2" cy="38.6" r="5.5" fill="#111111" stroke="#ffffff" stroke-width="2"/>
+<text x="711.2" y="28.6" font-size="11" text-anchor="end" fill="#111111">R4 at R0's cost  99.0%</text>
+<circle cx="170.8" cy="132.8" r="5.5" fill="#111111" stroke="#ffffff" stroke-width="2"/>
+<text x="178.8" y="124.8" font-size="11" fill="#111111">R4 automated  87.8%</text>
+<circle cx="476" cy="350" r="5.5" fill="#111111" stroke="#ffffff" stroke-width="2"/>
+<text x="488" y="354" font-size="11.5" fill="#222222">R4 operating points</text>
+<path d="M476,365.5 L482.5,372 L476,378.5 L469.5,372 z" fill="#ffffff" stroke="#111111" stroke-width="1.6"/>
+<text x="488" y="376" font-size="11.5" fill="#222222">baselines and other routers</text>
+<circle cx="476" cy="394" r="3" fill="#b5b5b5"/>
+<text x="488" y="398" font-size="11.5" fill="#222222">72 tuned R4 configurations</text>
+<line x1="469" y1="416" x2="483" y2="416" stroke="#111111" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="488" y="420" font-size="11.5" fill="#222222">Pareto frontier</text>
+</svg>

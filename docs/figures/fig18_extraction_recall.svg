@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" width="720" height="400" font-family="Helvetica, Arial, sans-serif" role="img" aria-label="Rule extraction recall against the gold set">
+<title>Rule extraction recall against the gold set</title>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#111111"/></marker>
+  <marker id="arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a8a8a"/></marker>
+  <pattern id="hatch45" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><rect width="6" height="6" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#111111" stroke-width="2"/></pattern>
+  <pattern id="hatch135" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(135)"><rect width="6" height="6" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#8a8a8a" stroke-width="2"/></pattern>
+</defs>
+<rect width="720" height="400" fill="#ffffff"/>
+<rect x="70" y="14" width="12" height="12" rx="2" fill="#8a8a8a"/>
+<text x="88" y="24" font-size="11.5" fill="#222222">before the extraction fixes</text>
+<rect x="274.6" y="14" width="12" height="12" rx="2" fill="#111111"/>
+<text x="292.6" y="24" font-size="11.5" fill="#222222">after (this version)</text>
+<line x1="70" y1="330" x2="690" y2="330" stroke="#e2e2e2" stroke-width="1"/>
+<text x="62" y="334" font-size="11" text-anchor="end" fill="#555555">0%</text>
+<line x1="70" y1="260" x2="690" y2="260" stroke="#e2e2e2" stroke-width="1"/>
+<text x="62" y="264" font-size="11" text-anchor="end" fill="#555555">25%</text>
+<line x1="70" y1="190" x2="690" y2="190" stroke="#e2e2e2" stroke-width="1"/>
+<text x="62" y="194" font-size="11" text-anchor="end" fill="#555555">50%</text>
+<line x1="70" y1="120" x2="690" y2="120" stroke="#e2e2e2" stroke-width="1"/>
+<text x="62" y="124" font-size="11" text-anchor="end" fill="#555555">75%</text>
+<line x1="70" y1="50" x2="690" y2="50" stroke="#e2e2e2" stroke-width="1"/>
+<text x="62" y="54" font-size="11" text-anchor="end" fill="#555555">100%</text>
+<line x1="70" y1="330" x2="690" y2="330" stroke="#9a9a9a" stroke-width="1"/>
+<path d="M131.3,330 V206.4 Q131.3,203.4 134.3,203.4 H168.3 Q171.3,203.4 171.3,206.4 V330 z" fill="#8a8a8a"/>
+<path d="M175.3,330 V93.6 Q175.3,90.6 178.3,90.6 H212.3 Q215.3,90.6 215.3,93.6 V330 z" fill="#111111"/>
+<text x="151.3" y="197.4" font-size="11" text-anchor="middle" fill="#555555">45.2%</text>
+<text x="195.3" y="84.6" font-size="11" font-weight="700" text-anchor="middle" fill="#111111">85.5%</text>
+<text x="173.3" y="348" font-size="12" text-anchor="middle" fill="#111111">All gold rules (n = 62)</text>
+<path d="M338,330 V96.1 Q338,93.1 341,93.1 H375 Q378,93.1 378,96.1 V330 z" fill="#8a8a8a"/>
+<path d="M382,330 V85.2 Q382,82.2 385,82.2 H419 Q422,82.2 422,85.2 V330 z" fill="#111111"/>
+<text x="358" y="87.1" font-size="11" text-anchor="middle" fill="#555555">84.6%</text>
+<text x="402" y="76.2" font-size="11" font-weight="700" text-anchor="middle" fill="#111111">88.5%</text>
+<text x="380" y="348" font-size="12" text-anchor="middle" fill="#111111">Figure requirements (n = 26)</text>
+<path d="M544.7,330 V286.2 Q544.7,283.2 547.7,283.2 H581.7 Q584.7,283.2 584.7,286.2 V330 z" fill="#8a8a8a"/>
+<path d="M588.7,330 V99.8 Q588.7,96.8 591.7,96.8 H625.7 Q628.7,96.8 628.7,99.8 V330 z" fill="#111111"/>
+<text x="564.7" y="277.2" font-size="11" text-anchor="middle" fill="#555555">16.7%</text>
+<text x="608.7" y="90.8" font-size="11" font-weight="700" text-anchor="middle" fill="#111111">83.3%</text>
+<text x="586.7" y="348" font-size="12" text-anchor="middle" fill="#111111">Network limits (n = 36)</text>
+<text x="380" y="378" font-size="11.5" text-anchor="middle" fill="#555555">exact recall (operator + value) on the hand-verified gold set; operator accuracy 100%</text>
+<text transform="translate(18 190) rotate(-90)" font-size="12" text-anchor="middle" fill="#555555">exact recall</text>
+</svg>

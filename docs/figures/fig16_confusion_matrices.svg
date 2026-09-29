@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 458" width="860" height="458" font-family="Helvetica, Arial, sans-serif" role="img" aria-label="Decision confusion matrices">
+<title>Decision confusion matrices</title>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#111111"/></marker>
+  <marker id="arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a8a8a"/></marker>
+  <pattern id="hatch45" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><rect width="6" height="6" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#111111" stroke-width="2"/></pattern>
+  <pattern id="hatch135" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(135)"><rect width="6" height="6" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#8a8a8a" stroke-width="2"/></pattern>
+</defs>
+<rect width="860" height="458" fill="#ffffff"/>
+<text x="120" y="22" font-size="13" font-weight="700" fill="#111111">(a) R4 adaptive router</text>
+<text x="250" y="42" font-size="11" text-anchor="middle" fill="#555555">produced decision</text>
+<text transform="translate(150 120) rotate(-90)" font-size="11" fill="#111111">Compliant</text>
+<text transform="translate(202 120) rotate(-90)" font-size="11" fill="#111111">Non-compliant</text>
+<text transform="translate(254 120) rotate(-90)" font-size="11" fill="#111111">Insufficient</text>
+<text transform="translate(306 120) rotate(-90)" font-size="11" fill="#111111">Ambiguous</text>
+<text transform="translate(358 120) rotate(-90)" font-size="11" fill="#111111">Human review</text>
+<text x="112" y="158" font-size="11" text-anchor="end" fill="#111111">Compliant</text>
+<rect x="121" y="129" width="50" height="50" fill="rgb(30,30,30)" stroke="#111111" stroke-width="1.5"/>
+<text x="146" y="158" font-size="12" font-weight="700" text-anchor="middle" fill="#ffffff">91</text>
+<rect x="173" y="129" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<rect x="225" y="129" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<rect x="277" y="129" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<rect x="329" y="129" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<text x="112" y="210" font-size="11" text-anchor="end" fill="#111111">Non-compliant</text>
+<rect x="121" y="181" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<rect x="173" y="181" width="50" height="50" fill="rgb(69,69,69)" stroke="#111111" stroke-width="1.5"/>
+<text x="198" y="210" font-size="12" font-weight="700" text-anchor="middle" fill="#ffffff">80</text>
+<rect x="225" y="181" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<rect x="277" y="181" width="50" height="50" fill="rgb(248,248,248)" stroke="none" stroke-width="0"/>
+<text x="302" y="210" font-size="12" text-anchor="middle" fill="#111111">3</text>
+<rect x="329" y="181" width="50" height="50" fill="rgb(223,223,223)" stroke="none" stroke-width="0"/>
+<text x="354" y="210" font-size="12" text-anchor="middle" fill="#111111">14</text>
+<text x="112" y="262" font-size="11" text-anchor="end" fill="#111111">Insufficient</text>
+<rect x="121" y="233" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<rect x="173" y="233" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<rect x="225" y="233" width="50" height="50" fill="rgb(30,30,30)" stroke="#111111" stroke-width="1.5"/>
+<text x="250" y="262" font-size="12" font-weight="700" text-anchor="middle" fill="#ffffff">39</text>
+<rect x="277" y="233" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<rect x="329" y="233" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<text x="112" y="314" font-size="11" text-anchor="end" fill="#111111">Ambiguous</text>
+<rect x="121" y="285" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<rect x="173" y="285" width="50" height="50" fill="rgb(233,233,233)" stroke="none" stroke-width="0"/>
+<text x="198" y="314" font-size="12" text-anchor="middle" fill="#111111">3</text>
+<rect x="225" y="285" width="50" height="50" fill="rgb(233,233,233)" stroke="none" stroke-width="0"/>
+<text x="250" y="314" font-size="12" text-anchor="middle" fill="#111111">3</text>
+<rect x="277" y="285" width="50" height="50" fill="rgb(255,255,255)" stroke="#111111" stroke-width="1.5"/>
+<rect x="329" y="285" width="50" height="50" fill="rgb(75,75,75)" stroke="none" stroke-width="0"/>
+<text x="354" y="314" font-size="12" text-anchor="middle" fill="#ffffff">24</text>
+<text x="112" y="366" font-size="11" text-anchor="end" fill="#111111">Human review</text>
+<rect x="121" y="337" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<rect x="173" y="337" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<rect x="225" y="337" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<rect x="277" y="337" width="50" height="50" fill="rgb(139,139,139)" stroke="none" stroke-width="0"/>
+<text x="302" y="366" font-size="12" text-anchor="middle" fill="#111111">19</text>
+<rect x="329" y="337" width="50" height="50" fill="rgb(146,146,146)" stroke="#111111" stroke-width="1.5"/>
+<text x="354" y="366" font-size="12" font-weight="700" text-anchor="middle" fill="#111111">18</text>
+<text transform="translate(14 258) rotate(-90)" font-size="11" text-anchor="middle" fill="#555555">expected decision</text>
+<text x="560" y="22" font-size="13" font-weight="700" fill="#111111">(b) R0 heuristic router</text>
+<text x="690" y="42" font-size="11" text-anchor="middle" fill="#555555">produced decision</text>
+<text transform="translate(590 120) rotate(-90)" font-size="11" fill="#111111">Compliant</text>
+<text transform="translate(642 120) rotate(-90)" font-size="11" fill="#111111">Non-compliant</text>
+<text transform="translate(694 120) rotate(-90)" font-size="11" fill="#111111">Insufficient</text>
+<text transform="translate(746 120) rotate(-90)" font-size="11" fill="#111111">Ambiguous</text>
+<text transform="translate(798 120) rotate(-90)" font-size="11" fill="#111111">Human review</text>
+<text x="552" y="158" font-size="11" text-anchor="end" fill="#111111">Compliant</text>
+<rect x="561" y="129" width="50" height="50" fill="rgb(47,47,47)" stroke="#111111" stroke-width="1.5"/>
+<text x="586" y="158" font-size="12" font-weight="700" text-anchor="middle" fill="#ffffff">84</text>
+<rect x="613" y="129" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<rect x="665" y="129" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<rect x="717" y="129" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<rect x="769" y="129" width="50" height="50" fill="rgb(238,238,238)" stroke="none" stroke-width="0"/>
+<text x="794" y="158" font-size="12" text-anchor="middle" fill="#111111">7</text>
+<text x="552" y="210" font-size="11" text-anchor="end" fill="#111111">Non-compliant</text>
+<rect x="561" y="181" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<rect x="613" y="181" width="50" height="50" fill="rgb(97,97,97)" stroke="#111111" stroke-width="1.5"/>
+<text x="638" y="210" font-size="12" font-weight="700" text-anchor="middle" fill="#ffffff">68</text>
+<rect x="665" y="181" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<rect x="717" y="181" width="50" height="50" fill="rgb(229,229,229)" stroke="none" stroke-width="0"/>
+<text x="742" y="210" font-size="12" text-anchor="middle" fill="#111111">11</text>
+<rect x="769" y="181" width="50" height="50" fill="rgb(213,213,213)" stroke="none" stroke-width="0"/>
+<text x="794" y="210" font-size="12" text-anchor="middle" fill="#111111">18</text>
+<text x="552" y="262" font-size="11" text-anchor="end" fill="#111111">Insufficient</text>
+<rect x="561" y="233" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<rect x="613" y="233" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<rect x="665" y="233" width="50" height="50" fill="rgb(47,47,47)" stroke="#111111" stroke-width="1.5"/>
+<text x="690" y="262" font-size="12" font-weight="700" text-anchor="middle" fill="#ffffff">36</text>
+<rect x="717" y="233" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<rect x="769" y="233" width="50" height="50" fill="rgb(238,238,238)" stroke="none" stroke-width="0"/>
+<text x="794" y="262" font-size="12" text-anchor="middle" fill="#111111">3</text>
+<text x="552" y="314" font-size="11" text-anchor="end" fill="#111111">Ambiguous</text>
+<rect x="561" y="285" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<rect x="613" y="285" width="50" height="50" fill="rgb(203,203,203)" stroke="none" stroke-width="0"/>
+<text x="638" y="314" font-size="12" text-anchor="middle" fill="#111111">7</text>
+<rect x="665" y="285" width="50" height="50" fill="rgb(233,233,233)" stroke="none" stroke-width="0"/>
+<text x="690" y="314" font-size="12" text-anchor="middle" fill="#111111">3</text>
+<rect x="717" y="285" width="50" height="50" fill="rgb(218,218,218)" stroke="#111111" stroke-width="1.5"/>
+<text x="742" y="314" font-size="12" font-weight="700" text-anchor="middle" fill="#111111">5</text>
+<rect x="769" y="285" width="50" height="50" fill="rgb(143,143,143)" stroke="none" stroke-width="0"/>
+<text x="794" y="314" font-size="12" text-anchor="middle" fill="#111111">15</text>
+<text x="552" y="366" font-size="11" text-anchor="end" fill="#111111">Human review</text>
+<rect x="561" y="337" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<rect x="613" y="337" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<rect x="665" y="337" width="50" height="50" fill="rgb(255,255,255)" stroke="none" stroke-width="0"/>
+<rect x="717" y="337" width="50" height="50" fill="rgb(219,219,219)" stroke="none" stroke-width="0"/>
+<text x="742" y="366" font-size="12" text-anchor="middle" fill="#111111">6</text>
+<rect x="769" y="337" width="50" height="50" fill="rgb(66,66,66)" stroke="#111111" stroke-width="1.5"/>
+<text x="794" y="366" font-size="12" font-weight="700" text-anchor="middle" fill="#ffffff">31</text>
+<text transform="translate(454 258) rotate(-90)" font-size="11" text-anchor="middle" fill="#555555">expected decision</text>
+<text x="430" y="444" font-size="11" text-anchor="middle" fill="#555555">test split; shade = share of the expected row; an escalation counts as Human review; diagonal outlined</text>
+</svg>
