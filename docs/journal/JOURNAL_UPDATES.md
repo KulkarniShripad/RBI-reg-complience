@@ -21,7 +21,7 @@ Every number below comes from a script in the repository and can be regenerated 
 | Baselines B1–B4 and routers R1–R3 | Only the fixed hybrid pipeline | All implemented and evaluated through the same code path, plus an Oracle | `scripts/eval_router.js` |
 | Versioned rules (temporal validity) | Latest value only | CRR phase-down (4 dates, 7 categories) and the UCB net-worth glide path parsed from the corpus; the rule engine applies the version in force on the as-of date | `src/services/router/versionedRules.js` |
 | Rule-extraction quality (RQ3) | Not measured | Gold set of 62 hand-verified rules. Exact recall 85.5%, up from 45.2% after the extraction fixes in this branch; operator accuracy 100% | `scripts/eval_extraction_gold.js` |
-| Structure-aware vs generic chunking (RQ2, baseline C3) | Not measured | Clause-aligned retrieval compared with fixed 800-character windows on 115 questions | `scripts/eval_chunking.js` |
+| Structure-aware vs generic chunking (RQ2, baseline C3) | Not measured | Clause-aligned hybrid retrieval: MRR@10 0.635 vs 0.309 for fixed 800-character windows (Top-5 recall 81% vs 48%) on 79 gold-rule questions; also 36 hand-written questions | `scripts/eval_chunking.js` |
 | Plain-language simplification (RQ4) | Not present | Guarded rule-based simplifier (Gemini optional), API endpoint and source-viewer toggle; meaning preservation measured | `src/services/simplifyService.js`; `scripts/eval_simplification.js` |
 | Significance testing | – | Paired cluster bootstrap (by rule) and exact McNemar for every headline comparison | `eval/results/router_eval.md` |
 | Architecture diagram | v2 (partly aspirational) | v3, drawn from the code as it is | `urcc-ef-backend/urcc-architecture-v3.svg` |
@@ -30,7 +30,7 @@ Every number below comes from a script in the repository and can be regenerated 
 
 ## 2. Revised abstract (suggested)
 
-> Regulatory compliance checking in Indian banking combines numeric limits, procedural obligations, conditional and time-bound requirements, qualitative standards and multi-entity exposure rules. No single reasoning method handles all of them reliably or cheaply. We present URCC-EF, a unified framework that extracts clause-aligned rules from 264 Reserve Bank of India directions (21,632 clauses, 4,544 rule atoms). It classifies every obligation into a seven-way requirement taxonomy and routes each (rule, evidence) pair to a deterministic rule engine, a graph evaluator for connected counterparties, a retrieval-grounded LLM, or human review. The router learns the error probability of each modality from features of the rule and the evidence, then minimises a risk-weighted error cost plus monetary and latency cost, with hard safety gates. On a benchmark of 1,393 cases over 215 real rules, evaluated on held-out rules, the router reaches 92.2% automated accuracy and 96.9% end-to-end accuracy at US$0.19 per case. That is +8.8 pp (95% CI +5.3 to +12.7) and +4.1 pp over a hand-designed router, at 32% lower cost, and +19.7 pp over RAG+LLM alone. It avoids 80% of LLM calls relative to RAG+LLM and produces no uncited decisions, while an LLM without retrieval mis-cites 62.6% of its decisions. Rule extraction recovers 85.5% of hand-verified thresholds with 100% operator accuracy. A guarded plain-language layer preserves every extracted rule on re-extraction.
+> Regulatory compliance checking in Indian banking combines numeric limits, procedural obligations, conditional and time-bound requirements, qualitative standards and multi-entity exposure rules. No single reasoning method handles all of them reliably or cheaply. We present URCC-EF, a unified framework that extracts clause-aligned rules from 264 Reserve Bank of India directions (21,632 clauses, 4,544 rule atoms). It classifies every obligation into a seven-way requirement taxonomy and routes each (rule, evidence) pair to a deterministic rule engine, a graph evaluator for connected counterparties, a retrieval-grounded LLM, or human review. The router learns the error probability of each modality from features of the rule and the evidence, then minimises a risk-weighted error cost plus monetary and latency cost, with hard safety gates. On a benchmark of 1,393 cases over 215 real rules, evaluated on held-out rules, the router reaches 92.2% automated accuracy and 96.9% end-to-end accuracy at US$0.19 per case. That is +8.8 pp (95% CI +5.3 to +12.7) and +4.1 pp over a hand-designed router, at 32% lower cost, and +19.7 pp over RAG+LLM alone. It avoids 80% of LLM calls relative to RAG+LLM and produces no uncited decisions, while an LLM without retrieval mis-cites 62.6% of its decisions. Rule extraction recovers 85.5% of hand-verified thresholds with 100% operator accuracy. Clause-aligned retrieval doubles MRR@10 over generic fixed-length chunks (0.635 vs 0.309). A guarded plain-language layer preserves every extracted rule on re-extraction.
 
 (The LLM paths in these numbers use an offline surrogate judge; see §9. Replace the numbers after `npm run eval:router:gemini`.)
 
@@ -296,7 +296,26 @@ These raised exact recall from 45.2% to 85.5% (network limits from 16.7% to 83.3
 
 ### 8.7 Structure-aware vs generic chunking (RQ2)
 
-{{CHUNKING}}
+`scripts/eval_chunking.js`. The system's clause-aligned chunks are compared with the generic baseline C3: each document cut into fixed 800-character windows with 200-character overlap (33,907 windows), searched with BM25, with the same BGE-small embeddings, and with both fused by reciprocal-rank fusion.
+
+Questions:
+- 36 hand-written questions (`eval/retrieval_eval.json`);
+- 79 questions generated from the verified gold rules, with the numbers removed from the question.
+
+A passage is relevant if it contains the whole provision (the rule's verified source text) in a document that applies to the right institution category.
+
+| Retrieval | Hand-written: Hit@1 | Top-5 recall | MRR@10 | Gold-rule questions: Hit@1 | Top-5 recall | MRR@10 |
+|---|---|---|---|---|---|---|
+| Structure-aware keyword (C1) | 61.1% | 83.3% | 0.721 | 46.8% | 75.9% | 0.593 |
+| Structure-aware semantic | 61.1% | 80.6% | 0.675 | 40.5% | 73.4% | 0.539 |
+| **Structure-aware hybrid (proposed)** | **72.2%** | **83.3%** | **0.768** | **53.2%** | **81.0%** | **0.635** |
+| Fixed windows BM25 (C3) | 36.1% | 61.1% | 0.465 | 20.3% | 48.1% | 0.316 |
+| Fixed windows semantic (C3) | 55.6% | 72.2% | 0.635 | 16.5% | 35.4% | 0.246 |
+| Fixed windows hybrid (C3) | 50.0% | 75.0% | 0.607 | 19.0% | 44.3% | 0.309 |
+
+**Suggested text:** "Clause-aligned chunking roughly doubles MRR@10 on rule-seeking questions (0.635 vs 0.309 for the best fixed-window configuration) and raises Top-5 recall from 48% to 81%. Fixed windows often cut a provision from the proviso or threshold that completes it, so the retrieved passage is not by itself a sufficient basis for a compliance decision."
+
+Caveat for the paper: the whole-provision relevance criterion is intentionally strict, because a decision must cite a complete provision; it partly penalises windows by construction. Report the definition with the table.
 
 ### 8.8 Plain-language simplification (RQ4)
 
