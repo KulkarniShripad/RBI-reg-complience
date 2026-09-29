@@ -1,3 +1,4 @@
+const { decisionCounts, decisionOf, recommendForRule } = require("./decisions");
 const db = require("../config/db");
 const graphService = require("./graph/graphComplianceService");
 
@@ -29,6 +30,8 @@ function generateReport(bank, quantResults, qualResults, graphOut = null) {
       qualitative_partial: partial.length,
       qualitative_likely_gap: gaps.length,
       qualitative_needs_review: needsReview.length,
+      // the five journal decisions over every checked item (Sec. VII.K)
+      decision_counts: decisionCounts([...quantResults, ...qualResults, ...(graphOut?.has_data ? graphOut.results : [])]),
       ...(graphOut?.has_data
         ? {
             network_checked: graphOut.results.length,
@@ -55,8 +58,12 @@ function generateReport(bank, quantResults, qualResults, graphOut = null) {
         rbi_ref: r.source?.rbi_ref,
         page: r.source?.page_number,
         reasons: r.reasons,
+        decision: decisionOf(r.status),
+        recommendation: r.recommendation || null,
       })),
     breaches: breaches.map((r) => ({
+      decision: decisionOf(r.status),
+      recommendation: recommendForRule({ ...r, metric_label: r.variable_text, unit: r.threshold_unit, source: { rbi_ref: r.rbi_ref, paragraph: r.paragraph } }),
       clause_uri: r.clause_uri,
       rbi_ref: r.rbi_ref,
       page: r.page_number,

@@ -3,6 +3,7 @@
  * the graph_* tables, resolves the applicable rules against the corpus,
  * evaluates, and (optionally) stores a frozen copy of the results.
  */
+const { withDecisions, recommendForNetwork } = require("../decisions");
 const db = require("../../config/db");
 const store = require("./graphStore");
 const graphRules = require("./graphRules");
@@ -57,6 +58,7 @@ function runGraphCheck({ bankId, periodLabel, includeFlagged = true, persist = f
   });
 
   const result = { ...base, graph_run_id: null, has_data: true, applicable: true, include_flagged: includeFlagged, ...out };
+  result.results = withDecisions(result.results).map((r) => ({ ...r, recommendation: recommendForNetwork(r) }));
   if (persist) result.graph_run_id = persistGraphRun(result, complianceRunId);
   return result;
 }

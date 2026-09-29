@@ -1,3 +1,4 @@
+const { decisionOf } = require("./decisions");
 const db = require("../config/db");
 const gemini = require("./geminiService");
 
@@ -69,6 +70,8 @@ function checkQuantitative(institutionCategory, bankId, periodLabel) {
       doc_title: r.doc_title,
       reported_value: reported,
       status,
+      decision: decisionOf(status),
+      evidence_completeness: reported === null ? 0 : 1,
       clause_text: r.clause_text,
       page_number: r.page_number,
       rbi_ref: r.rbi_ref,

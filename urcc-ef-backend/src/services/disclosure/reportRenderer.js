@@ -47,11 +47,11 @@ function renderReport(report) {
   const rows = report.rule_results
     .map(
       (r) => `<tr>
-  <td>${badge(r.status)}</td>
+  <td>${badge(r.status)}${r.decision ? `<div class="muted">${esc(r.decision)}</div>` : ""}</td>
   <td><b>${esc(r.label)}</b>${r.origin === "discovered" ? ' <span class="muted">(found by search)</span>' : ""}<div class="muted">${esc(r.metric_label)}</div></td>
   <td class="num">${fmt(r.reported_value, r.unit)}${r.figure?.page ? `<div class="muted">doc p.${esc(r.figure.page)} · ${esc(r.figure.confidence)}</div>` : ""}</td>
   <td class="num">${r.threshold === null || r.threshold === undefined ? "—" : `${r.operator === ">=" ? "≥" : r.operator === "<=" ? "≤" : esc(r.operator)} ${fmt(r.threshold, r.unit)}`}</td>
-  <td>${ref(r.source)}${r.source?.excerpt ? `<blockquote>${esc(r.source.excerpt)}</blockquote>` : ""}${r.note ? `<div class="note">${esc(r.note)}</div>` : ""}${r.rule_note ? `<div class="muted">${esc(r.rule_note)}</div>` : ""}</td>
+  <td>${ref(r.source)}${r.source?.excerpt ? `<blockquote>${esc(r.source.excerpt)}</blockquote>` : ""}${r.note ? `<div class="note">${esc(r.note)}</div>` : ""}${r.rule_note ? `<div class="muted">${esc(r.rule_note)}</div>` : ""}${r.recommendation ? `<div><b>Recommended action:</b> ${esc(r.recommendation)}</div>` : ""}</td>
 </tr>`
     )
     .join("");

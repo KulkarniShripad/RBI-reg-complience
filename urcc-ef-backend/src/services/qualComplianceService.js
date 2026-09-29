@@ -1,3 +1,4 @@
+const { decisionOf, withDecisions } = require("./decisions");
 const db = require("../config/db");
 const embedding = require("./embeddingService");
 const gemini = require("./geminiService");
@@ -70,6 +71,7 @@ async function checkQualitative({ institutionCategory, bankId, sampleLimit = 40,
       status: "LIKELY_GAP",
       llm_judgment: null,
       note: "No qualitative evidence submitted for this bank yet.",
+      decision: decisionOf("LIKELY_GAP"),
     }));
   }
 
@@ -134,7 +136,7 @@ async function checkQualitative({ institutionCategory, bankId, sampleLimit = 40,
       justification: judgment && judgment.justification ? judgment.justification : null,
     });
   }
-  return results;
+  return withDecisions(results);
 }
 
 function insertEvidence({ bankId, evidenceText, sourceType, periodLabel }) {

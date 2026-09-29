@@ -1,0 +1,9 @@
+{
+  "_note": "Cost and latency assumptions of the router objective (journal Eq. 4). LLM prices are Gemini 2.5 Flash list prices per 1M tokens at the time of writing; the human figures are an assumed 10-minute review at USD 9/hour and a 2% reviewer error rate. Edit and re-run npm run eval:router to see their effect. Rule-engine, graph and retrieval latencies are overwritten by measured values when the evaluation runs.",
+  "llm": { "model": "gemini-2.5-flash", "usd_per_1m_input": 0.30, "usd_per_1m_output": 2.50, "prompt_overhead_tokens": 350, "output_tokens": 120, "latency_ms": 1800 },
+  "llm_only_context_chars": 12000,
+  "retrieval": { "latency_ms": 60 },
+  "rule_engine": { "usd_per_case": 0, "latency_ms": 0.05 },
+  "graph": { "usd_per_case": 0, "latency_ms": 5 },
+  "human": { "usd_per_case": 1.50, "latency_ms": 600000, "error_rate": 0.02 }
+}

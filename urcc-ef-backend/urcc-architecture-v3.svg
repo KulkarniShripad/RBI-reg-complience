@@ -1,0 +1,206 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1300 1180" width="1300" height="1180" font-family="'Helvetica Neue', Arial, sans-serif">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <style>
+      .t { font-size: 20px; font-weight: 700; fill: #0f172a; }
+      .h { font-size: 14px; font-weight: 700; fill: #0f172a; }
+      .s { font-size: 11.5px; fill: #334155; }
+      .xs { font-size: 10.5px; fill: #475569; }
+      .lane { font-size: 12px; font-weight: 700; fill: #64748b; letter-spacing: 1px; }
+      .box { stroke-width: 1.4; rx: 10; }
+      .ln { stroke: #475569; stroke-width: 1.5; fill: none; marker-end: url(#ar); }
+      .dash { stroke: #94a3b8; stroke-width: 1.3; fill: none; stroke-dasharray: 5 4; marker-end: url(#ar); }
+    </style>
+  </defs>
+  <rect width="1300" height="1180" fill="#ffffff"/>
+  <text x="40" y="44" class="t">URCC-EF architecture v3 — as implemented (journal-updates)</text>
+  <text x="40" y="66" class="s">Unified Regulatory Comprehension &amp; Compliance – Evaluation Framework · SQLite + BGE-small embeddings · Gemini optional · all measured numbers in eval/results/</text>
+
+  <!-- lane labels -->
+  <text x="40" y="104" class="lane">1 · CORPUS &amp; EXTRACTION</text>
+  <text x="40" y="330" class="lane">2 · BANK EVIDENCE</text>
+  <text x="40" y="500" class="lane">3 · ADAPTIVE ROUTING (ALGORITHM 1)</text>
+  <text x="40" y="770" class="lane">4 · REASONING MODALITIES</text>
+  <text x="40" y="950" class="lane">5 · DECISIONS &amp; OUTPUTS</text>
+
+  <!-- 1. corpus -->
+  <rect x="40" y="116" width="220" height="92" class="box" fill="#f1f5f9" stroke="#94a3b8"/>
+  <text x="54" y="140" class="h">RBI Master Directions</text>
+  <text x="54" y="160" class="s">PDF circulars by institution</text>
+  <text x="54" y="176" class="s">category (commercial, SFB, PB,</text>
+  <text x="54" y="192" class="s">RRB, UCB, NBFC, AIFI …)</text>
+
+  <rect x="300" y="116" width="300" height="180" class="box" fill="#eff6ff" stroke="#3b82f6"/>
+  <text x="314" y="140" class="h">Structure-aware extraction</text>
+  <text x="314" y="160" class="s">db_builder.py · classifier.py</text>
+  <text x="314" y="180" class="s">• clause segmentation (chapter / para / proviso)</text>
+  <text x="314" y="198" class="s">• rule atoms: operator · threshold · unit · base</text>
+  <text x="314" y="216" class="s">  (list limits, number words, coordinated values)</text>
+  <text x="314" y="234" class="s">• definitions · cross-references · clause role</text>
+  <text x="314" y="252" class="s">• A–G taxonomy + risk level (ruleTaxonomy.js)</text>
+  <text x="314" y="270" class="s">• versioned rules (CRR phase-down, UCB NW glide)</text>
+  <text x="314" y="288" class="xs">gold set: 85.5% exact recall · 100% operator acc.</text>
+
+  <rect x="640" y="116" width="270" height="180" class="box" fill="#eef2ff" stroke="#6366f1"/>
+  <text x="654" y="140" class="h">Knowledge store (SQLite)</text>
+  <text x="654" y="162" class="s">documents · clause_registry</text>
+  <text x="654" y="180" class="s">rule_atoms · definitions</text>
+  <text x="654" y="198" class="s">cross_references · semantic_chunks</text>
+  <text x="654" y="216" class="s">FTS5 index (keyword)</text>
+  <text x="654" y="234" class="s">vector store: BGE-small (384-d)</text>
+  <text x="654" y="252" class="s">routing_decisions (audit log)</text>
+  <text x="654" y="274" class="xs">clause-aligned chunks, not fixed windows</text>
+
+  <rect x="950" y="116" width="310" height="180" class="box" fill="#f0fdf4" stroke="#22c55e"/>
+  <text x="964" y="140" class="h">Comprehension</text>
+  <text x="964" y="162" class="s">hybrid retrieval: FTS5 + semantic, fused</text>
+  <text x="964" y="180" class="s">query analyzer (595 abbreviations, categories)</text>
+  <text x="964" y="198" class="s">chat Q&amp;A with clickable clause citations</text>
+  <text x="964" y="216" class="s">source viewer: provision, PDF page, atoms</text>
+  <text x="964" y="234" class="s">plain-language restatement with a meaning</text>
+  <text x="964" y="252" class="s">guard (numbers · polarity · exceptions)</text>
+  <text x="964" y="274" class="xs">simplifyService.js · GET …/clauses/simplify/by-uri</text>
+
+  <path d="M260,162 L296,162" class="ln"/>
+  <path d="M600,206 L636,206" class="ln"/>
+  <path d="M910,206 L946,206" class="ln"/>
+
+  <!-- 2. bank evidence -->
+  <rect x="40" y="342" width="360" height="120" class="box" fill="#fff7ed" stroke="#f97316"/>
+  <text x="54" y="366" class="h">Public disclosures (Auto Check)</text>
+  <text x="54" y="386" class="s">annual reports · Basel III Pillar 3 · XLSX / PDF</text>
+  <text x="54" y="404" class="s">disclosureService: figures (CRAR, CET1, LCR, NSFR,</text>
+  <text x="54" y="422" class="s">leverage, PSL, NPA …) + qualitative statements</text>
+  <text x="54" y="440" class="s">anchored rules → verified paragraphs</text>
+  <text x="54" y="456" class="xs">142/142 expectations on 11 real sample documents</text>
+
+  <rect x="430" y="342" width="330" height="120" class="box" fill="#fff7ed" stroke="#f97316"/>
+  <text x="444" y="366" class="h">Bank Explorer data</text>
+  <text x="444" y="386" class="s">bank_quant_submissions (reported values)</text>
+  <text x="444" y="404" class="s">bank_qual_evidence (policy statements)</text>
+  <text x="444" y="422" class="s">manual check · history per bank / period</text>
+
+  <rect x="790" y="342" width="470" height="120" class="box" fill="#fdf4ff" stroke="#c026d3"/>
+  <text x="804" y="366" class="h">Counterparty network (graph store)</text>
+  <text x="804" y="386" class="s">ownership · control · economic dependence · directors / relatives</text>
+  <text x="804" y="404" class="s">connected-counterparty grouping (RBI illustrations, paras 20–30)</text>
+  <text x="804" y="422" class="s">53 network rules: single / group limits, ITE, related party (Sec. 20)</text>
+  <text x="804" y="440" class="xs">40/40 expectations on 6 synthetic scenarios</text>
+
+  <!-- 3. router -->
+  <rect x="40" y="512" width="1220" height="222" class="box" fill="#fefce8" stroke="#ca8a04"/>
+  <text x="58" y="538" class="h">ρ(rule, evidence) → modality   ·   src/services/router/adaptiveRouter.js</text>
+
+  <rect x="58" y="554" width="270" height="164" class="box" fill="#ffffff" stroke="#eab308"/>
+  <text x="72" y="576" class="h">Features (Table V)</text>
+  <text x="72" y="596" class="s">rule type A–G · semantic interp.</text>
+  <text x="72" y="612" class="s">structured field availability</text>
+  <text x="72" y="628" class="s">retrieval confidence (BGE)</text>
+  <text x="72" y="644" class="s">rule-engine applicability</text>
+  <text x="72" y="660" class="s">evidence completeness · risk</text>
+  <text x="72" y="676" class="s">historical accuracy per route</text>
+  <text x="72" y="692" class="s">source conflict · text–structured</text>
+  <text x="72" y="708" class="s">conflict · uncertainty cue</text>
+
+  <rect x="352" y="554" width="250" height="164" class="box" fill="#ffffff" stroke="#eab308"/>
+  <text x="366" y="576" class="h">Gates</text>
+  <text x="366" y="598" class="s">completeness = 0</text>
+  <text x="380" y="614" class="s">→ INSUFFICIENT_DATA</text>
+  <text x="366" y="634" class="s">completeness &lt; MIN_EVIDENCE</text>
+  <text x="380" y="650" class="s">→ HUMAN</text>
+  <text x="366" y="670" class="s">hard override: applicable ∧</text>
+  <text x="380" y="686" class="s">complete ∧ no text conflict</text>
+  <text x="380" y="702" class="s">→ DETERMINISTIC</text>
+
+  <rect x="626" y="554" width="330" height="164" class="box" fill="#ffffff" stroke="#eab308"/>
+  <text x="640" y="576" class="h">Cost-aware argmin</text>
+  <text x="640" y="600" class="s">m* = argmin  α·P(err | m, f)·risk</text>
+  <text x="700" y="618" class="s">+ β·USD(m) + γ·latency(m)</text>
+  <text x="640" y="642" class="s">P(err): logistic regression or tree,</text>
+  <text x="640" y="658" class="s">chosen per route by validation log-loss</text>
+  <text x="640" y="678" class="s">α, β, γ, MIN tuned on validation</text>
+  <text x="640" y="694" class="s">s.t. end-to-end accuracy ≥ τ = 0.95</text>
+  <text x="640" y="710" class="xs">eval/router_model.json (adopted: beats R0)</text>
+
+  <rect x="980" y="554" width="262" height="164" class="box" fill="#ffffff" stroke="#eab308"/>
+  <text x="994" y="576" class="h">Policy in the system</text>
+  <text x="994" y="598" class="s">adaptive if the evaluation</text>
+  <text x="994" y="614" class="s">adopted it, else the heuristic</text>
+  <text x="994" y="630" class="s">router (routingService.js)</text>
+  <text x="994" y="650" class="s">ROUTER_POLICY=adaptive|heuristic</text>
+  <text x="994" y="672" class="s">every decision logged with its</text>
+  <text x="994" y="688" class="s">reasons (routing_decisions)</text>
+
+  <path d="M328,636 L348,636" class="ln"/>
+  <path d="M602,636 L622,636" class="ln"/>
+  <path d="M956,636 L976,636" class="ln"/>
+
+  <path d="M330,462 L330,508" class="ln"/>
+  <path d="M595,462 L595,508" class="ln"/>
+  <path d="M1025,462 L1025,508" class="ln"/>
+  <path d="M775,296 L775,508" class="dash"/>
+
+  <!-- 4. modalities -->
+  <rect x="40" y="782" width="290" height="130" class="box" fill="#eff6ff" stroke="#3b82f6"/>
+  <text x="54" y="806" class="h">Rule engine (deterministic)</text>
+  <text x="54" y="826" class="s">A quantitative · C conditional</text>
+  <text x="54" y="842" class="s">D temporal · B with structured flag</text>
+  <text x="54" y="858" class="s">version in force on the as-of date</text>
+  <text x="54" y="874" class="s">conflicting sources → human review</text>
+  <text x="54" y="898" class="xs">≈0 USD · sub-millisecond</text>
+
+  <rect x="350" y="782" width="290" height="130" class="box" fill="#fdf4ff" stroke="#c026d3"/>
+  <text x="364" y="806" class="h">Graph evaluator (deterministic)</text>
+  <text x="364" y="826" class="s">G multi-entity: connected groups,</text>
+  <text x="364" y="842" class="s">aggregate exposure vs. Tier 1 / capital</text>
+  <text x="364" y="858" class="s">related-party prohibitions</text>
+  <text x="364" y="898" class="xs">graphComplianceService.js</text>
+
+  <rect x="660" y="782" width="290" height="130" class="box" fill="#f0fdf4" stroke="#22c55e"/>
+  <text x="674" y="806" class="h">RAG + LLM (grounded)</text>
+  <text x="674" y="826" class="s">E qualitative · F relational · B</text>
+  <text x="674" y="842" class="s">retrieve clause + evidence, judge,</text>
+  <text x="674" y="858" class="s">cite the governing paragraph</text>
+  <text x="674" y="874" class="s">Gemini (or offline surrogate judge)</text>
+  <text x="674" y="898" class="xs">≈0.0005 USD · ~1.9 s (modelled)</text>
+
+  <rect x="970" y="782" width="290" height="130" class="box" fill="#fef2f2" stroke="#ef4444"/>
+  <text x="984" y="806" class="h">Human review</text>
+  <text x="984" y="826" class="s">escalation when evidence is thin</text>
+  <text x="984" y="842" class="s">or expected error × risk is too</text>
+  <text x="984" y="858" class="s">high for any automated route</text>
+  <text x="984" y="898" class="xs">1.50 USD · 10 min (modelled)</text>
+
+  <path d="M270,734 L270,778" class="ln"/>
+  <path d="M495,734 L495,778" class="ln"/>
+  <path d="M805,734 L805,778" class="ln"/>
+  <path d="M1115,734 L1115,778" class="ln"/>
+
+  <!-- 5. outputs -->
+  <rect x="40" y="962" width="560" height="120" class="box" fill="#f8fafc" stroke="#64748b"/>
+  <text x="54" y="986" class="h">Five decisions (+ legacy status kept)</text>
+  <text x="54" y="1008" class="s">COMPLIANT · NON_COMPLIANT · INSUFFICIENT_DATA</text>
+  <text x="54" y="1026" class="s">AMBIGUOUS · REQUIRES_HUMAN_REVIEW</text>
+  <text x="54" y="1046" class="s">recommended action for breaches (gap to threshold)</text>
+  <text x="54" y="1064" class="s">every decision cites its RBI paragraph</text>
+
+  <rect x="620" y="962" width="640" height="120" class="box" fill="#f8fafc" stroke="#64748b"/>
+  <text x="634" y="986" class="h">Interfaces</text>
+  <text x="634" y="1008" class="s">Auto Check report (upload → figures → rules → report, PDF export)</text>
+  <text x="634" y="1026" class="s">Bank Explorer (banks · quantitative · qualitative · network · manual · history)</text>
+  <text x="634" y="1044" class="s">Regulatory chat &amp; source viewer (plain-language toggle)</text>
+  <text x="634" y="1062" class="s">REST API /api/* (Express)</text>
+
+  <path d="M270,912 L270,958" class="ln"/>
+  <path d="M495,912 L495,958" class="ln"/>
+  <path d="M805,912 L805,958" class="ln"/>
+  <path d="M1115,912 L1115,958" class="ln"/>
+  <path d="M600,1022 L616,1022" class="ln"/>
+
+  <!-- evaluation footer -->
+  <rect x="40" y="1100" width="1220" height="56" class="box" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="54" y="1122" class="h">Evaluation harness (npm run eval:journal)</text>
+  <text x="54" y="1142" class="s">synthetic benchmark 1,393 cases / 215 rules (train · validation · test by rule) · extraction gold set · structure-aware vs fixed-window chunking · simplification · graph scenarios · real disclosures</text>
+</svg>

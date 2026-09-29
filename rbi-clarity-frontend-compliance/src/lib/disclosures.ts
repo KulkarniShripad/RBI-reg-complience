@@ -75,6 +75,10 @@ export interface RuleResult {
   reported_value: number | null;
   unit: string;
   status: string;
+  /** one of the five journal decisions (COMPLIANT, NON_COMPLIANT, INSUFFICIENT_DATA, AMBIGUOUS, REQUIRES_HUMAN_REVIEW) */
+  decision?: string;
+  recommendation?: string | null;
+  evidence_completeness?: number;
   origin: "anchored" | "discovered";
   note?: string | null;
   rule_note?: string | null;

@@ -35,6 +35,7 @@ MODAL = re.compile(
 
 UPPER = r"(?:shall\s+not\s+exceed|should\s+not\s+exceed|must\s+not\s+exceed|will\s+not\s+exceed|not\s+to\s+exceed|" \
         r"shall\s+not\s+be\s+more\s+than|should\s+not\s+be\s+more\s+than|not\s+exceeding|does\s+not\s+exceed|" \
+        r"shall\s+not\s+be\s+higher\s+than|should\s+not\s+be\s+higher\s+than|not\s+be\s+higher\s+than|" \
         r"do\s+not\s+exceed|not\s+more\s+than|no\s+more\s+than|up\s*to|upto|a\s+maximum\s+of|maximum\s+of|" \
         r"ceiling\s+of|capped\s+at|cap\s+of|limited\s+to|restricted\s+to|within\s+(?:a|the)\s+(?:limit|ceiling)\s+of|" \
         r"at\s+(?:the\s+)?most|less\s+than\s+or\s+equal\s+to)"
@@ -223,10 +224,46 @@ def _canonical(var_text: str, sentence: str) -> str | None:
     return None
 
 
+# "five percent" -> "5 percent": limits are sometimes written in words
+_NUMBER_WORDS = {
+    "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10,
+    "eleven": 11, "twelve": 12, "fifteen": 15, "twenty": 20, "twenty-five": 25, "twenty five": 25, "thirty": 30,
+    "thirty-five": 35, "forty": 40, "fifty": 50, "sixty": 60, "seventy-five": 75, "hundred": 100, "one hundred": 100,
+}
+_NUMWORD_PCT = re.compile(r"\b(" + "|".join(sorted((re.escape(k) for k in _NUMBER_WORDS), key=len, reverse=True)) + r")(?=\s*(?:per\s*cent|percent)\b)", re.I)
+
+# "A bank shall adhere to the following intra-group exposure limits: (i) five percent of eligible capital base ..."
+_LIMIT_LEAD = re.compile(r"\b(?:shall|should|must)\s+(?:adhere|comply|conform)\s+(?:to|with)\s+(?:the\s+)?following\s+[^:.;]{0,80}?\b(?:limits?|ceilings?|caps?)\b", re.I)
+_LIST_LIMIT = re.compile(rf"^\(?(?:[ivx]{{1,4}}|[a-z]|\d{{1,2}})\)\s*(?P<val>{NUM}{PCT})\s+of\s+(?P<base>[^;,.]{{3,90}}?)(?:\s+in\s+case\s+of\s+(?P<var>[^;.]{{3,160}}))?(?:[;.,]|\s+and\b|$)", re.I)
+
+
+def _words_to_digits(sent: str) -> str:
+    return _NUMWORD_PCT.sub(lambda m: str(_NUMBER_WORDS[m.group(1).lower()]), sent)
+
+
 def extract_rule_atoms(text: str, is_relational: bool = False) -> list[RuleAtom]:
     atoms: list[RuleAtom] = []
     seen = set()
-    for sent in split_sentences(text):
+    lead_in_limits = bool(_LIMIT_LEAD.search(text))
+    for raw_sent in split_sentences(text):
+        sent = _words_to_digits(raw_sent)
+        if lead_in_limits:
+            lm = _LIST_LIMIT.match(sent)
+            if lm:
+                parsed = _parse_value(lm.group("val"))
+                if parsed and parsed[1] == "%":
+                    var = _clean_variable(lm.group("var") or lm.group("base"))
+                    key = ("<=", parsed[0], "%", var.lower())
+                    if key not in seen:
+                        seen.add(key)
+                        atoms.append(RuleAtom(
+                            operator="<=", threshold_value=parsed[0], threshold_unit="%", threshold_base=lm.group("base").strip(),
+                            variable_text=var[:200], variable_name=_canonical(var, sent),
+                            value_source="graph_aggregate" if is_relational else "direct_report",
+                            match_evidence=lm.group(0)[:200], sentence=raw_sent[:1200], atom_kind="requirement",
+                            confidence="high" if len(var.split()) >= 2 else "low",
+                        ))
+                    continue
         if not QUANT_SIGNAL.search(sent):
             continue
         n_values = len(re.findall(VALUE, sent, re.I))
@@ -320,8 +357,26 @@ def extract_rule_atoms(text: str, is_relational: bool = False) -> list[RuleAtom]
                     operator=operator, threshold_value=value, threshold_unit=unit, threshold_base=base,
                     variable_text=var[:200], variable_name=_canonical(var, sent),
                     value_source="graph_aggregate" if is_relational else "direct_report",
-                    match_evidence=m.group(0)[:200], sentence=sent[:1200], atom_kind=kind, confidence=confidence,
+                    match_evidence=m.group(0)[:200], sentence=raw_sent[:1200], atom_kind=kind, confidence=confidence,
                 ))
+                # coordinated value with the same operator: "shall be 4 per cent and 3.5 per cent for other banks"
+                cm = re.match(rf"\s*(?:,\s*|\s+)(?:and|or)\s+(?P<val2>{NUM}{PCT})(?P<rest>\s+(?:for|in\s+case\s+of|in\s+respect\s+of)\s+[^,;.]{{3,60}})?", sent[ve:], re.I)
+                if cm and unit == "%":
+                    p2 = _parse_value(cm.group("val2"))
+                    if p2 and p2[1] == "%":
+                        var2 = f"{var} {cm.group('rest').strip()}" if cm.group("rest") else var
+                        key2 = (operator, p2[0], "%", var2.lower())
+                        if key2 not in seen:
+                            seen.add(key2)
+                            s2, e2 = ve + cm.start("val2"), ve + cm.end("val2")
+                            claimed.append((s2, e2))
+                            atoms.append(RuleAtom(
+                                operator=operator, threshold_value=p2[0], threshold_unit="%", threshold_base=base,
+                                variable_text=var2[:200], variable_name=_canonical(var2, sent),
+                                value_source="graph_aggregate" if is_relational else "direct_report",
+                                match_evidence=(m.group(0) + cm.group(0))[:200], sentence=raw_sent[:1200], atom_kind=kind,
+                                confidence=confidence,
+                            ))
     return atoms
 
 

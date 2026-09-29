@@ -189,7 +189,39 @@ function corpusStats(req, res) {
   });
 }
 
+/**
+ * Plain-language restatement of one clause, next to the original. The rewrite
+ * is kept only where it preserves every number, the obligation / prohibition
+ * polarity and every exception marker (simplifyService.preserves).
+ *   GET /api/documents/clauses/simplify/by-uri/<clause_uri>?llm=1
+ */
+async function simplifyClause(req, res, next) {
+  try {
+    const uri = decodeURIComponent(req.params.clauseUri || req.params[0] || "");
+    const clause = db.prepare(`SELECT clause_uri, clause_text FROM clause_registry WHERE clause_uri = ?`).get(uri);
+    if (!clause) return res.status(404).json({ error: "clause not found", clause_uri: uri });
+    const simplify = require("../services/simplifyService");
+    const out = await simplify.simplify(clause.clause_text, { useLlm: req.query.llm === "1" || req.query.llm === "true" });
+    const before = simplify.fkgl(clause.clause_text);
+    const after = simplify.fkgl(out.text);
+    res.json({
+      clause_uri: uri,
+      original: clause.clause_text,
+      simplified: out.text,
+      method: out.method,
+      sentences_kept_verbatim: out.fallbacks ?? 0,
+      llm_rejected: out.llm_rejected || null,
+      fkgl_original: before === null ? null : Number(before.toFixed(1)),
+      fkgl_simplified: after === null ? null : Number(after.toFixed(1)),
+      meaning_check: simplify.preserves(clause.clause_text, out.text),
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
+  simplifyClause,
   listDocuments,
   getDocument,
   getDocumentClauses,

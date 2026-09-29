@@ -13,3 +13,6 @@ data/*-shm
 
 # uploaded bank documents (automatic compliance check)
 data/disclosures/
+
+# evaluation caches (window embeddings etc.)
+eval/.cache/

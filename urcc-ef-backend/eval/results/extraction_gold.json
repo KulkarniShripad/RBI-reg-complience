@@ -1,0 +1,620 @@
+{
+ "gold_rules": 62,
+ "distinct_paragraphs": 39,
+ "overall": {
+  "n": 62,
+  "exact_recall": 0.855,
+  "value_recall": 0.855,
+  "operator_accuracy": 1,
+  "taxonomy_agreement": 0.855
+ },
+ "by_set": {
+  "figures": {
+   "n": 26,
+   "exact_recall": 0.885,
+   "value_recall": 0.885,
+   "operator_accuracy": 1,
+   "taxonomy_agreement": 0.885
+  },
+  "network": {
+   "n": 36,
+   "exact_recall": 0.833,
+   "value_recall": 0.833,
+   "operator_accuracy": 1,
+   "taxonomy_agreement": 0.833
+  }
+ },
+ "by_gold_type": {
+  "A": {
+   "n": 41,
+   "exact_recall": 0.854,
+   "value_recall": 0.854,
+   "operator_accuracy": 1,
+   "taxonomy_agreement": 0.829
+  },
+  "F": {
+   "n": 4,
+   "exact_recall": 1,
+   "value_recall": 1,
+   "operator_accuracy": 1,
+   "taxonomy_agreement": 1
+  },
+  "G": {
+   "n": 17,
+   "exact_recall": 0.824,
+   "value_recall": 0.824,
+   "operator_accuracy": 1,
+   "taxonomy_agreement": 0.882
+  }
+ },
+ "atom_precision_lower_bound": 0.793,
+ "atoms_in_gold_paragraphs": 87,
+ "types": [
+  {
+   "key": "cb_crar",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "cb_cet1",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "cb_tier1",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "cb_crar_ccb",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "E"
+  },
+  {
+   "key": "cb_cet1_ccb",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "E"
+  },
+  {
+   "key": "cb_leverage_dsib",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "cb_leverage",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "cb_lcr",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "cb_nsfr",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "cb_psl",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "E"
+  },
+  {
+   "key": "sfb_crar",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "sfb_cet1",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "sfb_tier1",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "sfb_leverage",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "sfb_lcr",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "sfb_nsfr",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "pb_crar",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "pb_cet1",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "pb_tier1",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "pb_leverage",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "ucb_crar",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "ucb_net_worth",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "rrb_crar",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "rrb_tier1",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "lab_crar",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "rcb_crar",
+   "kind": "figure",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "cb_single",
+   "kind": "single_limit",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "cb_interbank",
+   "kind": "single_limit",
+   "gold": [
+    "A"
+   ],
+   "predicted": "E"
+  },
+  {
+   "key": "cb_nbfc_single",
+   "kind": "single_limit",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "cb_gold_nbfc",
+   "kind": "single_limit",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "cb_group",
+   "kind": "group_limit",
+   "gold": [
+    "G"
+   ],
+   "predicted": "G"
+  },
+  {
+   "key": "cb_connected_nbfc",
+   "kind": "group_limit",
+   "gold": [
+    "G"
+   ],
+   "predicted": "G"
+  },
+  {
+   "key": "cb_ite_single_nonfin",
+   "kind": "ite_single",
+   "gold": [
+    "F",
+    "G"
+   ],
+   "predicted": "G"
+  },
+  {
+   "key": "cb_ite_single_fin",
+   "kind": "ite_single",
+   "gold": [
+    "F",
+    "G"
+   ],
+   "predicted": "G"
+  },
+  {
+   "key": "cb_ite_agg_nonfin",
+   "kind": "ite_aggregate",
+   "gold": [
+    "G"
+   ],
+   "predicted": "G"
+  },
+  {
+   "key": "cb_ite_agg_all",
+   "kind": "ite_aggregate",
+   "gold": [
+    "G"
+   ],
+   "predicted": "G"
+  },
+  {
+   "key": "sfb_single",
+   "kind": "single_limit",
+   "gold": [
+    "A",
+    "G"
+   ],
+   "predicted": "G"
+  },
+  {
+   "key": "sfb_group",
+   "kind": "group_limit",
+   "gold": [
+    "G",
+    "A"
+   ],
+   "predicted": "G"
+  },
+  {
+   "key": "sfb_nbfc_single",
+   "kind": "single_limit",
+   "gold": [
+    "A",
+    "G"
+   ],
+   "predicted": "G"
+  },
+  {
+   "key": "sfb_nbfc_group",
+   "kind": "group_limit",
+   "gold": [
+    "G",
+    "A"
+   ],
+   "predicted": "G"
+  },
+  {
+   "key": "sfb_ite_single_nonfin",
+   "kind": "ite_single",
+   "gold": [
+    "F",
+    "G"
+   ],
+   "predicted": "G"
+  },
+  {
+   "key": "sfb_ite_single_fin",
+   "kind": "ite_single",
+   "gold": [
+    "F",
+    "G"
+   ],
+   "predicted": "G"
+  },
+  {
+   "key": "sfb_ite_agg_nonfin",
+   "kind": "ite_aggregate",
+   "gold": [
+    "G"
+   ],
+   "predicted": "G"
+  },
+  {
+   "key": "sfb_ite_agg_all",
+   "kind": "ite_aggregate",
+   "gold": [
+    "G"
+   ],
+   "predicted": "G"
+  },
+  {
+   "key": "lab_single",
+   "kind": "single_limit",
+   "gold": [
+    "A",
+    "G"
+   ],
+   "predicted": "G"
+  },
+  {
+   "key": "lab_group",
+   "kind": "group_limit",
+   "gold": [
+    "G",
+    "A"
+   ],
+   "predicted": "G"
+  },
+  {
+   "key": "lab_nbfc_single",
+   "kind": "single_limit",
+   "gold": [
+    "A",
+    "G"
+   ],
+   "predicted": "G"
+  },
+  {
+   "key": "lab_nbfc_group",
+   "kind": "group_limit",
+   "gold": [
+    "G",
+    "A"
+   ],
+   "predicted": "G"
+  },
+  {
+   "key": "rrb_single",
+   "kind": "single_limit",
+   "gold": [
+    "A",
+    "G"
+   ],
+   "predicted": "G"
+  },
+  {
+   "key": "rrb_group",
+   "kind": "group_limit",
+   "gold": [
+    "G",
+    "A"
+   ],
+   "predicted": "G"
+  },
+  {
+   "key": "ucb_single",
+   "kind": "single_limit",
+   "gold": [
+    "A"
+   ],
+   "predicted": "G"
+  },
+  {
+   "key": "ucb_group",
+   "kind": "group_limit",
+   "gold": [
+    "G"
+   ],
+   "predicted": "G"
+  },
+  {
+   "key": "nbfc_ml_single",
+   "kind": "single_limit",
+   "gold": [
+    "A"
+   ],
+   "predicted": "E"
+  },
+  {
+   "key": "nbfc_ml_group",
+   "kind": "group_limit",
+   "gold": [
+    "G"
+   ],
+   "predicted": "E"
+  },
+  {
+   "key": "nbfc_ifc_single",
+   "kind": "single_limit",
+   "gold": [
+    "A"
+   ],
+   "predicted": "E"
+  },
+  {
+   "key": "nbfc_ifc_group",
+   "kind": "group_limit",
+   "gold": [
+    "G"
+   ],
+   "predicted": "E"
+  },
+  {
+   "key": "nbfc_ul_single",
+   "kind": "single_limit",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "nbfc_ul_ifc_single",
+   "kind": "single_limit",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "nbfc_ul_group",
+   "kind": "group_limit",
+   "gold": [
+    "G"
+   ],
+   "predicted": "G"
+  },
+  {
+   "key": "nbfc_ul_ifc_group",
+   "kind": "group_limit",
+   "gold": [
+    "G"
+   ],
+   "predicted": "G"
+  },
+  {
+   "key": "aifi_single",
+   "kind": "single_limit",
+   "gold": [
+    "A"
+   ],
+   "predicted": "A"
+  },
+  {
+   "key": "aifi_group",
+   "kind": "group_limit",
+   "gold": [
+    "G"
+   ],
+   "predicted": "G"
+  }
+ ],
+ "misses": [
+  {
+   "key": "cb_crar_ccb",
+   "clause_uri": "rbi://cb/abefd7a8b4e5ffdd/para251",
+   "expected": ">= 2.5%",
+   "value_recovered": false
+  },
+  {
+   "key": "cb_cet1_ccb",
+   "clause_uri": "rbi://cb/abefd7a8b4e5ffdd/para251",
+   "expected": ">= 2.5%",
+   "value_recovered": false
+  },
+  {
+   "key": "cb_psl",
+   "clause_uri": "rbi://multi/2742505e8b864b52/para7.1",
+   "expected": ">= 40%",
+   "value_recovered": false
+  },
+  {
+   "key": "cb_interbank",
+   "clause_uri": "rbi://cb/c340b6a4171f2a7a/para62",
+   "expected": "<= 25%",
+   "value_recovered": false
+  },
+  {
+   "key": "nbfc_ml_single",
+   "clause_uri": "rbi://nbfc/c980fd43fee616b2/para13",
+   "expected": "<= 25%",
+   "value_recovered": false
+  },
+  {
+   "key": "nbfc_ml_group",
+   "clause_uri": "rbi://nbfc/c980fd43fee616b2/para13",
+   "expected": "<= 40%",
+   "value_recovered": false
+  },
+  {
+   "key": "nbfc_ifc_single",
+   "clause_uri": "rbi://nbfc/c980fd43fee616b2/para14",
+   "expected": "<= 30%",
+   "value_recovered": false
+  },
+  {
+   "key": "nbfc_ifc_group",
+   "clause_uri": "rbi://nbfc/c980fd43fee616b2/para14",
+   "expected": "<= 50%",
+   "value_recovered": false
+  },
+  {
+   "key": "nbfc_ul_ifc_group",
+   "clause_uri": "rbi://nbfc/c980fd43fee616b2/para35",
+   "expected": "<= 35%",
+   "value_recovered": false
+  }
+ ]
+}

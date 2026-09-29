@@ -1,0 +1,271 @@
+{
+ "error_models": {
+  "DETERMINISTIC": {
+   "kind": "tree",
+   "root": {
+    "leaf": false,
+    "j": 8,
+    "t": 0.25,
+    "n": 840,
+    "left": {
+     "leaf": false,
+     "j": 11,
+     "t": 0.25,
+     "n": 354,
+     "left": {
+      "leaf": false,
+      "j": 7,
+      "t": 0.5,
+      "n": 110,
+      "left": {
+       "leaf": true,
+       "n": 61,
+       "pos": 0,
+       "p": 0.015873015873015872
+      },
+      "right": {
+       "leaf": false,
+       "j": 13,
+       "t": 0.6767848917549517,
+       "n": 49,
+       "left": {
+        "leaf": true,
+        "n": 27,
+        "pos": 0,
+        "p": 0.034482758620689655
+       },
+       "right": {
+        "leaf": true,
+        "n": 22,
+        "pos": 7,
+        "p": 0.3333333333333333
+       }
+      }
+     },
+     "right": {
+      "leaf": false,
+      "j": 9,
+      "t": 0.7260971590509903,
+      "n": 244,
+      "left": {
+       "leaf": false,
+       "j": 18,
+       "t": 0.5,
+       "n": 53,
+       "left": {
+        "leaf": true,
+        "n": 23,
+        "pos": 20,
+        "p": 0.84
+       },
+       "right": {
+        "leaf": true,
+        "n": 30,
+        "pos": 30,
+        "p": 0.96875
+       }
+      },
+      "right": {
+       "leaf": true,
+       "n": 191,
+       "pos": 191,
+       "p": 0.9948186528497409
+      }
+     }
+    },
+    "right": {
+     "leaf": false,
+     "j": 17,
+     "t": 0.5,
+     "n": 486,
+     "left": {
+      "leaf": true,
+      "n": 460,
+      "pos": 0,
+      "p": 0.0021645021645021645
+     },
+     "right": {
+      "leaf": true,
+      "n": 26,
+      "pos": 26,
+      "p": 0.9642857142857143
+     }
+    }
+   }
+  },
+  "RAG_LLM": {
+   "kind": "logistic",
+   "w": [
+    -0.04836098952868797,
+    -0.7356900676739786,
+    0.6919697409549413,
+    -1.0349474706500086,
+    -0.2157440970906799,
+    -0.22759703428801586,
+    1.3037177253639238,
+    0.46372506507977523,
+    0.8812870467881779,
+    -0.4413121988123078,
+    -1.8560667110913294,
+    1.0731790588186678,
+    0.40073094071166954,
+    0.16049199544942885,
+    -0.10178485013273982,
+    1.1524444819343482,
+    -0.26665219291250275,
+    0.8814757765161768,
+    1.4906825562315023
+   ],
+   "b": -2.0029575751907203,
+   "train_loss": 0.40905348989605583,
+   "n": 840,
+   "positive_rate": 0.1988095238095238
+  }
+ },
+ "human_error_rate": 0.02,
+ "cost_model": {
+  "_note": "Cost and latency assumptions of the router objective (journal Eq. 4). LLM prices are Gemini 2.5 Flash list prices per 1M tokens at the time of writing; the human figures are an assumed 10-minute review at USD 9/hour and a 2% reviewer error rate. Edit and re-run npm run eval:router to see their effect. Rule-engine, graph and retrieval latencies are overwritten by measured values when the evaluation runs.",
+  "llm": {
+   "model": "gemini-2.5-flash",
+   "usd_per_1m_input": 0.3,
+   "usd_per_1m_output": 2.5,
+   "prompt_overhead_tokens": 350,
+   "output_tokens": 120,
+   "latency_ms": 1800
+  },
+  "llm_only_context_chars": 12000,
+  "retrieval": {
+   "latency_ms": 60
+  },
+  "rule_engine": {
+   "usd_per_case": 0,
+   "latency_ms": 0.0305
+  },
+  "graph": {
+   "usd_per_case": 0,
+   "latency_ms": 1.3962
+  },
+  "human": {
+   "usd_per_case": 1.5,
+   "latency_ms": 600000,
+   "error_rate": 0.02
+  }
+ },
+ "params": {
+  "alpha": 1,
+  "beta": 0.1,
+  "gamma": 0.001,
+  "min_evidence": 0.75
+ },
+ "adopted_operating_point": "tau",
+ "operating_points": {
+  "tau": {
+   "alpha": 1,
+   "beta": 0.1,
+   "gamma": 0.001,
+   "min_evidence": 0.75
+  },
+  "cost_matched": {
+   "alpha": 1,
+   "beta": 0.3,
+   "gamma": 0.0001,
+   "min_evidence": 0.75
+  },
+  "automated": {
+   "alpha": 1,
+   "beta": 0.1,
+   "gamma": 0,
+   "min_evidence": 0.5,
+   "no_human": true
+  }
+ },
+ "estimator_choice": {
+  "DETERMINISTIC": {
+   "logistic_val_logloss": 0.0627,
+   "tree_val_logloss": 0.043,
+   "chosen": "tree"
+  },
+  "RAG_LLM": {
+   "logistic_val_logloss": 0.4667,
+   "tree_val_logloss": 0.814,
+   "chosen": "logistic"
+  }
+ },
+ "feature_names": [
+  "rule_type_A",
+  "rule_type_B",
+  "rule_type_C",
+  "rule_type_D",
+  "rule_type_E",
+  "rule_type_F",
+  "rule_type_G",
+  "requires_semantic_interpretation",
+  "structured_field_availability",
+  "retrieval_confidence",
+  "rule_engine_applicability",
+  "evidence_completeness",
+  "historical_accuracy_deterministic",
+  "historical_accuracy_rag_llm",
+  "risk_level",
+  "source_conflict",
+  "narrative_present",
+  "text_structured_conflict",
+  "text_uncertainty_cue"
+ ],
+ "history": {
+  "A:DETERMINISTIC": 0.9010989010989011,
+  "A:RAG_LLM": 0.8351648351648352,
+  "D:DETERMINISTIC": 1,
+  "D:RAG_LLM": 0.9464285714285714,
+  "C:DETERMINISTIC": 1,
+  "C:RAG_LLM": 0.74,
+  "B:DETERMINISTIC": 0.6666666666666666,
+  "B:RAG_LLM": 0.8717948717948718,
+  "E:DETERMINISTIC": 0.16666666666666666,
+  "E:RAG_LLM": 0.6785714285714286,
+  "F:DETERMINISTIC": 0.16666666666666666,
+  "F:RAG_LLM": 0.6818181818181818,
+  "G:DETERMINISTIC": 1,
+  "G:RAG_LLM": 0.4666666666666667
+ },
+ "judge": "surrogate",
+ "tau_acc": 0.95,
+ "trained_on": {
+  "benchmark": "eval/compliance_benchmark.json",
+  "seed": 7,
+  "train": 840,
+  "validation": 259,
+  "test": 294
+ },
+ "validation": {
+  "chosen": {
+   "n": 259,
+   "accuracy": 0.9459,
+   "end_to_end_accuracy": 0.9575,
+   "macro_f1": 0.9333,
+   "non_compliant_precision": 0.971,
+   "non_compliant_recall": 0.8933,
+   "non_compliant_f1": 0.9306,
+   "false_positive_rate": 0,
+   "false_negative_rate": 0.0667,
+   "escalation_rate": 0.0927,
+   "llm_call_rate": 0.1699,
+   "citation_accuracy": 1,
+   "hallucination_rate": 0,
+   "usd_per_case": 0.1391,
+   "usd_per_case_automated": 0.0001,
+   "mean_latency_ms": 55914.6,
+   "median_latency_automated_ms": 0.02,
+   "route_mix": {
+    "DETERMINISTIC": 161,
+    "NONE": 30,
+    "HUMAN": 24,
+    "RAG_LLM": 44
+   }
+  },
+  "feasible_configs": 20,
+  "grid_size": 72
+ },
+ "adopted_in_system": true,
+ "trained_at": "2026-09-29T09:38:25.630Z"
+}

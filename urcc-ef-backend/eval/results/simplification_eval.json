@@ -1,0 +1,128 @@
+{
+ "method": "rules (guarded)",
+ "overall": {
+  "n": 272,
+  "fkgl_before": 15.74,
+  "fkgl_after": 15.64,
+  "words_per_sentence_before": 31.1,
+  "words_per_sentence_after": 30.4,
+  "guard_pass": 0.996,
+  "clauses_with_atoms": 107,
+  "rule_reextraction_agreement": 1,
+  "semantic_similarity": 0.992,
+  "verbatim_sentence_share": 0.026
+ },
+ "by_rule_type": {
+  "A": {
+   "n": 40,
+   "fkgl_before": 14.29,
+   "fkgl_after": 14.23,
+   "words_per_sentence_before": 29.9,
+   "words_per_sentence_after": 29,
+   "guard_pass": 1,
+   "clauses_with_atoms": 40,
+   "rule_reextraction_agreement": 1,
+   "semantic_similarity": 0.99,
+   "verbatim_sentence_share": 0.037
+  },
+  "B": {
+   "n": 40,
+   "fkgl_before": 16.11,
+   "fkgl_after": 16.11,
+   "words_per_sentence_before": 28.4,
+   "words_per_sentence_after": 27.9,
+   "guard_pass": 1,
+   "clauses_with_atoms": 7,
+   "rule_reextraction_agreement": 1,
+   "semantic_similarity": 0.992,
+   "verbatim_sentence_share": 0.007
+  },
+  "C": {
+   "n": 32,
+   "fkgl_before": 15.22,
+   "fkgl_after": 14.86,
+   "words_per_sentence_before": 33.7,
+   "words_per_sentence_after": 31.9,
+   "guard_pass": 1,
+   "clauses_with_atoms": 32,
+   "rule_reextraction_agreement": 1,
+   "semantic_similarity": 0.992,
+   "verbatim_sentence_share": 0
+  },
+  "D": {
+   "n": 40,
+   "fkgl_before": 16.16,
+   "fkgl_after": 16.05,
+   "words_per_sentence_before": 31.7,
+   "words_per_sentence_after": 31.2,
+   "guard_pass": 1,
+   "clauses_with_atoms": 8,
+   "rule_reextraction_agreement": 1,
+   "semantic_similarity": 0.992,
+   "verbatim_sentence_share": 0.022
+  },
+  "E": {
+   "n": 40,
+   "fkgl_before": 16.27,
+   "fkgl_after": 16.26,
+   "words_per_sentence_before": 32.8,
+   "words_per_sentence_after": 32.5,
+   "guard_pass": 1,
+   "clauses_with_atoms": 3,
+   "rule_reextraction_agreement": 1,
+   "semantic_similarity": 0.992,
+   "verbatim_sentence_share": 0.052
+  },
+  "F": {
+   "n": 40,
+   "fkgl_before": 16.5,
+   "fkgl_after": 16.44,
+   "words_per_sentence_before": 32,
+   "words_per_sentence_after": 31.6,
+   "guard_pass": 0.975,
+   "clauses_with_atoms": 1,
+   "rule_reextraction_agreement": 1,
+   "semantic_similarity": 0.992,
+   "verbatim_sentence_share": 0.015
+  },
+  "G": {
+   "n": 40,
+   "fkgl_before": 15.52,
+   "fkgl_after": 15.41,
+   "words_per_sentence_before": 29.5,
+   "words_per_sentence_after": 29.1,
+   "guard_pass": 1,
+   "clauses_with_atoms": 16,
+   "rule_reextraction_agreement": 1,
+   "semantic_similarity": 0.992,
+   "verbatim_sentence_share": 0.053
+  }
+ },
+ "atom_disagreements": [],
+ "examples": [
+  {
+   "clause_uri": "rbi://rrb/2893adce47bac866/para68",
+   "rule_type": "A",
+   "original": "Collection of Account Payee Cheques: The bank shall not collect account payee cheques for any person other than the payee constituent. The bank shall, at its option, collect account payee cheques drawn for an amount not exceeding ₹50,000 to the account of its customers who are co-operative credit societies, provided the payees of such cheques are the constituents of such co-operative credit societies.",
+   "simplified": "Collection of Account Payee Cheques: The bank must not collect account payee cheques for any person other than the payee constituent. The bank must, at its option, collect account payee cheques drawn for an amount not exceeding ₹50,000 to the account of its customers who are co-operative credit societies, provided the payees of such cheques are the constituents of such co-operative credit societies."
+  },
+  {
+   "clause_uri": "rbi://lab/398a0e8b345abb99/para11",
+   "rule_type": "A",
+   "original": "A bank’s exposure to a single NBFC which is predominantly engaged in lending against collateral of gold jewellery (hereafter referred to as ‘gold loans’) i.e. such loans comprising 50 percent or more of its financial assets, shall not exceed 7.5 percent of the bank’s capital funds.",
+   "simplified": "A bank’s exposure to a single NBFC which is predominantly engaged in lending against collateral of gold jewellery (hereafter referred to as ‘gold loans’) i.e. that loans comprising 50% or more of its financial assets, must not exceed 7.5% of the bank’s capital funds."
+  },
+  {
+   "clause_uri": "rbi://cb/078e260172babd7f/para51",
+   "rule_type": "A",
+   "original": "A bank shall set up a subsidiary / joint venture company for undertaking insurance broking and corporate agency only after fulfilling the following eligibility criteria as on March 31 of the previous year:\n(1) Its net worth shall not be less than ₹500 crore after investing in the equity of such company; and\n(2) It complies with conditions stated under paragraphs 50(2), 50(3), 50(4) and 50(5).",
+   "simplified": "A bank must set up a subsidiary / joint venture company for undertaking insurance broking and corporate agency only after fulfilling the following eligibility criteria as on March 31 of the previous year. (1) Its net worth must not be less than ₹500 crore after investing in the equity of such company. And (2) It complies with conditions stated under paragraphs 50(2), 50(3), 50(4) and 50(5)."
+  },
+  {
+   "clause_uri": "rbi://sfb/96fbba06ff6bef2f/para13",
+   "rule_type": "A",
+   "original": "A bank’s exposure to non-QCCPs shall be subject to the exposure ceiling of 10 per cent of its capital funds applicable to single obligor.",
+   "simplified": "A bank’s exposure to non-QCCPs must be subject to the exposure ceiling of 10% of its capital funds applicable to single obligor."
+  }
+ ]
+}

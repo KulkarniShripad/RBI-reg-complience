@@ -1,5 +1,6 @@
 /**
- * Runs the ADAPTIVE ROUTER (routingService.js) across every clause
+ * Runs the router across every clause (Algorithm 1 in router/adaptiveRouter.js
+ * when evaluation adopted it, else the heuristic routingService.js)
  * applicable to a bank, as opposed to complianceController's fixed
  * pipeline (which always sends quantitative clauses to the rule engine
  * and qualitative clauses to Gemini — that fixed pipeline IS your
@@ -8,6 +9,7 @@
  * Comparing this service's output against complianceController's output,
  * on the same bank+period, is the RQ1 experiment from the blueprint.
  */
+const { decisionOf } = require("./decisions");
 const db = require("../config/db");
 const routing = require("./routingService");
 const quantService = require("./quantComplianceService");
@@ -16,6 +18,10 @@ const embedding = require("./embeddingService");
 const graphStore = require("./graph/graphStore");
 const graphRules = require("./graph/graphRules");
 const graphService = require("./graph/graphComplianceService");
+const adaptive = require("./router/adaptiveRouter");
+
+// the adaptive router's modalities, in this service's route names
+const ADAPTIVE_TO_ROUTE = { RAG_LLM: routing.ROUTES.RAG_LLM, HUMAN: routing.ROUTES.HUMAN };
 
 const OPERATORS = {
   "<=": (v, t) => v <= t,
@@ -36,8 +42,8 @@ async function runRoutedCompliance({ bankId, periodLabel, graphDataAvailable = f
     .prepare(
       `SELECT cr.clause_uri, cr.clause_type, cr.clause_role, cr.needs_llm_refinement,
               CASE WHEN ra.rule_id IS NOT NULL THEN ra.confidence ELSE cr.confidence END AS confidence,
-              cr.clause_text, cr.page_number, d.rbi_ref,
-              ra.rule_id, ra.operator, ra.threshold_value, ra.threshold_unit
+              cr.clause_text, cr.page_number, d.rbi_ref, d.title,
+              ra.rule_id, ra.operator, ra.threshold_value, ra.threshold_unit, ra.sentence
        FROM clause_registry cr
        JOIN documents d ON cr.doc_id = d.doc_id
        LEFT JOIN rule_atoms ra ON ra.clause_uri = cr.clause_uri AND ra.atom_kind = 'requirement'
@@ -96,6 +102,11 @@ async function runRoutedCompliance({ bankId, periodLabel, graphDataAvailable = f
       })
     : [];
 
+  // Algorithm 1 (adaptive, cost-aware) when evaluation adopted it; otherwise
+  // the heuristic router. ROUTER_POLICY=adaptive|heuristic overrides.
+  const model = adaptive.loadModel();
+  const policy = adaptive.activePolicy(model);
+
   const results = [];
 
   for (const clause of clauses) {
@@ -150,7 +161,7 @@ async function runRoutedCompliance({ bankId, periodLabel, graphDataAvailable = f
 
     const riskTier = clause.clause_type === "quantitative" ? "high" : "standard";
 
-    const decision = routing.route(
+    const heuristic = () => routing.route(
       { clause_type: clause.clause_type, confidence: clause.confidence, needs_llm_refinement: clause.needs_llm_refinement },
       ruleAtom,
       {
@@ -164,6 +175,28 @@ async function runRoutedCompliance({ bankId, periodLabel, graphDataAvailable = f
         riskTier,
       }
     );
+    let decision;
+    let ruleType = null;
+    if (policy === "adaptive") {
+      const a = adaptive.routeClause(clause, {
+        hasStructuredValue: reportedValue !== null,
+        graphCovers,
+        graphData: !!graphOut?.has_data,
+        narrative: !ruleAtom && evidenceRows.length ? evidenceRows.join(" ") : null,
+        retrievalTopScore,
+      }, model);
+      ruleType = a.rule_type;
+      let route = a.route === "DETERMINISTIC" ? (graphCovers && graphOut?.has_data ? routing.ROUTES.GRAPH : ruleAtom && reportedValue !== null ? routing.ROUTES.RULE_ENGINE : null) : ADAPTIVE_TO_ROUTE[a.route] ?? null;
+      // the deterministic engines cannot run without their data: human review
+      let dec = a.decision;
+      if (a.route === "DETERMINISTIC" && !route) {
+        route = routing.ROUTES.HUMAN;
+        dec = "REQUIRES_HUMAN_REVIEW";
+      }
+      decision = { route, decision: route ? (route === routing.ROUTES.HUMAN ? dec || "REQUIRES_HUMAN_REVIEW" : null) : dec || "INSUFFICIENT_DATA", reasons: a.reasons };
+    } else {
+      decision = heuristic();
+    }
 
     // --- execute the chosen route ---
     let finalStatus = decision.decision;
@@ -204,8 +237,11 @@ async function runRoutedCompliance({ bankId, periodLabel, graphDataAvailable = f
       clause_type: clause.clause_type,
       clause_text: clause.clause_text,
       route: decision.route,
+      router_policy: policy,
+      rule_type: ruleType,
       routing_reasons: decision.reasons,
       status: finalStatus,
+      decision: decisionOf(finalStatus),
       detail,
     });
   }

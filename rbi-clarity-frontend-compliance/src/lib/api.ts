@@ -368,6 +368,22 @@ export const getClause = async (clauseUri: string): Promise<ClauseDetail> => {
   return res.data;
 };
 
+export interface ClauseSimplification {
+  clause_uri: string;
+  original: string;
+  simplified: string;
+  method: string;
+  fkgl_original: number | null;
+  fkgl_simplified: number | null;
+  meaning_check: { ok: boolean; problems: string[] };
+}
+
+/** Plain-language restatement of a clause (kept only where numbers, polarity and exceptions survive). */
+export const simplifyClause = async (clauseUri: string): Promise<ClauseSimplification> => {
+  const res = await api.get(`/api/documents/clauses/simplify/by-uri/${encodeURIComponent(clauseUri)}`);
+  return res.data;
+};
+
 export const getDocumentClauses = async (docId: string): Promise<DocumentClause[]> => {
   const res = await api.get(`/api/documents/${encodeURIComponent(docId)}/clauses`, { params: { limit: 2000 } });
   return Array.isArray(res.data) ? res.data : [];

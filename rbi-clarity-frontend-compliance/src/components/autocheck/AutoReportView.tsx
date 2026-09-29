@@ -54,6 +54,7 @@ const RuleRow = ({ r, uploadId, format, onSource }: { r: RuleResult; uploadId: n
   <div className="py-3 border-b border-border last:border-0 grid gap-2 sm:grid-cols-[140px_minmax(0,1fr)_170px]">
     <div className="flex sm:block items-center gap-2">
       <StatusBadge status={r.status} />
+      {r.decision && <div className="text-[10px] text-muted-foreground mt-1 tracking-wide">{r.decision}</div>}
       {r.origin === "discovered" && <div className="text-[11px] text-muted-foreground mt-1">found by search</div>}
     </div>
     <div className="min-w-0">
@@ -61,6 +62,7 @@ const RuleRow = ({ r, uploadId, format, onSource }: { r: RuleResult; uploadId: n
       <p className="text-xs text-muted-foreground">{r.metric_label}</p>
       <div className="mt-1"><SourceButton source={r.source} onOpen={onSource} /></div>
       {r.note && <p className="text-xs text-yellow-800 mt-1">{r.note}</p>}
+      {r.recommendation && <p className="text-xs text-foreground mt-1"><span className="font-medium">Recommended action: </span>{r.recommendation}</p>}
       {r.rule_note && <p className="text-xs text-muted-foreground mt-1">{r.rule_note}</p>}
     </div>
     <div className="text-sm sm:text-right">

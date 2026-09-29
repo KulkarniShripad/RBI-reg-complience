@@ -27,6 +27,7 @@ const rules = require("./regulatoryRules");
 const discovery = require("./ruleDiscovery");
 const checklist = require("./disclosureChecklist");
 const docQual = require("./documentQualitative");
+const { withDecisions, decisionCounts, recommendForRule, recommendForQualitative } = require("../decisions");
 const graphStore = require("../graph/graphStore");
 const graphService = require("../graph/graphComplianceService");
 
@@ -451,7 +452,13 @@ function evaluateAnchored(category, profile, metrics) {
     const source = rules.resolveSource(r);
     const metric = catalog.get(r.metric);
     const m = metrics[r.metric];
+    // evidence fields the rule needs (journal Sec. VII.D): the figure itself, plus
+    // deposits for a UCB whose tier (and so its CRAR minimum) is not known
+    const required = [r.metric, ...(typeof r.threshold === "function" && r.category === "urban_cooperative_banks" && !profile.ucb_tier ? ["total_deposits"] : [])];
+    const present = required.filter((k) => metrics[k] && metrics[k].value !== null && metrics[k].value !== undefined);
     const base = {
+      required_fields: required,
+      evidence_completeness: Number((present.length / required.length).toFixed(3)),
       id: `rule:${r.key}`,
       rule_key: r.key,
       metric_key: r.metric,
@@ -580,15 +587,19 @@ async function run(uploadId, { persist = true, useLlm = true, includeQualitative
   const covered = new Set(anchored.filter((r) => r.status !== "NEEDS_REVIEW" || r.reported_value !== null).map((r) => r.metric_key));
   const anchoredUris = new Set(anchored.map((r) => r.source?.clause_uri).filter(Boolean));
   const discovered = discover ? await discovery.discoverRules(category, metrics, covered, anchoredUris, { useLlm }) : [];
-  const ruleResults = [...anchored, ...discovered].sort((a, b) => (SEVERITY[b.status] ?? 0) - (SEVERITY[a.status] ?? 0));
+  const ruleResults = withDecisions([...anchored, ...discovered])
+    .map((r) => ({ ...r, recommendation: recommendForRule(r) }))
+    .sort((a, b) => (SEVERITY[b.status] ?? 0) - (SEVERITY[a.status] ?? 0));
 
   const disclosures = checklist.checkDisclosures(category, profile.doc_type, upload.pages);
+  disclosures.items = withDecisions(disclosures.items).map((d) => ({ ...d, recommendation: recommendForQualitative(d, "disclosure") }));
   let qualitative = { applicable: false, reason: "Not requested.", results: [] };
   if (includeQualitative && ["annual_report", "policy", "board_minutes", "other"].includes(profile.doc_type)) {
     qualitative = await docQual.obligationsInDocument({ category, pages: upload.pages, useLlm });
   } else if (includeQualitative) {
     qualitative = { applicable: false, reason: "Figures-only document (Pillar 3 / results / spreadsheet): no governance narrative to assess.", results: [] };
   }
+  qualitative.results = withDecisions(qualitative.results).map((q) => ({ ...q, recommendation: recommendForQualitative(q) }));
   // keep the passages that matched an obligation as evidence for the manual qualitative check
   for (const q of qualitative.results) {
     qualService.insertEvidence({ bankId: bank.bank_id, evidenceText: q.evidence_text, sourceType: profile.doc_type, periodLabel: profile.period_label });
@@ -623,6 +634,7 @@ async function run(uploadId, { persist = true, useLlm = true, includeQualitative
     obligations_partial: count(qualitative.results, "PARTIAL"),
     figures_found: Object.keys(metrics).length,
     submissions_backfilled: backfilled,
+    decision_counts: decisionCounts([...ruleResults, ...disclosures.items, ...qualitative.results, ...(network?.results || [])]),
     network_checked: network?.results?.length || 0,
     network_breach: network ? count(network.results || [], "BREACH") + count(network.results || [], "PROHIBITED") : 0,
     network_attention: network

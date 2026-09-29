@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowRight, ExternalLink, FileText, Link2, Loader2 } from "l
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { getClause, pdfUrl, type ChatSource, type ClauseDetail } from "@/lib/api";
+import { getClause, pdfUrl, simplifyClause, type ChatSource, type ClauseDetail, type ClauseSimplification } from "@/lib/api";
 
 const OPS: Record<string, string> = { "<=": "≤", ">=": "≥", "<": "<", ">": ">", within_days: "within" };
 
@@ -49,6 +49,8 @@ export const SourceViewer = ({ target, onClose }: Props) => {
   const [detail, setDetail] = useState<ClauseDetail | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [plain, setPlain] = useState<ClauseSimplification | null>(null);
+  const [plainLoading, setPlainLoading] = useState(false);
 
   useEffect(() => {
     setCurrent(target);
@@ -61,6 +63,7 @@ export const SourceViewer = ({ target, onClose }: Props) => {
     setLoading(true);
     setError(null);
     setDetail(null);
+    setPlain(null);
     getClause(current.clauseUri)
       .then((d) => alive && setDetail(d))
       .catch(() => alive && setError("Could not load the full provision from the server."))
@@ -73,6 +76,15 @@ export const SourceViewer = ({ target, onClose }: Props) => {
   const go = (uri: string) => {
     if (current) setHistory((h) => [...h, current]);
     setCurrent({ clauseUri: uri });
+  };
+  const togglePlain = () => {
+    if (plain) return setPlain(null);
+    if (!current) return;
+    setPlainLoading(true);
+    simplifyClause(current.clauseUri)
+      .then(setPlain)
+      .catch(() => setError("Could not simplify this provision."))
+      .finally(() => setPlainLoading(false));
   };
   const back = () => {
     const prev = history[history.length - 1];
@@ -143,6 +155,25 @@ export const SourceViewer = ({ target, onClose }: Props) => {
               <span className="text-muted-foreground">No text available.</span>
             )}
           </div>
+
+          {text && current && (
+            <div className="space-y-2">
+              <Button variant="outline" size="sm" className="h-7" onClick={togglePlain} disabled={plainLoading}>
+                {plainLoading && <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />}
+                {plain ? "Hide plain language" : "Plain language"}
+              </Button>
+              {plain && (
+                <div className="rounded-lg border border-border p-3 text-sm leading-relaxed">
+                  <p>{plain.simplified}</p>
+                  {plain.fkgl_original !== null && plain.fkgl_simplified !== null && (
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Reading grade {plain.fkgl_original} → {plain.fkgl_simplified}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           {docId && (
             <a
