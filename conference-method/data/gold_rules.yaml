@@ -1,0 +1,214 @@
+# Gold operational rules for the transaction-level experiments.
+#
+# Every rule is a real provision of a Reserve Bank of India direction for
+# commercial banks, located by an exact quote from the ingested corpus
+# (whitespace-insensitive). `params` is the machine-testable reading of the
+# quote, written by hand by the authors and checked against the paragraph;
+# experiments/eval_extraction.py compares the automatic extraction against it,
+# and synth/gold.py (written independently of regcomp/validators.py) uses it to
+# label the synthetic evidence.
+#
+# kinds: threshold | temporal | cardinality | set
+# unit types (synth/generate.py): small_account_year, wire_transfer,
+#   kyc_onboarding, kyc_info_update, kyc_periodic, card_closure, complaint, cyber_incident
+
+as_of: "2026-09-30"          # evaluation date for "has the deadline passed?"
+category: commercial_banks
+
+rules:
+  - id: G01_small_credits
+    title_contains: "Commercial Banks - Know Your Customer"
+    quote: "the aggregate of all credits in a financial year does not exceed Rupees One Lakh"
+    unit_type: small_account_year
+    params:
+      kind: threshold
+      field: credits
+      aggregate: sum
+      period: financial_year
+      op: "<="
+      value: 100000
+      unit: INR
+      conditions: {account_type: small}
+
+  - id: G02_small_debits
+    title_contains: "Commercial Banks - Know Your Customer"
+    quote: "the aggregate of all withdrawals and transfers in a month does not exceed ₹10,000"
+    unit_type: small_account_year
+    params:
+      kind: threshold
+      field: debits
+      aggregate: sum
+      period: month
+      op: "<="
+      value: 10000
+      unit: INR
+      conditions: {account_type: small}
+
+  - id: G03_small_balance
+    title_contains: "Commercial Banks - Know Your Customer"
+    quote: "the balance at any point of time does not exceed ₹50,000"
+    unit_type: small_account_year
+    params:
+      kind: threshold
+      field: balance
+      aggregate: max
+      period: any_time
+      op: "<="
+      value: 50000
+      unit: INR
+      conditions: {account_type: small}
+      exceptions:
+        - {exclude_credit_sources: [govt_grant, welfare, procurement]}
+    # "Provided that the bank shall not consider this limit on balance when making
+    #  deposits through Government grants, welfare benefits and payment against procurements."
+
+  - id: G04_wire_information
+    title_contains: "Commercial Banks - Know Your Customer"
+    quote: "All cross-border wire transfers shall be accompanied by accurate, complete, and meaningful originator and beneficiary information"
+    unit_type: wire_transfer
+    params:
+      kind: set
+      required:
+        - [originator_name]
+        - [originator_account, txn_ref]
+        - [originator_address, originator_national_id, originator_customer_id, originator_dob_pob]
+        - [beneficiary_name]
+        - [beneficiary_account, txn_ref]
+    # Gold revision 2026-10-09: the sentence after the list ("In the absence of an
+    # account, a unique transaction reference number should be included ...") makes the
+    # transaction reference an alternative to both account-number items (b) and (e).
+      conditions: {cross_border: true}
+      exceptions:
+        - when: {batch: true}
+          originator_any_of: [originator_account, txn_ref]
+    # (ii) batch transfers are exempt from the originator items provided they include
+    # "the originator's account number or unique transaction reference number".
+
+  - id: G05_ckycr_upload
+    title_contains: "Commercial Banks - Know Your Customer"
+    quote: "upload onto CKYCR within 10 days of commencement of an account-based relationship"
+    unit_type: kyc_onboarding
+    params:
+      kind: temporal
+      anchor: [account_opened]
+      target: ckycr_uploaded
+      window: 10
+      unit: days
+
+  - id: G06_ckycr_update
+    title_contains: "Commercial Banks - Know Your Customer"
+    quote: "shall within seven days or within such period as may be notified by the Central Government, furnish the updated information to CKYCR"
+    unit_type: kyc_info_update
+    params:
+      kind: temporal
+      anchor: [updated_info_obtained]
+      target: ckycr_updated
+      window: 7
+      unit: days
+
+  - id: G07_cdd_documents
+    title_contains: "Commercial Banks - Know Your Customer"
+    quote: "PAN or the equivalent e-document thereof or Form No. 60"
+    unit_type: kyc_onboarding
+    params:
+      kind: set
+      required:
+        - [aadhaar, ovd, kyc_identifier]
+        - [pan, form60]
+
+  - id: G08_periodic_updation
+    title_contains: "Commercial Banks - Know Your Customer"
+    quote: "periodic updation at least once in every two years for high-risk customers, once in every eight years for medium risk customers and once in every 10 years for low-risk customers"
+    unit_type: kyc_periodic
+    params:
+      kind: temporal
+      anchor: [last_kyc_update, account_opened]
+      anchor_mode: latest
+      target: kyc_updated
+      unit: years
+      per_category: {field: risk, values: {high: 2, medium: 8, low: 10}}
+      grace:
+        when: {risk: low, customer_type: individual}
+        extra: 1          # years after falling due ...
+        until: "2026-06-30"
+        combine: later    # "... or up to June 30, 2026, whichever is later"
+
+  - id: G09_advance_intimations
+    title_contains: "Commercial Banks - Know Your Customer"
+    quote: "the bank shall give at least three advance intimations, including at least one intimation by letter"
+    unit_type: kyc_periodic
+    params:
+      kind: cardinality
+      field: advance_intimations
+      op: ">="
+      value: 3
+      sub: {filter: {mode: letter}, op: ">=", value: 1}
+      when: before_due
+
+  - id: G10_reminders
+    title_contains: "Commercial Banks - Know Your Customer"
+    quote: "Subsequent to the due date, the bank shall give at least three reminders, including at least one reminder by letter"
+    unit_type: kyc_periodic
+    params:
+      kind: cardinality
+      field: reminders
+      op: ">="
+      value: 3
+      sub: {filter: {mode: letter}, op: ">=", value: 1}
+      when: after_due
+
+  - id: G11_card_closure
+    title_contains: "Commercial Banks - Credit Cards and Debit Cards"
+    quote: "Any request for closure of a credit card shall be honoured within seven working days by the credit card-issuer"
+    unit_type: card_closure
+    params:
+      kind: temporal
+      anchor: [closure_requested, dues_cleared]
+      anchor_mode: latest
+      target: card_closed
+      window: 7
+      unit: working_days
+      remediation: {per_day: 500, unit: INR}
+    # "...the prescribed timeline of seven working days shall be calculated after
+    #  excluding the number of days taken by the cardholder to clear the outstanding dues"
+    # "Failure ... shall result in a penalty of ₹500 per calendar day of delay"
+
+  - id: G12_card_cic_update
+    title_contains: "Commercial Banks - Credit Cards and Debit Cards"
+    quote: "The information regarding the closure of card account shall also accordingly be updated with the Credit Information Company/ies within a period of 30 days"
+    unit_type: card_closure
+    params:
+      kind: temporal
+      anchor: [card_closed]
+      target: cic_updated
+      window: 30
+      unit: days
+
+  - id: G13_io_decision
+    title_contains: "Commercial Banks - Internal Ombudsman"
+    quote: "the final decision is communicated to the complainant within a period of 30 days from the date of receipt of complaint by the bank"
+    unit_type: complaint
+    params:
+      kind: temporal
+      anchor: [complaint_received]
+      target: decision_communicated
+      window: 30
+      unit: days
+
+  - id: G14_cyber_reporting
+    title_contains: "Commercial Banks - Managing Risks in Outsourcing"
+    quote: "an incident is reported by the bank to the RBI within six hours of detection by the service provider"
+    unit_type: cyber_incident
+    params:
+      kind: temporal
+      anchor: [incident_detected]
+      target: incident_reported_rbi
+      window: 6
+      unit: hours
+
+# Clause operationalised by the anomaly detectors (no programmatic condition):
+anomaly_clause:
+  id: A01_monitoring
+  title_contains: "Commercial Banks - Know Your Customer"
+  quote: "the bank shall necessarily monitor the following types of transactions"
+  unit_type: account_month

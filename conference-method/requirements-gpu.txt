@@ -1,0 +1,7 @@
+# Transformer encoders (MahaBERT, IndicBERT, XLM-R, multilingual mpnet), fine-tuning, flan-T5
+-r requirements.txt
+torch>=2.1
+transformers>=4.40
+sentence-transformers>=2.7,<5
+accelerate>=0.27
+sentencepiece>=0.1.99

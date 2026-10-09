@@ -1,0 +1,229 @@
+{
+ "budget": 0.05,
+ "sizes": {
+  "train": 8436,
+  "validation": 1770,
+  "test": 1794
+ },
+ "features": [
+  "log_turnover",
+  "turnover_to_balance",
+  "max_txn_to_history",
+  "max_txn_to_income",
+  "n_txn",
+  "n_counterparties",
+  "cash_withdrawal_share",
+  "cheque_then_cash",
+  "credit_debit_symmetry"
+ ],
+ "results": {
+  "iforest": {
+   "precision": 0.39773081201334815,
+   "recall": 0.8949999999999999,
+   "f1": 0.5506725019696426,
+   "roc_auc": 0.9894327251995438,
+   "avg_precision": 0.7352856664628464,
+   "normal_flag_rate": 0.00241884150222788,
+   "std_f1": 0.007683194918841433,
+   "recall_by_pattern": {
+    "unusual_large": 0.9375,
+    "high_turnover": 0.7538461538461538,
+    "third_party_cash": 1.0
+   },
+   "benign_irregular_flag_rate": 0.2754098360655738,
+   "seeds": 5
+  },
+  "ocsvm": {
+   "precision": 0.24545454545454545,
+   "recall": 0.675,
+   "f1": 0.36,
+   "roc_auc": 0.8860889395667046,
+   "avg_precision": 0.25572525607870106,
+   "normal_flag_rate": 0.0120942075111394,
+   "std_f1": 0.0,
+   "recall_by_pattern": {
+    "unusual_large": 1.0,
+    "high_turnover": 0.3076923076923077,
+    "third_party_cash": 0.6363636363636364
+   },
+   "benign_irregular_flag_rate": 0.34972677595628415,
+   "seeds": 1
+  },
+  "static_rules": {
+   "precision": 0.4807692307692308,
+   "recall": 0.625,
+   "f1": 0.5434782608695652,
+   "tp": 25,
+   "fp": 27,
+   "fn": 15,
+   "recall_by_pattern": {
+    "unusual_large": 0.875,
+    "high_turnover": 0.0,
+    "third_party_cash": 1.0
+   },
+   "benign_irregular_flag_rate": 0.08743169398907104,
+   "normal_flag_rate": 0.007001909611712286
+  }
+ },
+ "examples": [
+  {
+   "unit_id": "acct_month:SB00481:2026-01",
+   "status": "REVIEW",
+   "detector": "iforest",
+   "score": 0.2134,
+   "threshold": 0.0766,
+   "explanation": [
+    {
+     "feature": "max_txn_to_history",
+     "robust_z": 16.51,
+     "value": 11.814
+    },
+    {
+     "feature": "max_txn_to_income",
+     "robust_z": 16.21,
+     "value": 11.643
+    },
+    {
+     "feature": "turnover_to_balance",
+     "robust_z": 7.24,
+     "value": 4.181
+    }
+   ],
+   "source": {
+    "id": "A01_monitoring",
+    "quote": "the bank shall necessarily monitor the following types of transactions",
+    "direction": "Commercial Banks - Know Your Customer"
+   },
+   "truth": "unusual_large"
+  },
+  {
+   "unit_id": "acct_month:SB00364:2025-10",
+   "status": "REVIEW",
+   "detector": "iforest",
+   "score": 0.206,
+   "threshold": 0.0766,
+   "explanation": [
+    {
+     "feature": "cheque_then_cash",
+     "robust_z": 12.02,
+     "value": 0.766
+    },
+    {
+     "feature": "max_txn_to_income",
+     "robust_z": 10.76,
+     "value": 5.803
+    },
+    {
+     "feature": "turnover_to_balance",
+     "robust_z": 6.36,
+     "value": 3.459
+    }
+   ],
+   "source": {
+    "id": "A01_monitoring",
+    "quote": "the bank shall necessarily monitor the following types of transactions",
+    "direction": "Commercial Banks - Know Your Customer"
+   },
+   "truth": "fd_maturity"
+  },
+  {
+   "unit_id": "acct_month:SB01070:2026-03",
+   "status": "REVIEW",
+   "detector": "iforest",
+   "score": 0.2032,
+   "threshold": 0.0766,
+   "explanation": [
+    {
+     "feature": "cheque_then_cash",
+     "robust_z": 13.98,
+     "value": 0.938
+    },
+    {
+     "feature": "cash_withdrawal_share",
+     "robust_z": 7.29,
+     "value": 0.963
+    },
+    {
+     "feature": "max_txn_to_history",
+     "robust_z": 4.41,
+     "value": 2.285
+    }
+   ],
+   "source": {
+    "id": "A01_monitoring",
+    "quote": "the bank shall necessarily monitor the following types of transactions",
+    "direction": "Commercial Banks - Know Your Customer"
+   },
+   "truth": "third_party_cash"
+  },
+  {
+   "unit_id": "acct_month:SB01479:2026-03",
+   "status": "REVIEW",
+   "detector": "iforest",
+   "score": 0.2028,
+   "threshold": 0.0766,
+   "explanation": [
+    {
+     "feature": "max_txn_to_history",
+     "robust_z": 14.77,
+     "value": 9.533
+    },
+    {
+     "feature": "max_txn_to_income",
+     "robust_z": 14.68,
+     "value": 9.626
+    },
+    {
+     "feature": "turnover_to_balance",
+     "robust_z": 6.32,
+     "value": 3.434
+    }
+   ],
+   "source": {
+    "id": "A01_monitoring",
+    "quote": "the bank shall necessarily monitor the following types of transactions",
+    "direction": "Commercial Banks - Know Your Customer"
+   },
+   "truth": "unusual_large"
+  },
+  {
+   "unit_id": "acct_month:SB00053:2026-02",
+   "status": "REVIEW",
+   "detector": "iforest",
+   "score": 0.1992,
+   "threshold": 0.0766,
+   "explanation": [
+    {
+     "feature": "cheque_then_cash",
+     "robust_z": 12.91,
+     "value": 0.843
+    },
+    {
+     "feature": "cash_withdrawal_share",
+     "robust_z": 6.45,
+     "value": 0.828
+    },
+    {
+     "feature": "max_txn_to_history",
+     "robust_z": 4.57,
+     "value": 2.342
+    }
+   ],
+   "source": {
+    "id": "A01_monitoring",
+    "quote": "the bank shall necessarily monitor the following types of transactions",
+    "direction": "Commercial Banks - Know Your Customer"
+   },
+   "truth": "third_party_cash"
+  }
+ ],
+ "hardware": {
+  "python": "3.11.15",
+  "platform": "Linux-6.18.44-fc-v80-x86_64-with-glibc2.39",
+  "cpus": 4,
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "ram_gb": 15.7,
+  "gpu": null
+ },
+ "generated_at": "2026-10-09T17:21:11+00:00"
+}

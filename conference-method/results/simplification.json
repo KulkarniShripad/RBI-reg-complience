@@ -1,0 +1,69 @@
+{
+ "n": 17,
+ "systems": {
+  "source": {
+   "fkgl_mean": 16.370205393622523,
+   "fkgl_median": 14.220454545454547,
+   "words_mean": 120.29411764705883
+  },
+  "template": {
+   "fkgl_mean": 7.416227897056794,
+   "fkgl_median": 8.002894736842105,
+   "words_mean": 22.470588235294116
+  }
+ },
+ "t5_model": null,
+ "examples": [
+  {
+   "clause_id": "cf7e3d4f8f:13",
+   "source": "Procedure for Complaint Redress by Internal Ombudsman (1) The regulated entity shall formulate a Standard Operating Procedure (SOP) approved by the Committee of the Board handling Customer Service and Protection and establish a fully automated Complaints Management Software wherein all complaints that are partly or wholly rejected by the regulated entity's internal grievance redress mechanism are auto-escalated to the Internal Ombudsman within 20 days of receipt, for a final decision. (2) The Internal Ombudsman and regulated entity shall ensure that the final decision is communicated to the complainant within a period of 30 days from the date of receipt of complaint by the regulated entity. Such decision must be communicated to the complainant within 7 days of communication of the decision of the Internal Ombudsman on the case to the regulated entity.",
+   "template": "Communicate the final decision within 30 days of receipt of the complaint."
+  },
+  {
+   "clause_id": "7de9bbb89f:14",
+   "source": "IO gets at least 10 days for review of such complaints to enable final decision to be communicated to the complainants within the timelines prescribed by Reserve Bank of India, National Payments Corporation of India, or card network, as applicable; b) in all other cases, within 20 days of receipt. (9) The bank shall ensure that the final decision is communicated to the complainant within a period of 30 days from the date of receipt of complaint by the bank.",
+   "template": "Communicate the final decision within 30 days of receipt of the complaint."
+  },
+  {
+   "clause_id": "9d8feedffd:8",
+   "source": "Closure of Credit Card (a) Any request for closure of a credit card shall be honoured within seven working days by the credit card-issuer, subject to payment of all dues by the cardholder . If no reply is received from the cardholder within a period of 30 days, the card account shall be closed by the card-issuer, subject to payment of all dues by the cardholder . The information regarding the closure of card account shall also accordingly be updated with the Credit Information Company/ies within a period of 30 days.",
+   "template": "Report the closure to the credit information companies within 30 days of card closure."
+  },
+  {
+   "clause_id": "3b8082f9de:9",
+   "source": "In addition to the conditions laid down in paragraph 7 of these Directions, interest on domestic rupee savings deposit shall be subject to the following: (1) Interest shall be calculated on a daily product basis as under: (i) A uniform interest rate shall be set on balance up to ₹1 lakh, irrespective of the amount in the account within this limit.",
+   "template": "The balance must not exceed ₹1,00,000."
+  },
+  {
+   "clause_id": "0b30dc1ec2:19",
+   "source": "Any request for closure of a credit card shall be honoured within seven working days by the credit card-issuer, subject to payment of all dues by the cardholder.",
+   "template": "Close the card within 7 working days of the later of the closure request and clearance of dues. Delay costs ₹500 per day."
+  },
+  {
+   "clause_id": "0b30dc1ec2:20",
+   "source": "If no reply is received from the cardholder within a period of 30 days, the card account shall be closed by the card-issuer, subject to payment of all dues by the cardholder. The information regarding the closure of card account shall also accordingly be updated with the Credit Information Company/ies within a period of 30 days.",
+   "template": "Report the closure to the credit information companies within 30 days of card closure."
+  },
+  {
+   "clause_id": "88d2277455:21",
+   "source": "In terms of Sections 17(1) and11(2)(b)(ii) of the BR Act a bank is required to transfer, out of the balance of profit as disclosed in the profit and loss account, a sum equivalent to not less than 20 per cent of such profit to Reserve Fund. However, in order to augment capital, Commercial Bank shall transfer not less than 25 per cent of the 'net profit' before appropriations to the Statutory Reserve.",
+   "template": "The balance must be at least 20%."
+  },
+  {
+   "clause_id": "3de6429c14:5",
+   "source": "Explanation: For the purpose of this sub-clause- • 'Controlling ownership interest' means ownership of / entitlement to more than 10 percent of the shares or capital or profits of the company. • 'Control' shall include the right to appoint the majority of the directors or to control the management or policy decisions including by virtue of their shareholding or management rights or shareholders agreements or voting agreements. (b) Where the customer is a partnership firm , the beneficial owner is the natural person(s), who, whether acting alone or together, or through one or more juridical person(s), has / have ownership of / entitlement to more than 10 percent of capital or profits of the partnership or who exercises control through other means. (c) Where the customer is an unincorporated association or body of individuals, the beneficial owner is the natural person(s), who, whether acting alone or together, or through one or more juridical person, has / have ownership of / entitlement to more than 15 percent of the property or capital or profits of the unincorporated association or body of individuals. However, as mentioned below in clause (c), they are required to submit an OVD with current address within a period of three months. (c) the customer shall submit OVD with current address within a period of three months of submitting the documents specified at (b) above (d) if the OVD that a foreign national presents does not contain the details of address, the bank shall accept documents that Government departments of foreign jurisdictions issue, and a letter that the Foreign Embassy or Mission in India issues, as proof of address. Explanation: The CDD, at the time of commencement of an account-based relationship or while carrying out occasional transaction of an amount equal to or exceeding ₹50,000, whether conducted as a single transaction or several transactions that appear to be connected, or any international money transfer operations, shall include: (a) Identification of the customer, verification of their identity using reliable and independent sources of identification, obtaining information on the purpose and intended nature of the business relationship, where applicable (b) Taking reasonable steps to understand the nature of the customer's business, and its ownership and control; the following meanings are assigned to the terms herein: (1) Terms bearing meaning assigned in terms of the Prevention of Money-Laundering Act, 2002, and the Prevention of Money-Laundering (Maintenance of Records) Rules, 2005: (i) 'Aadhaar number' shall have the meaning assigned to it in clause (a) of section 2 of the Aadhaar (Targeted Delivery of Financial and Other Subsidies, Benefits and Servic the following documents or the equivalent e-documents thereof to be OVDs for the limited purpose of proof of address:- • utility bill which is not more than two months old of any service provider (electricity, telephone, post-paid mobile phone, piped gas, water bill); • property or Municipal tax receipt; • pension or family pension payment orders (PPOs) issued to retired employees by Government De",
+   "template": "For cross-border wire transfers, small accounts: Required: Aadhaar. For cross-border wire transfers, small accounts: Required: an officially valid document."
+  },
+  {
+   "clause_id": "3de6429c14:23",
+   "source": "shall obtain the following from an individual while establishing an account-based relationship or while dealing with the individual who is a beneficial owner, authorised signatory or the power of attorney holder related to any legal entity: (1) the Aadhaar number where, (i) they are desirous of receiving any benefit or subsidy under any scheme notified under section 7 of the Aadhaar (Targeted Deli",
+   "template": "Required: Aadhaar or an officially valid document or the KYC identifier; PAN or Form 60."
+  },
+  {
+   "clause_id": "3de6429c14:25",
+   "source": "(3) The aggregate balance of all the deposit accounts of the customer shall not exceed Rupees One Lakh. (4) The aggregate of all credits in a financial year, in all the deposit accounts taken together, shall not exceed Rupees Two Lakh. The aggregate amount of term loans sanctioned shall not exceed ₹60,000 in a year.",
+   "template": "The balance must not exceed ₹1,00,000. Total credits in a financial year must not exceed ₹2,00,000."
+  }
+ ],
+ "generated_at": "2026-10-09T17:18:17+00:00"
+}

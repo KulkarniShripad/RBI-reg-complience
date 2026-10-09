@@ -1,0 +1,102 @@
+{
+ "hardware": {
+  "python": "3.11.15",
+  "platform": "Linux-6.18.44-fc-v80-x86_64-with-glibc2.39",
+  "cpus": 4,
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "ram_gb": 15.7,
+  "gpu": null
+ },
+ "ingestion": {
+  "pdfs": 20,
+  "pages": 1016,
+  "clauses": 1371,
+  "seconds": 19.173192739486694,
+  "pages_per_s": 52.99065282474182
+ },
+ "extraction": {
+  "clauses": 19418,
+  "operational": 4018,
+  "rules": 2767,
+  "detect_clauses_per_s": 4546.719482491793,
+  "extract_clauses_per_s": 664.3433035141808
+ },
+ "encoding": {
+  "tfidf": {
+   "texts_per_s": 4298.103192088948
+  },
+  "bge-onnx": {
+   "texts_per_s": 30.60798419339419
+  }
+ },
+ "search": [
+  {
+   "dim": 384,
+   "vectors": 1000,
+   "ms_per_query": 0.013362407684326172
+  },
+  {
+   "dim": 384,
+   "vectors": 10000,
+   "ms_per_query": 0.06942439079284668
+  },
+  {
+   "dim": 384,
+   "vectors": 50000,
+   "ms_per_query": 0.340407133102417
+  },
+  {
+   "dim": 384,
+   "vectors": 200000,
+   "ms_per_query": 1.317629337310791
+  },
+  {
+   "dim": 768,
+   "vectors": 1000,
+   "ms_per_query": 0.012404441833496094
+  },
+  {
+   "dim": 768,
+   "vectors": 10000,
+   "ms_per_query": 0.14526128768920898
+  },
+  {
+   "dim": 768,
+   "vectors": 50000,
+   "ms_per_query": 0.6686897277832031
+  },
+  {
+   "dim": 768,
+   "vectors": 200000,
+   "ms_per_query": 2.517395257949829
+  }
+ ],
+ "end_to_end": [
+  {
+   "scale": 1.0,
+   "units": 2400,
+   "link_ms_per_unit": 0.04551788171132406,
+   "validate_ms_per_unit": 0.01689205567042033,
+   "validator_calls_per_unit": 8.0775,
+   "rule_only_ms_per_unit": 0.36542942126592,
+   "rule_only_calls_per_unit": 529.0
+  },
+  {
+   "scale": 4.0,
+   "units": 9600,
+   "link_ms_per_unit": 0.03921632965405782,
+   "validate_ms_per_unit": 0.028510366876920063,
+   "validator_calls_per_unit": 8.176875,
+   "rule_only_ms_per_unit": 0.38162318368752796,
+   "rule_only_calls_per_unit": 529.0
+  },
+  {
+   "scale": 16.0,
+   "units": 38400,
+   "link_ms_per_unit": 0.08181866258382797,
+   "validate_ms_per_unit": 0.025527638693650562,
+   "validator_calls_per_unit": 8.145364583333333
+  }
+ ],
+ "generated_at": "2026-10-09T17:19:57+00:00"
+}

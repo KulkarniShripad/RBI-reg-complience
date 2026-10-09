@@ -1,0 +1,885 @@
+{
+ "source": "urcc-ef-backend regulatoryRules.js + graphRules.js (verified sources only)",
+ "n": 62,
+ "rules": [
+  {
+   "key": "cb_crar",
+   "set": "figures",
+   "category": "commercial_banks",
+   "doc_title": "Reserve Bank of India (Commercial Banks - Prudential Norms on Capital Adequacy) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Commercial Banks - Prudential Norms on Capital Adequacy\\)",
+   "text_regex": "Capital to Risk-Weighted Assets Ratio \\(CRAR\\) shall be at least 9 per cent",
+   "operator": ">=",
+   "values": [
+    9
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "cb_cet1",
+   "set": "figures",
+   "category": "commercial_banks",
+   "doc_title": "Reserve Bank of India (Commercial Banks - Prudential Norms on Capital Adequacy) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Commercial Banks - Prudential Norms on Capital Adequacy\\)",
+   "text_regex": "CET1 capital shall be at least 5\\.5 per cent of the RWAs",
+   "operator": ">=",
+   "values": [
+    5.5
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "cb_tier1",
+   "set": "figures",
+   "category": "commercial_banks",
+   "doc_title": "Reserve Bank of India (Commercial Banks - Prudential Norms on Capital Adequacy) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Commercial Banks - Prudential Norms on Capital Adequacy\\)",
+   "text_regex": "Tier 1 capital shall be at least 7 per cent of the RWAs",
+   "operator": ">=",
+   "values": [
+    7
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "cb_crar_ccb",
+   "set": "figures",
+   "category": "commercial_banks",
+   "doc_title": "Reserve Bank of India (Commercial Banks - Prudential Norms on Capital Adequacy) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Commercial Banks - Prudential Norms on Capital Adequacy\\)",
+   "text_regex": "maintain a CCB of 2\\.5 per cent which shall comprise of CET1 capital, above the regulatory minimum capital requirement of 9 per cent",
+   "operator": ">=",
+   "values": [
+    2.5
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "cb_cet1_ccb",
+   "set": "figures",
+   "category": "commercial_banks",
+   "doc_title": "Reserve Bank of India (Commercial Banks - Prudential Norms on Capital Adequacy) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Commercial Banks - Prudential Norms on Capital Adequacy\\)",
+   "text_regex": "maintain a CCB of 2\\.5 per cent which shall comprise of CET1 capital",
+   "operator": ">=",
+   "values": [
+    2.5
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "cb_leverage_dsib",
+   "set": "figures",
+   "category": "commercial_banks",
+   "doc_title": "Reserve Bank of India (Commercial Banks - Prudential Norms on Capital Adequacy) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Commercial Banks - Prudential Norms on Capital Adequacy\\)",
+   "text_regex": "minimum leverage ratio for a Domestic Systemically Important Bank \\(D-\\s?SIB\\) shall be 4 per cent and 3\\.5 per cent for other banks",
+   "operator": ">=",
+   "values": [
+    4
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "cb_leverage",
+   "set": "figures",
+   "category": "commercial_banks",
+   "doc_title": "Reserve Bank of India (Commercial Banks - Prudential Norms on Capital Adequacy) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Commercial Banks - Prudential Norms on Capital Adequacy\\)",
+   "text_regex": "minimum leverage ratio for a Domestic Systemically Important Bank \\(D-\\s?SIB\\) shall be 4 per cent and 3\\.5 per cent for other banks",
+   "operator": ">=",
+   "values": [
+    3.5
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "cb_lcr",
+   "set": "figures",
+   "category": "commercial_banks",
+   "doc_title": "Reserve Bank of India (Commercial Banks – Asset Liability Management) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Commercial Banks – Asset Liability Management\\)",
+   "text_regex": "maintain LCR at a minimum of 100 per cent",
+   "operator": ">=",
+   "values": [
+    100
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "cb_nsfr",
+   "set": "figures",
+   "category": "commercial_banks",
+   "doc_title": "Reserve Bank of India (Commercial Banks – Asset Liability Management) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Commercial Banks – Asset Liability Management\\)",
+   "text_regex": "maintain NSFR of at a minimum of 100 per cent",
+   "operator": ">=",
+   "values": [
+    100
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "cb_psl",
+   "set": "figures",
+   "category": "commercial_banks",
+   "doc_title": "Reserve Bank of India (Priority Sector Lending – Targets and Classification) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Priority Sector Lending – Targets and Classification\\)",
+   "text_regex": "40 per cent of ANBC",
+   "operator": ">=",
+   "values": [
+    40
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "sfb_crar",
+   "set": "figures",
+   "category": "small_finance_banks",
+   "doc_title": "Reserve Bank of India (Small Finance Banks – Prudential Norms on Capital Adequacy) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Small Finance Banks – Prudential Norms on Capital Adequacy\\)",
+   "text_regex": "capital to risk-weighted assets ratio \\(CRAR\\) shall be at least 15 per cent",
+   "operator": ">=",
+   "values": [
+    15
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "sfb_cet1",
+   "set": "figures",
+   "category": "small_finance_banks",
+   "doc_title": "Reserve Bank of India (Small Finance Banks – Prudential Norms on Capital Adequacy) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Small Finance Banks – Prudential Norms on Capital Adequacy\\)",
+   "text_regex": "CET1 capital shall be at least 6 per cent of the RWAs",
+   "operator": ">=",
+   "values": [
+    6
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "sfb_tier1",
+   "set": "figures",
+   "category": "small_finance_banks",
+   "doc_title": "Reserve Bank of India (Small Finance Banks – Prudential Norms on Capital Adequacy) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Small Finance Banks – Prudential Norms on Capital Adequacy\\)",
+   "text_regex": "Tier 1 capital shall be at least 7\\.5 per cent of the RWAs",
+   "operator": ">=",
+   "values": [
+    7.5
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "sfb_leverage",
+   "set": "figures",
+   "category": "small_finance_banks",
+   "doc_title": "Reserve Bank of India (Small Finance Banks – Prudential Norms on Capital Adequacy) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Small Finance Banks – Prudential Norms on Capital Adequacy\\)",
+   "text_regex": "minimum leverage ratio for a bank shall be 4\\.5 per cent",
+   "operator": ">=",
+   "values": [
+    4.5
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "sfb_lcr",
+   "set": "figures",
+   "category": "small_finance_banks",
+   "doc_title": "Reserve Bank of India (Small Finance Banks – Asset Liability Management) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Small Finance Banks – Asset Liability Management\\)",
+   "text_regex": "maintain LCR at a minimum of 100 per cent",
+   "operator": ">=",
+   "values": [
+    100
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "sfb_nsfr",
+   "set": "figures",
+   "category": "small_finance_banks",
+   "doc_title": "Reserve Bank of India (Small Finance Banks – Asset Liability Management) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Small Finance Banks – Asset Liability Management\\)",
+   "text_regex": "maintain NSFR of at a minimum of 100 per cent",
+   "operator": ">=",
+   "values": [
+    100
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "pb_crar",
+   "set": "figures",
+   "category": "payments_banks",
+   "doc_title": "Reserve Bank of India (Payments Banks – Prudential Norms on Capital Adequacy) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Payments Banks – Prudential Norms on Capital Adequacy\\)",
+   "text_regex": "Capital to Risk Weighted Asset Ratio \\(CRAR\\) shall be at least 15 per cent",
+   "operator": ">=",
+   "values": [
+    15
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "pb_cet1",
+   "set": "figures",
+   "category": "payments_banks",
+   "doc_title": "Reserve Bank of India (Payments Banks – Prudential Norms on Capital Adequacy) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Payments Banks – Prudential Norms on Capital Adequacy\\)",
+   "text_regex": "CET\\s?1 capital shall be at least 6 per cent of the RWAs",
+   "operator": ">=",
+   "values": [
+    6
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "pb_tier1",
+   "set": "figures",
+   "category": "payments_banks",
+   "doc_title": "Reserve Bank of India (Payments Banks – Prudential Norms on Capital Adequacy) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Payments Banks – Prudential Norms on Capital Adequacy\\)",
+   "text_regex": "Tier 1 Capital shall be at least 7\\.5 per cent of the RWAs",
+   "operator": ">=",
+   "values": [
+    7.5
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "pb_leverage",
+   "set": "figures",
+   "category": "payments_banks",
+   "doc_title": "Reserve Bank of India (Payments Banks – Prudential Norms on Capital Adequacy) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Payments Banks – Prudential Norms on Capital Adequacy\\)",
+   "text_regex": "leverage ratio of not less than 3 per cent",
+   "operator": ">=",
+   "values": [
+    3
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "ucb_crar",
+   "set": "figures",
+   "category": "urban_cooperative_banks",
+   "doc_title": "Reserve Bank of India (Urban Co-operative Banks - Prudential Norms on Capital Adequacy) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Urban Co-operative Banks - Prudential Norms on Capital Adequacy\\)",
+   "text_regex": "Tier 1 UCB shall maintain a minimum CRAR of 9 per cent[\\s\\S]*Tiers 2 to 4 shall maintain a minimum CRAR of 12 per cent",
+   "operator": ">=",
+   "values": [
+    9,
+    12
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "ucb_net_worth",
+   "set": "figures",
+   "category": "urban_cooperative_banks",
+   "doc_title": "Reserve Bank of India (Urban Co-operative Banks - Prudential Norms on Capital Adequacy) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Urban Co-operative Banks - Prudential Norms on Capital Adequacy\\)",
+   "text_regex": "All other UCBs \\(of all tiers\\) shall have minimum net worth of ₹5 crore",
+   "operator": ">=",
+   "values": [
+    5
+   ],
+   "unit": "₹ crore"
+  },
+  {
+   "key": "rrb_crar",
+   "set": "figures",
+   "category": "regional_rural_banks",
+   "doc_title": "Reserve Bank of India (Regional Rural Banks - Prudential Norms on Capital Adequacy) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Regional Rural Banks - Prudential Norms on Capital Adequacy\\)",
+   "text_regex": "RRB is required to maintain a minimum Capital to Risk Weighted Assets Ratio \\(CRAR\\) of 9 per cent",
+   "operator": ">=",
+   "values": [
+    9
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "rrb_tier1",
+   "set": "figures",
+   "category": "regional_rural_banks",
+   "doc_title": "Reserve Bank of India (Regional Rural Banks - Prudential Norms on Capital Adequacy) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Regional Rural Banks - Prudential Norms on Capital Adequacy\\)",
+   "text_regex": "total Tier 1 Capital shall not be less than 7 per cent of RWAs",
+   "operator": ">=",
+   "values": [
+    7
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "lab_crar",
+   "set": "figures",
+   "category": "local_area_banks",
+   "doc_title": "Reserve Bank of India (Local Area Banks - Prudential Norms on Capital Adequacy) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Local Area Banks - Prudential Norms on Capital Adequacy\\)",
+   "text_regex": "LAB shall maintain a minimum Capital to Risk-weighted Assets Ratio \\(CRAR\\) of 9 per cent",
+   "operator": ">=",
+   "values": [
+    9
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "rcb_crar",
+   "set": "figures",
+   "category": "rural_cooperative_banks",
+   "doc_title": "Reserve Bank of India (Rural Co-operative Banks - Prudential Norms on Capital Adequacy) Directions, 2025",
+   "title_regex": "^Reserve Bank of India \\(Rural Co-operative Banks - Prudential Norms on Capital Adequacy\\)",
+   "text_regex": "RCB shall maintain a minimum Capital to Risk Weighted Assets Ratio \\(CRAR\\) of 9 per cent",
+   "operator": ">=",
+   "values": [
+    9
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "cb_single",
+   "set": "network",
+   "category": "commercial_banks",
+   "doc_title": "Reserve Bank of India (Commercial Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Commercial Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "single counterparty shall not be higher than 20 ?per ?cent",
+   "para": "15",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    20
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "cb_interbank",
+   "set": "network",
+   "category": "commercial_banks",
+   "doc_title": "Reserve Bank of India (Commercial Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Commercial Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "interbank exposures.*25 ?per ?cent of a bank.s Tier 1",
+   "para": "62",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    25
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "cb_nbfc_single",
+   "set": "network",
+   "category": "commercial_banks",
+   "doc_title": "Reserve Bank of India (Commercial Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Commercial Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "single NBFC will be restricted to 20 ?per ?cent",
+   "para": "79",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    20
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "cb_gold_nbfc",
+   "set": "network",
+   "category": "commercial_banks",
+   "doc_title": "Reserve Bank of India (Commercial Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Commercial Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "shall not exceed 7\\.5 ?per ?cent of the bank.s capital funds",
+   "para": "80",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    7.5
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "cb_group",
+   "set": "network",
+   "category": "commercial_banks",
+   "doc_title": "Reserve Bank of India (Commercial Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Commercial Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "group of connected counterparties.*shall not be higher than 25 ?per ?cent",
+   "para": "16",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    25
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "cb_connected_nbfc",
+   "set": "network",
+   "category": "commercial_banks",
+   "doc_title": "Reserve Bank of India (Commercial Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Commercial Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "group of connected NBFCs.*25 ?per ?cent of its Tier I",
+   "para": "81",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    25
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "cb_ite_single_nonfin",
+   "set": "network",
+   "category": "commercial_banks",
+   "doc_title": "Reserve Bank of India (Commercial Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Commercial Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "five ?per ?cent of eligible capital base in case of non-financial",
+   "para": "116",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    5
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "cb_ite_single_fin",
+   "set": "network",
+   "category": "commercial_banks",
+   "doc_title": "Reserve Bank of India (Commercial Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Commercial Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "10 ?per ?cent of eligible capital base in case of regulated financial",
+   "para": "116",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    10
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "cb_ite_agg_nonfin",
+   "set": "network",
+   "category": "commercial_banks",
+   "doc_title": "Reserve Bank of India (Commercial Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Commercial Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "10 ?per ?cent of eligible capital base in case of all non-financial",
+   "para": "116",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    10
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "cb_ite_agg_all",
+   "set": "network",
+   "category": "commercial_banks",
+   "doc_title": "Reserve Bank of India (Commercial Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Commercial Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "20 ?per ?cent of eligible capital base in case of the group",
+   "para": "116",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    20
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "sfb_single",
+   "set": "network",
+   "category": "small_finance_banks",
+   "doc_title": "Reserve Bank of India (Small Finance Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Small Finance Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "single and group obligor shall not be higher than 10 per ?cent and 15 per ?cent",
+   "para": "10",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    10
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "sfb_group",
+   "set": "network",
+   "category": "small_finance_banks",
+   "doc_title": "Reserve Bank of India (Small Finance Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Small Finance Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "single and group obligor shall not be higher than 10 per ?cent and 15 per ?cent",
+   "para": "10",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    15
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "sfb_nbfc_single",
+   "set": "network",
+   "category": "small_finance_banks",
+   "doc_title": "Reserve Bank of India (Small Finance Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Small Finance Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "single NBFC and group NBFC obligor shall not be higher than 10 per ?cent and 15 per ?cent",
+   "para": "14",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    10
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "sfb_nbfc_group",
+   "set": "network",
+   "category": "small_finance_banks",
+   "doc_title": "Reserve Bank of India (Small Finance Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Small Finance Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "single NBFC and group NBFC obligor shall not be higher than 10 per ?cent and 15 per ?cent",
+   "para": "14",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    15
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "sfb_ite_single_nonfin",
+   "set": "network",
+   "category": "small_finance_banks",
+   "doc_title": "Reserve Bank of India (Small Finance Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Small Finance Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "five per ?cent of Paid-up Capital and Reserves in case of non-financial",
+   "para": "48",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    5
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "sfb_ite_single_fin",
+   "set": "network",
+   "category": "small_finance_banks",
+   "doc_title": "Reserve Bank of India (Small Finance Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Small Finance Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "10 per ?cent of Paid-up Capital and Reserves in case of regulated",
+   "para": "48",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    10
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "sfb_ite_agg_nonfin",
+   "set": "network",
+   "category": "small_finance_banks",
+   "doc_title": "Reserve Bank of India (Small Finance Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Small Finance Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "10 per ?cent of Paid-up Capital and Reserves in case of all non-financial",
+   "para": "48",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    10
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "sfb_ite_agg_all",
+   "set": "network",
+   "category": "small_finance_banks",
+   "doc_title": "Reserve Bank of India (Small Finance Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Small Finance Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "20 per ?cent of Paid-up Capital and Reserves in case of the group",
+   "para": "48",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    20
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "lab_single",
+   "set": "network",
+   "category": "local_area_banks",
+   "doc_title": "Reserve Bank of India (Local Area Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Local Area Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "single and group borrower shall not be higher than 15 ?percent and 40 ?percent",
+   "para": "7",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    15
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "lab_group",
+   "set": "network",
+   "category": "local_area_banks",
+   "doc_title": "Reserve Bank of India (Local Area Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Local Area Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "single and group borrower shall not be higher than 15 ?percent and 40 ?percent",
+   "para": "7",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    40
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "lab_nbfc_single",
+   "set": "network",
+   "category": "local_area_banks",
+   "doc_title": "Reserve Bank of India (Local Area Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Local Area Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "single NBFC and group NBFC borrower shall not be higher than 10 ?percent and 15 ?percent",
+   "para": "10",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    10
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "lab_nbfc_group",
+   "set": "network",
+   "category": "local_area_banks",
+   "doc_title": "Reserve Bank of India (Local Area Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Local Area Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "single NBFC and group NBFC borrower shall not be higher than 10 ?percent and 15 ?percent",
+   "para": "10",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    15
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "rrb_single",
+   "set": "network",
+   "category": "regional_rural_banks",
+   "doc_title": "Reserve Bank of India (Regional Rural Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Regional Rural Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "not be higher than 15 per ?cent and 40 per ?cent of its owned funds",
+   "para": "7",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    15
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "rrb_group",
+   "set": "network",
+   "category": "regional_rural_banks",
+   "doc_title": "Reserve Bank of India (Regional Rural Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Regional Rural Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "not be higher than 15 per ?cent and 40 per ?cent of its owned funds",
+   "para": "7",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    40
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "ucb_single",
+   "set": "network",
+   "category": "urban_cooperative_banks",
+   "doc_title": "Reserve Bank of India (Urban Co-operative Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Urban Co-operative Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "individual borrower does not exceed 15 per ?cent of Tier-I capital",
+   "para": "6",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    15
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "ucb_group",
+   "set": "network",
+   "category": "urban_cooperative_banks",
+   "doc_title": "Reserve Bank of India (Urban Co-operative Banks - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Urban Co-operative Banks\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "group of connected borrowers \\/ parties does not exceed 25 per ?cent of Tier-I capital",
+   "para": "6",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    25
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "nbfc_ml_single",
+   "set": "network",
+   "category": "nbfc",
+   "doc_title": "Reserve Bank of India (Non-Banking Financial Companies - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Non-Banking Financial Companies\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "25 per ?cent of its Tier 1 capital to a single party",
+   "para": "13",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    25
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "nbfc_ml_group",
+   "set": "network",
+   "category": "nbfc",
+   "doc_title": "Reserve Bank of India (Non-Banking Financial Companies - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Non-Banking Financial Companies\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "40 per ?cent of its Tier 1 capital to a single group of parties",
+   "para": "13",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    40
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "nbfc_ifc_single",
+   "set": "network",
+   "category": "nbfc",
+   "doc_title": "Reserve Bank of India (Non-Banking Financial Companies - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Non-Banking Financial Companies\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "30 per ?cent of its Tier 1 capital to a single party",
+   "para": "14",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    30
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "nbfc_ifc_group",
+   "set": "network",
+   "category": "nbfc",
+   "doc_title": "Reserve Bank of India (Non-Banking Financial Companies - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Non-Banking Financial Companies\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "50 per ?cent of its Tier 1 capital to a single group of parties",
+   "para": "14",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    50
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "nbfc_ul_single",
+   "set": "network",
+   "category": "nbfc",
+   "doc_title": "Reserve Bank of India (Non-Banking Financial Companies - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Non-Banking Financial Companies\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "single counterparty shall not be higher than 20 per ?cent",
+   "para": "33",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    20
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "nbfc_ul_ifc_single",
+   "set": "network",
+   "category": "nbfc",
+   "doc_title": "Reserve Bank of India (Non-Banking Financial Companies - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Non-Banking Financial Companies\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "30 per ?cent for NBFC-IFC",
+   "para": "34",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    25
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "nbfc_ul_group",
+   "set": "network",
+   "category": "nbfc",
+   "doc_title": "Reserve Bank of India (Non-Banking Financial Companies - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Non-Banking Financial Companies\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "group of connected counterparties shall not be higher than 25 per ?cent",
+   "para": "35",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    25
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "nbfc_ul_ifc_group",
+   "set": "network",
+   "category": "nbfc",
+   "doc_title": "Reserve Bank of India (Non-Banking Financial Companies - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(Non-Banking Financial Companies\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "IFC may exceed the exposure limit by 10 per ?cent",
+   "para": "35",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    35
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "aifi_single",
+   "set": "network",
+   "category": "all_india_financial_institutions",
+   "doc_title": "Reserve Bank of India (All India Financial Institutions - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(All India Financial Institutions\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "single counterparty shall not be higher than 20 per ?cent",
+   "para": "11",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    20
+   ],
+   "unit": "%"
+  },
+  {
+   "key": "aifi_group",
+   "set": "network",
+   "category": "all_india_financial_institutions",
+   "doc_title": "Reserve Bank of India (All India Financial Institutions - Concentration Risk Management) Directions, 2025",
+   "title_regex": "\\(All India Financial Institutions\\s*[-–]\\s*Concentration Risk Management\\)",
+   "text_regex": "group of connected counterparties shall not be higher than 25 per ?cent",
+   "para": "12",
+   "clause_text": null,
+   "operator": "<=",
+   "values": [
+    25
+   ],
+   "unit": "%"
+  }
+ ]
+}

@@ -1,0 +1,4863 @@
+{
+ "A_development": {
+  "rows": [
+   {
+    "gold": "G01_small_credits",
+    "clause": "3de6429c14:28",
+    "kind": "threshold",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "aggregate": true,
+     "period": true,
+     "op": true,
+     "value": true,
+     "conditions": true
+    },
+    "candidate": {
+     "rule_id": "3de6429c14:28#1",
+     "clause_id": "3de6429c14:28",
+     "kind": "threshold",
+     "field": "credits",
+     "aggregate": "sum",
+     "period": "financial_year",
+     "op": "<=",
+     "value": 100000.0,
+     "unit": "INR",
+     "role": "limit",
+     "conditions": {
+      "account_type": "small"
+     }
+    }
+   },
+   {
+    "gold": "G02_small_debits",
+    "clause": "3de6429c14:28",
+    "kind": "threshold",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "aggregate": true,
+     "period": true,
+     "op": true,
+     "value": true,
+     "conditions": true
+    },
+    "candidate": {
+     "rule_id": "3de6429c14:28#2",
+     "clause_id": "3de6429c14:28",
+     "kind": "threshold",
+     "field": "debits",
+     "aggregate": "sum",
+     "period": "month",
+     "op": "<=",
+     "value": 10000.0,
+     "unit": "INR",
+     "role": "limit",
+     "conditions": {
+      "account_type": "small"
+     }
+    }
+   },
+   {
+    "gold": "G03_small_balance",
+    "clause": "3de6429c14:28",
+    "kind": "threshold",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "aggregate": true,
+     "period": true,
+     "op": true,
+     "value": true,
+     "conditions": true,
+     "exceptions": true
+    },
+    "candidate": {
+     "rule_id": "3de6429c14:28#3",
+     "clause_id": "3de6429c14:28",
+     "kind": "threshold",
+     "field": "balance",
+     "aggregate": "max",
+     "period": "any_time",
+     "op": "<=",
+     "value": 50000.0,
+     "unit": "INR",
+     "role": "limit",
+     "conditions": {
+      "account_type": "small"
+     },
+     "exceptions": [
+      {
+       "exclude_credit_sources": [
+        "govt_grant",
+        "welfare",
+        "procurement"
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "gold": "G04_wire_information",
+    "clause": "3de6429c14:74",
+    "kind": "set",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "required": true,
+     "conditions": true,
+     "exceptions": true
+    },
+    "candidate": {
+     "rule_id": "3de6429c14:74#3",
+     "clause_id": "3de6429c14:74",
+     "kind": "set",
+     "role": "limit",
+     "required": [
+      [
+       "originator_name"
+      ],
+      [
+       "originator_account",
+       "txn_ref"
+      ],
+      [
+       "originator_address",
+       "originator_national_id",
+       "originator_customer_id",
+       "originator_dob_pob"
+      ],
+      [
+       "beneficiary_name"
+      ],
+      [
+       "beneficiary_account",
+       "txn_ref"
+      ]
+     ],
+     "conditions": {
+      "cross_border": true
+     },
+     "exceptions": [
+      {
+       "when": {
+        "batch": true
+       },
+       "originator_any_of": [
+        "originator_account",
+        "txn_ref"
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "gold": "G05_ckycr_upload",
+    "clause": "3de6429c14:65",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "3de6429c14:65#1",
+     "clause_id": "3de6429c14:65",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "account_opened"
+     ],
+     "target": "ckycr_uploaded",
+     "window": 10.0
+    }
+   },
+   {
+    "gold": "G06_ckycr_update",
+    "clause": "3de6429c14:65",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "3de6429c14:65#2",
+     "clause_id": "3de6429c14:65",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "updated_info_obtained"
+     ],
+     "target": "ckycr_updated",
+     "window": 7.0
+    }
+   },
+   {
+    "gold": "G07_cdd_documents",
+    "clause": "3de6429c14:23",
+    "kind": "set",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "required": true
+    },
+    "candidate": {
+     "rule_id": "3de6429c14:23#1",
+     "clause_id": "3de6429c14:23",
+     "kind": "set",
+     "role": "limit",
+     "required": [
+      [
+       "aadhaar",
+       "ovd",
+       "kyc_identifier"
+      ],
+      [
+       "pan",
+       "form60"
+      ]
+     ]
+    }
+   },
+   {
+    "gold": "G08_periodic_updation",
+    "clause": "3de6429c14:42",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "unit": true,
+     "per_category": true,
+     "grace": true
+    },
+    "candidate": {
+     "rule_id": "3de6429c14:42#1",
+     "clause_id": "3de6429c14:42",
+     "kind": "temporal",
+     "unit": "years",
+     "role": "limit",
+     "anchor": [
+      "account_opened",
+      "last_kyc_update"
+     ],
+     "anchor_mode": "latest",
+     "target": "kyc_updated",
+     "per_category": {
+      "field": "risk",
+      "values": {
+       "high": 2.0,
+       "medium": 8.0,
+       "low": 10.0
+      }
+     },
+     "grace": {
+      "when": {
+       "customer_type": "individual",
+       "risk": "low"
+      },
+      "extra": 1.0,
+      "unit": "years",
+      "until": "June 30, 2026",
+      "combine": "later"
+     }
+    }
+   },
+   {
+    "gold": "G09_advance_intimations",
+    "clause": "3de6429c14:42",
+    "kind": "cardinality",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "op": true,
+     "value": true,
+     "sub": true,
+     "when": true
+    },
+    "candidate": {
+     "rule_id": "3de6429c14:42#5",
+     "clause_id": "3de6429c14:42",
+     "kind": "cardinality",
+     "field": "advance_intimations",
+     "op": ">=",
+     "value": 3.0,
+     "unit": "count",
+     "role": "limit",
+     "sub": {
+      "filter": {
+       "mode": "letter"
+      },
+      "op": ">=",
+      "value": 1.0
+     },
+     "when": "before_due"
+    }
+   },
+   {
+    "gold": "G10_reminders",
+    "clause": "3de6429c14:42",
+    "kind": "cardinality",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "op": true,
+     "value": true,
+     "sub": true,
+     "when": true
+    },
+    "candidate": {
+     "rule_id": "3de6429c14:42#6",
+     "clause_id": "3de6429c14:42",
+     "kind": "cardinality",
+     "field": "reminders",
+     "op": ">=",
+     "value": 3.0,
+     "unit": "count",
+     "role": "limit",
+     "sub": {
+      "filter": {
+       "mode": "letter"
+      },
+      "op": ">=",
+      "value": 1.0
+     },
+     "when": "after_due"
+    }
+   },
+   {
+    "gold": "G11_card_closure",
+    "clause": "0b30dc1ec2:19",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true,
+     "remediation": true
+    },
+    "candidate": {
+     "rule_id": "0b30dc1ec2:19#1",
+     "clause_id": "0b30dc1ec2:19",
+     "kind": "temporal",
+     "unit": "working_days",
+     "role": "limit",
+     "anchor": [
+      "closure_requested",
+      "dues_cleared"
+     ],
+     "anchor_mode": "latest",
+     "target": "card_closed",
+     "window": 7.0,
+     "remediation": {
+      "per_day": 500.0,
+      "unit": "INR"
+     }
+    }
+   },
+   {
+    "gold": "G12_card_cic_update",
+    "clause": "0b30dc1ec2:20",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "0b30dc1ec2:20#2",
+     "clause_id": "0b30dc1ec2:20",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "card_closed"
+     ],
+     "target": "cic_updated",
+     "window": 30.0
+    }
+   },
+   {
+    "gold": "G13_io_decision",
+    "clause": "7de9bbb89f:14",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "7de9bbb89f:14#2",
+     "clause_id": "7de9bbb89f:14",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "complaint_received"
+     ],
+     "target": "decision_communicated",
+     "window": 30.0
+    }
+   },
+   {
+    "gold": "G14_cyber_reporting",
+    "clause": "f2b4a8d19d:56",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "f2b4a8d19d:56#1",
+     "clause_id": "f2b4a8d19d:56",
+     "kind": "temporal",
+     "unit": "hours",
+     "role": "limit",
+     "anchor": [
+      "incident_detected"
+     ],
+     "target": "incident_reported_rbi",
+     "window": 6.0
+    }
+   }
+  ],
+  "exact": 14,
+  "n": 14,
+  "per_param": {
+   "aggregate": 1.0,
+   "anchor": 1.0,
+   "conditions": 1.0,
+   "exceptions": 1.0,
+   "field": 1.0,
+   "grace": 1.0,
+   "op": 1.0,
+   "per_category": 1.0,
+   "period": 1.0,
+   "remediation": 1.0,
+   "required": 1.0,
+   "sub": 1.0,
+   "target": 1.0,
+   "unit": 1.0,
+   "value": 1.0,
+   "when": 1.0,
+   "window": 1.0
+  },
+  "operational_recall": 1.0,
+  "extracted": 20,
+  "extra": [
+   {
+    "rule_id": "3de6429c14:74#1",
+    "clause_id": "3de6429c14:74",
+    "kind": "threshold",
+    "sentence": "(b) Customer Identification shall be made if a customer, who is not an account holder of the ordering bank, is intentionally structuring domestic wire transfers below ₹50,000 to avoid reporting or monitoring.",
+    "op": "<",
+    "value": 50000.0,
+    "unit": "INR",
+    "role": "limit",
+    "conditions": {
+     "cross_border": true
+    }
+   },
+   {
+    "rule_id": "3de6429c14:74#2",
+    "clause_id": "3de6429c14:74",
+    "kind": "temporal",
+    "sentence": "Existing agreements / arrangements, if any, with such entities shall be reviewed within three months to ensure aforementioned requirements.",
+    "unit": "months",
+    "role": "limit",
+    "window": 3.0,
+    "conditions": {
+     "cross_border": true
+    }
+   },
+   {
+    "rule_id": "3de6429c14:42#3",
+    "clause_id": "3de6429c14:42",
+    "kind": "temporal",
+    "sentence": "(3) Individuals: (i) No change in KYC information: In case of no change in the KYC information, the bank shall obtain a self-declaration from the customer in this regard through the customer's email-id registered with the bank, customer's mobile number registered with the bank, ATMs, or digital channels (such as online banking / internet banking, mobile application of bank) letter, etc. (ii) Change in address: In case of a change only in the address details of the customer, the bank shall obtain a self-declaration of the new address from the customer through customer's email-id registered with the bank , customer's mobile number registered with the bank , ATMs, digital channels (such as online banking / internet banking, mobile application of bank), letter, etc., and shall verify the declared address through positive confirmation within two months, by means such as address verification letter, contact point verification, deliverables, etc. (iii) Further, the bank at its option, may obtain a copy of OVD or deemed OVD, as defined in sub-clause (xiv) of clause (1) of paragraph 5, or the equivalent e-documents thereof, as defined in sub-clause (x) of clause (1) of paragraph 5, for the purpose of proof of address, declared by the customer at the time of updation / periodic updation.",
+    "unit": "months",
+    "role": "limit",
+    "target": "kyc_updated",
+    "window": 2.0
+   },
+   {
+    "rule_id": "3de6429c14:42#4",
+    "clause_id": "3de6429c14:42",
+    "kind": "temporal",
+    "sentence": "This shall be done within 30 days of the update to the documents for the purpose of updating the records at the bank's end.",
+    "unit": "days",
+    "role": "limit",
+    "window": 30.0
+   },
+   {
+    "rule_id": "0b30dc1ec2:20#1",
+    "clause_id": "0b30dc1ec2:20",
+    "kind": "temporal",
+    "sentence": "If no reply is received from the cardholder within a period of 30 days, the card account shall be closed by the card-issuer, subject to payment of all dues by the cardholder.",
+    "unit": "days",
+    "role": "limit",
+    "target": "card_closed",
+    "window": 30.0
+   },
+   {
+    "rule_id": "7de9bbb89f:14#1",
+    "clause_id": "7de9bbb89f:14",
+    "kind": "temporal",
+    "sentence": "IO gets at least 10 days for review of such complaints to enable final decision to be communicated to the complainants within the timelines prescribed by Reserve Bank of India, National Payments Corporation of India, or card network, as applicable; b) in all other cases, within 20 days of receipt.",
+    "unit": "days",
+    "role": "limit",
+    "anchor": [
+     "decision_communicated"
+    ],
+    "window": 20.0
+   }
+  ]
+ },
+ "B_parallel": {
+  "rows": [
+   {
+    "gold": "G01_small_credits@9f303816f3:27",
+    "clause": "9f303816f3:27",
+    "kind": "threshold",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "aggregate": true,
+     "period": true,
+     "op": true,
+     "value": true,
+     "conditions": true
+    },
+    "candidate": {
+     "rule_id": "9f303816f3:27#1",
+     "clause_id": "9f303816f3:27",
+     "kind": "threshold",
+     "field": "credits",
+     "aggregate": "sum",
+     "period": "financial_year",
+     "op": "<=",
+     "value": 100000.0,
+     "unit": "INR",
+     "role": "limit",
+     "conditions": {
+      "account_type": "small"
+     }
+    },
+    "category": "Regional_Rural_Bank",
+    "direction": "Reserve Bank of India (Regional Rural Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G01_small_credits@e510d3e0e7:27",
+    "clause": "e510d3e0e7:27",
+    "kind": "threshold",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "aggregate": true,
+     "period": true,
+     "op": true,
+     "value": true,
+     "conditions": true
+    },
+    "candidate": {
+     "rule_id": "e510d3e0e7:27#1",
+     "clause_id": "e510d3e0e7:27",
+     "kind": "threshold",
+     "field": "credits",
+     "aggregate": "sum",
+     "period": "financial_year",
+     "op": "<=",
+     "value": 100000.0,
+     "unit": "INR",
+     "role": "limit",
+     "conditions": {
+      "account_type": "small"
+     }
+    },
+    "category": "Rural_Cooperative_Bank",
+    "direction": "Reserve Bank of India (Rural Co-operative Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G01_small_credits@59eb085a8a:27",
+    "clause": "59eb085a8a:27",
+    "kind": "threshold",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "aggregate": true,
+     "period": true,
+     "op": true,
+     "value": true,
+     "conditions": true
+    },
+    "candidate": {
+     "rule_id": "59eb085a8a:27#1",
+     "clause_id": "59eb085a8a:27",
+     "kind": "threshold",
+     "field": "credits",
+     "aggregate": "sum",
+     "period": "financial_year",
+     "op": "<=",
+     "value": 100000.0,
+     "unit": "INR",
+     "role": "limit",
+     "conditions": {
+      "account_type": "small"
+     }
+    },
+    "category": "Urban_Cooperative_Bank",
+    "direction": "Reserve Bank of India (Urban Co-operative Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G01_small_credits@b94be66351:27",
+    "clause": "b94be66351:27",
+    "kind": "threshold",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "aggregate": true,
+     "period": true,
+     "op": true,
+     "value": true,
+     "conditions": true
+    },
+    "candidate": {
+     "rule_id": "b94be66351:27#1",
+     "clause_id": "b94be66351:27",
+     "kind": "threshold",
+     "field": "credits",
+     "aggregate": "sum",
+     "period": "financial_year",
+     "op": "<=",
+     "value": 100000.0,
+     "unit": "INR",
+     "role": "limit",
+     "conditions": {
+      "account_type": "small"
+     }
+    },
+    "category": "local area banks",
+    "direction": "Reserve Bank of India (Local Area Banks - Know Your Customer) Directions,"
+   },
+   {
+    "gold": "G01_small_credits@37d6f921dc:28",
+    "clause": "37d6f921dc:28",
+    "kind": "threshold",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "aggregate": true,
+     "period": true,
+     "op": true,
+     "value": true,
+     "conditions": true
+    },
+    "candidate": {
+     "rule_id": "37d6f921dc:28#1",
+     "clause_id": "37d6f921dc:28",
+     "kind": "threshold",
+     "field": "credits",
+     "aggregate": "sum",
+     "period": "financial_year",
+     "op": "<=",
+     "value": 100000.0,
+     "unit": "INR",
+     "role": "limit",
+     "conditions": {
+      "account_type": "small"
+     }
+    },
+    "category": "payment banks",
+    "direction": "Reserve Bank of India (Payments Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G01_small_credits@845ce004f7:29",
+    "clause": "845ce004f7:29",
+    "kind": "threshold",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "aggregate": true,
+     "period": true,
+     "op": true,
+     "value": true,
+     "conditions": true
+    },
+    "candidate": {
+     "rule_id": "845ce004f7:29#1",
+     "clause_id": "845ce004f7:29",
+     "kind": "threshold",
+     "field": "credits",
+     "aggregate": "sum",
+     "period": "financial_year",
+     "op": "<=",
+     "value": 100000.0,
+     "unit": "INR",
+     "role": "limit",
+     "conditions": {
+      "account_type": "small"
+     }
+    },
+    "category": "small financial banks",
+    "direction": "Reserve Bank of India (Small Finance Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G02_small_debits@9f303816f3:27",
+    "clause": "9f303816f3:27",
+    "kind": "threshold",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "aggregate": true,
+     "period": true,
+     "op": true,
+     "value": true,
+     "conditions": true
+    },
+    "candidate": {
+     "rule_id": "9f303816f3:27#2",
+     "clause_id": "9f303816f3:27",
+     "kind": "threshold",
+     "field": "debits",
+     "aggregate": "sum",
+     "period": "month",
+     "op": "<=",
+     "value": 10000.0,
+     "unit": "INR",
+     "role": "limit",
+     "conditions": {
+      "account_type": "small"
+     }
+    },
+    "category": "Regional_Rural_Bank",
+    "direction": "Reserve Bank of India (Regional Rural Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G02_small_debits@e510d3e0e7:27",
+    "clause": "e510d3e0e7:27",
+    "kind": "threshold",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "aggregate": true,
+     "period": true,
+     "op": true,
+     "value": true,
+     "conditions": true
+    },
+    "candidate": {
+     "rule_id": "e510d3e0e7:27#2",
+     "clause_id": "e510d3e0e7:27",
+     "kind": "threshold",
+     "field": "debits",
+     "aggregate": "sum",
+     "period": "month",
+     "op": "<=",
+     "value": 10000.0,
+     "unit": "INR",
+     "role": "limit",
+     "conditions": {
+      "account_type": "small"
+     }
+    },
+    "category": "Rural_Cooperative_Bank",
+    "direction": "Reserve Bank of India (Rural Co-operative Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G02_small_debits@59eb085a8a:27",
+    "clause": "59eb085a8a:27",
+    "kind": "threshold",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "aggregate": true,
+     "period": true,
+     "op": true,
+     "value": true,
+     "conditions": true
+    },
+    "candidate": {
+     "rule_id": "59eb085a8a:27#2",
+     "clause_id": "59eb085a8a:27",
+     "kind": "threshold",
+     "field": "debits",
+     "aggregate": "sum",
+     "period": "month",
+     "op": "<=",
+     "value": 10000.0,
+     "unit": "INR",
+     "role": "limit",
+     "conditions": {
+      "account_type": "small"
+     }
+    },
+    "category": "Urban_Cooperative_Bank",
+    "direction": "Reserve Bank of India (Urban Co-operative Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G02_small_debits@b94be66351:27",
+    "clause": "b94be66351:27",
+    "kind": "threshold",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "aggregate": true,
+     "period": true,
+     "op": true,
+     "value": true,
+     "conditions": true
+    },
+    "candidate": {
+     "rule_id": "b94be66351:27#2",
+     "clause_id": "b94be66351:27",
+     "kind": "threshold",
+     "field": "debits",
+     "aggregate": "sum",
+     "period": "month",
+     "op": "<=",
+     "value": 10000.0,
+     "unit": "INR",
+     "role": "limit",
+     "conditions": {
+      "account_type": "small"
+     }
+    },
+    "category": "local area banks",
+    "direction": "Reserve Bank of India (Local Area Banks - Know Your Customer) Directions,"
+   },
+   {
+    "gold": "G02_small_debits@37d6f921dc:28",
+    "clause": "37d6f921dc:28",
+    "kind": "threshold",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "aggregate": true,
+     "period": true,
+     "op": true,
+     "value": true,
+     "conditions": true
+    },
+    "candidate": {
+     "rule_id": "37d6f921dc:28#2",
+     "clause_id": "37d6f921dc:28",
+     "kind": "threshold",
+     "field": "debits",
+     "aggregate": "sum",
+     "period": "month",
+     "op": "<=",
+     "value": 10000.0,
+     "unit": "INR",
+     "role": "limit",
+     "conditions": {
+      "account_type": "small"
+     }
+    },
+    "category": "payment banks",
+    "direction": "Reserve Bank of India (Payments Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G02_small_debits@845ce004f7:29",
+    "clause": "845ce004f7:29",
+    "kind": "threshold",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "aggregate": true,
+     "period": true,
+     "op": true,
+     "value": true,
+     "conditions": true
+    },
+    "candidate": {
+     "rule_id": "845ce004f7:29#2",
+     "clause_id": "845ce004f7:29",
+     "kind": "threshold",
+     "field": "debits",
+     "aggregate": "sum",
+     "period": "month",
+     "op": "<=",
+     "value": 10000.0,
+     "unit": "INR",
+     "role": "limit",
+     "conditions": {
+      "account_type": "small"
+     }
+    },
+    "category": "small financial banks",
+    "direction": "Reserve Bank of India (Small Finance Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G03_small_balance@9f303816f3:27",
+    "clause": "9f303816f3:27",
+    "kind": "threshold",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "aggregate": true,
+     "period": true,
+     "op": true,
+     "value": true,
+     "conditions": true,
+     "exceptions": true
+    },
+    "candidate": {
+     "rule_id": "9f303816f3:27#3",
+     "clause_id": "9f303816f3:27",
+     "kind": "threshold",
+     "field": "balance",
+     "aggregate": "max",
+     "period": "any_time",
+     "op": "<=",
+     "value": 50000.0,
+     "unit": "INR",
+     "role": "limit",
+     "conditions": {
+      "account_type": "small"
+     },
+     "exceptions": [
+      {
+       "exclude_credit_sources": [
+        "govt_grant",
+        "welfare",
+        "procurement"
+       ]
+      }
+     ]
+    },
+    "category": "Regional_Rural_Bank",
+    "direction": "Reserve Bank of India (Regional Rural Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G03_small_balance@e510d3e0e7:27",
+    "clause": "e510d3e0e7:27",
+    "kind": "threshold",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "aggregate": true,
+     "period": true,
+     "op": true,
+     "value": true,
+     "conditions": true,
+     "exceptions": true
+    },
+    "candidate": {
+     "rule_id": "e510d3e0e7:27#3",
+     "clause_id": "e510d3e0e7:27",
+     "kind": "threshold",
+     "field": "balance",
+     "aggregate": "max",
+     "period": "any_time",
+     "op": "<=",
+     "value": 50000.0,
+     "unit": "INR",
+     "role": "limit",
+     "conditions": {
+      "account_type": "small"
+     },
+     "exceptions": [
+      {
+       "exclude_credit_sources": [
+        "govt_grant",
+        "welfare",
+        "procurement"
+       ]
+      }
+     ]
+    },
+    "category": "Rural_Cooperative_Bank",
+    "direction": "Reserve Bank of India (Rural Co-operative Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G03_small_balance@59eb085a8a:27",
+    "clause": "59eb085a8a:27",
+    "kind": "threshold",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "aggregate": true,
+     "period": true,
+     "op": true,
+     "value": true,
+     "conditions": true,
+     "exceptions": true
+    },
+    "candidate": {
+     "rule_id": "59eb085a8a:27#3",
+     "clause_id": "59eb085a8a:27",
+     "kind": "threshold",
+     "field": "balance",
+     "aggregate": "max",
+     "period": "any_time",
+     "op": "<=",
+     "value": 50000.0,
+     "unit": "INR",
+     "role": "limit",
+     "conditions": {
+      "account_type": "small"
+     },
+     "exceptions": [
+      {
+       "exclude_credit_sources": [
+        "govt_grant",
+        "welfare",
+        "procurement"
+       ]
+      }
+     ]
+    },
+    "category": "Urban_Cooperative_Bank",
+    "direction": "Reserve Bank of India (Urban Co-operative Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G03_small_balance@b94be66351:27",
+    "clause": "b94be66351:27",
+    "kind": "threshold",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "aggregate": true,
+     "period": true,
+     "op": true,
+     "value": true,
+     "conditions": true,
+     "exceptions": true
+    },
+    "candidate": {
+     "rule_id": "b94be66351:27#3",
+     "clause_id": "b94be66351:27",
+     "kind": "threshold",
+     "field": "balance",
+     "aggregate": "max",
+     "period": "any_time",
+     "op": "<=",
+     "value": 50000.0,
+     "unit": "INR",
+     "role": "limit",
+     "conditions": {
+      "account_type": "small"
+     },
+     "exceptions": [
+      {
+       "exclude_credit_sources": [
+        "govt_grant",
+        "welfare",
+        "procurement"
+       ]
+      }
+     ]
+    },
+    "category": "local area banks",
+    "direction": "Reserve Bank of India (Local Area Banks - Know Your Customer) Directions,"
+   },
+   {
+    "gold": "G03_small_balance@37d6f921dc:28",
+    "clause": "37d6f921dc:28",
+    "kind": "threshold",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "aggregate": true,
+     "period": true,
+     "op": true,
+     "value": true,
+     "conditions": true,
+     "exceptions": true
+    },
+    "candidate": {
+     "rule_id": "37d6f921dc:28#3",
+     "clause_id": "37d6f921dc:28",
+     "kind": "threshold",
+     "field": "balance",
+     "aggregate": "max",
+     "period": "any_time",
+     "op": "<=",
+     "value": 50000.0,
+     "unit": "INR",
+     "role": "limit",
+     "conditions": {
+      "account_type": "small"
+     },
+     "exceptions": [
+      {
+       "exclude_credit_sources": [
+        "govt_grant",
+        "welfare",
+        "procurement"
+       ]
+      }
+     ]
+    },
+    "category": "payment banks",
+    "direction": "Reserve Bank of India (Payments Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G03_small_balance@845ce004f7:29",
+    "clause": "845ce004f7:29",
+    "kind": "threshold",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "aggregate": true,
+     "period": true,
+     "op": true,
+     "value": true,
+     "conditions": true,
+     "exceptions": true
+    },
+    "candidate": {
+     "rule_id": "845ce004f7:29#3",
+     "clause_id": "845ce004f7:29",
+     "kind": "threshold",
+     "field": "balance",
+     "aggregate": "max",
+     "period": "any_time",
+     "op": "<=",
+     "value": 50000.0,
+     "unit": "INR",
+     "role": "limit",
+     "conditions": {
+      "account_type": "small"
+     },
+     "exceptions": [
+      {
+       "exclude_credit_sources": [
+        "govt_grant",
+        "welfare",
+        "procurement"
+       ]
+      }
+     ]
+    },
+    "category": "small financial banks",
+    "direction": "Reserve Bank of India (Small Finance Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G04_wire_information@248ac9f178:69",
+    "clause": "248ac9f178:69",
+    "kind": "set",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "required": true,
+     "conditions": true,
+     "exceptions": true
+    },
+    "candidate": {
+     "rule_id": "248ac9f178:69#4",
+     "clause_id": "248ac9f178:69",
+     "kind": "set",
+     "role": "limit",
+     "required": [
+      [
+       "originator_name"
+      ],
+      [
+       "originator_account",
+       "txn_ref"
+      ],
+      [
+       "originator_address",
+       "originator_national_id",
+       "originator_customer_id",
+       "originator_dob_pob"
+      ],
+      [
+       "beneficiary_name"
+      ],
+      [
+       "beneficiary_account",
+       "txn_ref"
+      ]
+     ],
+     "conditions": {
+      "cross_border": true
+     },
+     "exceptions": [
+      {
+       "when": {
+        "batch": true
+       },
+       "originator_any_of": [
+        "originator_account",
+        "txn_ref"
+       ]
+      }
+     ]
+    },
+    "category": "All_India_Financial_Institutions",
+    "direction": "Reserve Bank of India (All India Financial Institutions - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G04_wire_information@b3d4cfd332:69",
+    "clause": "b3d4cfd332:69",
+    "kind": "set",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "required": true,
+     "conditions": true,
+     "exceptions": true
+    },
+    "candidate": {
+     "rule_id": "b3d4cfd332:69#3",
+     "clause_id": "b3d4cfd332:69",
+     "kind": "set",
+     "role": "limit",
+     "required": [
+      [
+       "originator_name"
+      ],
+      [
+       "originator_account",
+       "txn_ref"
+      ],
+      [
+       "originator_address",
+       "originator_national_id",
+       "originator_customer_id",
+       "originator_dob_pob"
+      ],
+      [
+       "beneficiary_name"
+      ],
+      [
+       "beneficiary_account",
+       "txn_ref"
+      ]
+     ],
+     "conditions": {
+      "cross_border": true
+     },
+     "exceptions": [
+      {
+       "when": {
+        "batch": true
+       },
+       "originator_any_of": [
+        "originator_account",
+        "txn_ref"
+       ]
+      }
+     ]
+    },
+    "category": "NBFC",
+    "direction": "Reserve Bank of India (Non-Banking Financial Companies - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G04_wire_information@9f303816f3:73",
+    "clause": "9f303816f3:73",
+    "kind": "set",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "required": true,
+     "conditions": true,
+     "exceptions": true
+    },
+    "candidate": {
+     "rule_id": "9f303816f3:73#4",
+     "clause_id": "9f303816f3:73",
+     "kind": "set",
+     "role": "limit",
+     "required": [
+      [
+       "originator_name"
+      ],
+      [
+       "originator_account",
+       "txn_ref"
+      ],
+      [
+       "originator_address",
+       "originator_national_id",
+       "originator_customer_id",
+       "originator_dob_pob"
+      ],
+      [
+       "beneficiary_name"
+      ],
+      [
+       "beneficiary_account",
+       "txn_ref"
+      ]
+     ],
+     "conditions": {
+      "cross_border": true
+     },
+     "exceptions": [
+      {
+       "when": {
+        "batch": true
+       },
+       "originator_any_of": [
+        "originator_account",
+        "txn_ref"
+       ]
+      }
+     ]
+    },
+    "category": "Regional_Rural_Bank",
+    "direction": "Reserve Bank of India (Regional Rural Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G04_wire_information@e510d3e0e7:73",
+    "clause": "e510d3e0e7:73",
+    "kind": "set",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "required": true,
+     "conditions": true,
+     "exceptions": true
+    },
+    "candidate": {
+     "rule_id": "e510d3e0e7:73#4",
+     "clause_id": "e510d3e0e7:73",
+     "kind": "set",
+     "role": "limit",
+     "required": [
+      [
+       "originator_name"
+      ],
+      [
+       "originator_account",
+       "txn_ref"
+      ],
+      [
+       "originator_address",
+       "originator_national_id",
+       "originator_customer_id",
+       "originator_dob_pob"
+      ],
+      [
+       "beneficiary_name"
+      ],
+      [
+       "beneficiary_account",
+       "txn_ref"
+      ]
+     ],
+     "conditions": {
+      "cross_border": true
+     },
+     "exceptions": [
+      {
+       "when": {
+        "batch": true
+       },
+       "originator_any_of": [
+        "originator_account",
+        "txn_ref"
+       ]
+      }
+     ]
+    },
+    "category": "Rural_Cooperative_Bank",
+    "direction": "Reserve Bank of India (Rural Co-operative Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G04_wire_information@59eb085a8a:73",
+    "clause": "59eb085a8a:73",
+    "kind": "set",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "required": true,
+     "conditions": true,
+     "exceptions": true
+    },
+    "candidate": {
+     "rule_id": "59eb085a8a:73#4",
+     "clause_id": "59eb085a8a:73",
+     "kind": "set",
+     "role": "limit",
+     "required": [
+      [
+       "originator_name"
+      ],
+      [
+       "originator_account",
+       "txn_ref"
+      ],
+      [
+       "originator_address",
+       "originator_national_id",
+       "originator_customer_id",
+       "originator_dob_pob"
+      ],
+      [
+       "beneficiary_name"
+      ],
+      [
+       "beneficiary_account",
+       "txn_ref"
+      ]
+     ],
+     "conditions": {
+      "cross_border": true
+     },
+     "exceptions": [
+      {
+       "when": {
+        "batch": true
+       },
+       "originator_any_of": [
+        "originator_account",
+        "txn_ref"
+       ]
+      }
+     ]
+    },
+    "category": "Urban_Cooperative_Bank",
+    "direction": "Reserve Bank of India (Urban Co-operative Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G04_wire_information@b94be66351:73",
+    "clause": "b94be66351:73",
+    "kind": "set",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "required": true,
+     "conditions": true,
+     "exceptions": true
+    },
+    "candidate": {
+     "rule_id": "b94be66351:73#4",
+     "clause_id": "b94be66351:73",
+     "kind": "set",
+     "role": "limit",
+     "required": [
+      [
+       "originator_name"
+      ],
+      [
+       "originator_account",
+       "txn_ref"
+      ],
+      [
+       "originator_address",
+       "originator_national_id",
+       "originator_customer_id",
+       "originator_dob_pob"
+      ],
+      [
+       "beneficiary_name"
+      ],
+      [
+       "beneficiary_account",
+       "txn_ref"
+      ]
+     ],
+     "conditions": {
+      "cross_border": true
+     },
+     "exceptions": [
+      {
+       "when": {
+        "batch": true
+       },
+       "originator_any_of": [
+        "originator_account",
+        "txn_ref"
+       ]
+      }
+     ]
+    },
+    "category": "local area banks",
+    "direction": "Reserve Bank of India (Local Area Banks - Know Your Customer) Directions,"
+   },
+   {
+    "gold": "G04_wire_information@37d6f921dc:74",
+    "clause": "37d6f921dc:74",
+    "kind": "set",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "required": true,
+     "conditions": true,
+     "exceptions": true
+    },
+    "candidate": {
+     "rule_id": "37d6f921dc:74#3",
+     "clause_id": "37d6f921dc:74",
+     "kind": "set",
+     "role": "limit",
+     "required": [
+      [
+       "originator_name"
+      ],
+      [
+       "originator_account",
+       "txn_ref"
+      ],
+      [
+       "originator_address",
+       "originator_national_id",
+       "originator_customer_id",
+       "originator_dob_pob"
+      ],
+      [
+       "beneficiary_name"
+      ],
+      [
+       "beneficiary_account",
+       "txn_ref"
+      ]
+     ],
+     "conditions": {
+      "cross_border": true
+     },
+     "exceptions": [
+      {
+       "when": {
+        "batch": true
+       },
+       "originator_any_of": [
+        "originator_account",
+        "txn_ref"
+       ]
+      }
+     ]
+    },
+    "category": "payment banks",
+    "direction": "Reserve Bank of India (Payments Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G04_wire_information@845ce004f7:75",
+    "clause": "845ce004f7:75",
+    "kind": "set",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "required": true,
+     "conditions": true,
+     "exceptions": true
+    },
+    "candidate": {
+     "rule_id": "845ce004f7:75#4",
+     "clause_id": "845ce004f7:75",
+     "kind": "set",
+     "role": "limit",
+     "required": [
+      [
+       "originator_name"
+      ],
+      [
+       "originator_account",
+       "txn_ref"
+      ],
+      [
+       "originator_address",
+       "originator_national_id",
+       "originator_customer_id",
+       "originator_dob_pob"
+      ],
+      [
+       "beneficiary_name"
+      ],
+      [
+       "beneficiary_account",
+       "txn_ref"
+      ]
+     ],
+     "conditions": {
+      "cross_border": true
+     },
+     "exceptions": [
+      {
+       "when": {
+        "batch": true
+       },
+       "originator_any_of": [
+        "originator_account",
+        "txn_ref"
+       ]
+      }
+     ]
+    },
+    "category": "small financial banks",
+    "direction": "Reserve Bank of India (Small Finance Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G05_ckycr_upload@248ac9f178:62",
+    "clause": "248ac9f178:62",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "248ac9f178:62#1",
+     "clause_id": "248ac9f178:62",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "account_opened"
+     ],
+     "target": "ckycr_uploaded",
+     "window": 10.0
+    },
+    "category": "All_India_Financial_Institutions",
+    "direction": "Reserve Bank of India (All India Financial Institutions - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G05_ckycr_upload@0a209c9e20:59",
+    "clause": "0a209c9e20:59",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "0a209c9e20:59#1",
+     "clause_id": "0a209c9e20:59",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "account_opened"
+     ],
+     "target": "ckycr_uploaded",
+     "window": 10.0
+    },
+    "category": "Asset_Reconstruction_Companies",
+    "direction": "Reserve Bank of India (Asset Reconstruction Companies - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G05_ckycr_upload@b3d4cfd332:63",
+    "clause": "b3d4cfd332:63",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "b3d4cfd332:63#1",
+     "clause_id": "b3d4cfd332:63",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "account_opened"
+     ],
+     "target": "ckycr_uploaded",
+     "window": 10.0
+    },
+    "category": "NBFC",
+    "direction": "Reserve Bank of India (Non-Banking Financial Companies - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G05_ckycr_upload@9f303816f3:64",
+    "clause": "9f303816f3:64",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "9f303816f3:64#1",
+     "clause_id": "9f303816f3:64",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "account_opened"
+     ],
+     "target": "ckycr_uploaded",
+     "window": 10.0
+    },
+    "category": "Regional_Rural_Bank",
+    "direction": "Reserve Bank of India (Regional Rural Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G05_ckycr_upload@e510d3e0e7:64",
+    "clause": "e510d3e0e7:64",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "e510d3e0e7:64#1",
+     "clause_id": "e510d3e0e7:64",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "account_opened"
+     ],
+     "target": "ckycr_uploaded",
+     "window": 10.0
+    },
+    "category": "Rural_Cooperative_Bank",
+    "direction": "Reserve Bank of India (Rural Co-operative Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G05_ckycr_upload@59eb085a8a:64",
+    "clause": "59eb085a8a:64",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "59eb085a8a:64#1",
+     "clause_id": "59eb085a8a:64",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "account_opened"
+     ],
+     "target": "ckycr_uploaded",
+     "window": 10.0
+    },
+    "category": "Urban_Cooperative_Bank",
+    "direction": "Reserve Bank of India (Urban Co-operative Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G05_ckycr_upload@b94be66351:64",
+    "clause": "b94be66351:64",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "b94be66351:64#1",
+     "clause_id": "b94be66351:64",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "account_opened"
+     ],
+     "target": "ckycr_uploaded",
+     "window": 10.0
+    },
+    "category": "local area banks",
+    "direction": "Reserve Bank of India (Local Area Banks - Know Your Customer) Directions,"
+   },
+   {
+    "gold": "G05_ckycr_upload@37d6f921dc:65",
+    "clause": "37d6f921dc:65",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "37d6f921dc:65#1",
+     "clause_id": "37d6f921dc:65",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "account_opened"
+     ],
+     "target": "ckycr_uploaded",
+     "window": 10.0
+    },
+    "category": "payment banks",
+    "direction": "Reserve Bank of India (Payments Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G05_ckycr_upload@845ce004f7:66",
+    "clause": "845ce004f7:66",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "845ce004f7:66#1",
+     "clause_id": "845ce004f7:66",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "account_opened"
+     ],
+     "target": "ckycr_uploaded",
+     "window": 10.0
+    },
+    "category": "small financial banks",
+    "direction": "Reserve Bank of India (Small Finance Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G06_ckycr_update@248ac9f178:62",
+    "clause": "248ac9f178:62",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "248ac9f178:62#2",
+     "clause_id": "248ac9f178:62",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "updated_info_obtained"
+     ],
+     "target": "ckycr_updated",
+     "window": 7.0
+    },
+    "category": "All_India_Financial_Institutions",
+    "direction": "Reserve Bank of India (All India Financial Institutions - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G06_ckycr_update@0a209c9e20:59",
+    "clause": "0a209c9e20:59",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "0a209c9e20:59#2",
+     "clause_id": "0a209c9e20:59",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "updated_info_obtained"
+     ],
+     "target": "ckycr_updated",
+     "window": 7.0
+    },
+    "category": "Asset_Reconstruction_Companies",
+    "direction": "Reserve Bank of India (Asset Reconstruction Companies - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G06_ckycr_update@b3d4cfd332:63",
+    "clause": "b3d4cfd332:63",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "b3d4cfd332:63#2",
+     "clause_id": "b3d4cfd332:63",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "updated_info_obtained"
+     ],
+     "target": "ckycr_updated",
+     "window": 7.0
+    },
+    "category": "NBFC",
+    "direction": "Reserve Bank of India (Non-Banking Financial Companies - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G06_ckycr_update@59eb085a8a:64",
+    "clause": "59eb085a8a:64",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "59eb085a8a:64#2",
+     "clause_id": "59eb085a8a:64",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "updated_info_obtained"
+     ],
+     "target": "ckycr_updated",
+     "window": 7.0
+    },
+    "category": "Urban_Cooperative_Bank",
+    "direction": "Reserve Bank of India (Urban Co-operative Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G06_ckycr_update@b94be66351:64",
+    "clause": "b94be66351:64",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "b94be66351:64#2",
+     "clause_id": "b94be66351:64",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "updated_info_obtained"
+     ],
+     "target": "ckycr_updated",
+     "window": 7.0
+    },
+    "category": "local area banks",
+    "direction": "Reserve Bank of India (Local Area Banks - Know Your Customer) Directions,"
+   },
+   {
+    "gold": "G06_ckycr_update@37d6f921dc:65",
+    "clause": "37d6f921dc:65",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "37d6f921dc:65#2",
+     "clause_id": "37d6f921dc:65",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "updated_info_obtained"
+     ],
+     "target": "ckycr_updated",
+     "window": 7.0
+    },
+    "category": "payment banks",
+    "direction": "Reserve Bank of India (Payments Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G06_ckycr_update@845ce004f7:66",
+    "clause": "845ce004f7:66",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "845ce004f7:66#2",
+     "clause_id": "845ce004f7:66",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "updated_info_obtained"
+     ],
+     "target": "ckycr_updated",
+     "window": 7.0
+    },
+    "category": "small financial banks",
+    "direction": "Reserve Bank of India (Small Finance Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G07_cdd_documents@248ac9f178:23",
+    "clause": "248ac9f178:23",
+    "kind": "set",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "required": true
+    },
+    "candidate": {
+     "rule_id": "248ac9f178:23#1",
+     "clause_id": "248ac9f178:23",
+     "kind": "set",
+     "role": "limit",
+     "required": [
+      [
+       "aadhaar",
+       "ovd",
+       "kyc_identifier"
+      ],
+      [
+       "pan",
+       "form60"
+      ]
+     ]
+    },
+    "category": "All_India_Financial_Institutions",
+    "direction": "Reserve Bank of India (All India Financial Institutions - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G07_cdd_documents@0a209c9e20:22",
+    "clause": "0a209c9e20:22",
+    "kind": "set",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "required": true
+    },
+    "candidate": {
+     "rule_id": "0a209c9e20:22#1",
+     "clause_id": "0a209c9e20:22",
+     "kind": "set",
+     "role": "limit",
+     "required": [
+      [
+       "aadhaar",
+       "ovd",
+       "kyc_identifier"
+      ],
+      [
+       "pan",
+       "form60"
+      ]
+     ]
+    },
+    "category": "Asset_Reconstruction_Companies",
+    "direction": "Reserve Bank of India (Asset Reconstruction Companies - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G07_cdd_documents@b3d4cfd332:23",
+    "clause": "b3d4cfd332:23",
+    "kind": "set",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "required": true
+    },
+    "candidate": {
+     "rule_id": "b3d4cfd332:23#1",
+     "clause_id": "b3d4cfd332:23",
+     "kind": "set",
+     "role": "limit",
+     "required": [
+      [
+       "aadhaar",
+       "ovd",
+       "kyc_identifier"
+      ],
+      [
+       "pan",
+       "form60"
+      ]
+     ]
+    },
+    "category": "NBFC",
+    "direction": "Reserve Bank of India (Non-Banking Financial Companies - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G07_cdd_documents@9f303816f3:22",
+    "clause": "9f303816f3:22",
+    "kind": "set",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "required": true
+    },
+    "candidate": {
+     "rule_id": "9f303816f3:22#1",
+     "clause_id": "9f303816f3:22",
+     "kind": "set",
+     "role": "limit",
+     "required": [
+      [
+       "aadhaar",
+       "ovd",
+       "kyc_identifier"
+      ],
+      [
+       "pan",
+       "form60"
+      ]
+     ]
+    },
+    "category": "Regional_Rural_Bank",
+    "direction": "Reserve Bank of India (Regional Rural Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G07_cdd_documents@e510d3e0e7:22",
+    "clause": "e510d3e0e7:22",
+    "kind": "set",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "required": true
+    },
+    "candidate": {
+     "rule_id": "e510d3e0e7:22#1",
+     "clause_id": "e510d3e0e7:22",
+     "kind": "set",
+     "role": "limit",
+     "required": [
+      [
+       "aadhaar",
+       "ovd",
+       "kyc_identifier"
+      ],
+      [
+       "pan",
+       "form60"
+      ]
+     ]
+    },
+    "category": "Rural_Cooperative_Bank",
+    "direction": "Reserve Bank of India (Rural Co-operative Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G07_cdd_documents@59eb085a8a:22",
+    "clause": "59eb085a8a:22",
+    "kind": "set",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "required": true
+    },
+    "candidate": {
+     "rule_id": "59eb085a8a:22#1",
+     "clause_id": "59eb085a8a:22",
+     "kind": "set",
+     "role": "limit",
+     "required": [
+      [
+       "aadhaar",
+       "ovd",
+       "kyc_identifier"
+      ],
+      [
+       "pan",
+       "form60"
+      ]
+     ]
+    },
+    "category": "Urban_Cooperative_Bank",
+    "direction": "Reserve Bank of India (Urban Co-operative Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G07_cdd_documents@b94be66351:22",
+    "clause": "b94be66351:22",
+    "kind": "set",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "required": true
+    },
+    "candidate": {
+     "rule_id": "b94be66351:22#1",
+     "clause_id": "b94be66351:22",
+     "kind": "set",
+     "role": "limit",
+     "required": [
+      [
+       "aadhaar",
+       "ovd",
+       "kyc_identifier"
+      ],
+      [
+       "pan",
+       "form60"
+      ]
+     ]
+    },
+    "category": "local area banks",
+    "direction": "Reserve Bank of India (Local Area Banks - Know Your Customer) Directions,"
+   },
+   {
+    "gold": "G07_cdd_documents@37d6f921dc:23",
+    "clause": "37d6f921dc:23",
+    "kind": "set",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "required": true
+    },
+    "candidate": {
+     "rule_id": "37d6f921dc:23#1",
+     "clause_id": "37d6f921dc:23",
+     "kind": "set",
+     "role": "limit",
+     "required": [
+      [
+       "aadhaar",
+       "ovd",
+       "kyc_identifier"
+      ],
+      [
+       "pan",
+       "form60"
+      ]
+     ]
+    },
+    "category": "payment banks",
+    "direction": "Reserve Bank of India (Payments Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G07_cdd_documents@845ce004f7:24",
+    "clause": "845ce004f7:24",
+    "kind": "set",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "required": true
+    },
+    "candidate": {
+     "rule_id": "845ce004f7:24#1",
+     "clause_id": "845ce004f7:24",
+     "kind": "set",
+     "role": "limit",
+     "required": [
+      [
+       "aadhaar",
+       "ovd",
+       "kyc_identifier"
+      ],
+      [
+       "pan",
+       "form60"
+      ]
+     ]
+    },
+    "category": "small financial banks",
+    "direction": "Reserve Bank of India (Small Finance Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G08_periodic_updation@248ac9f178:41",
+    "clause": "248ac9f178:41",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "unit": true,
+     "per_category": true,
+     "grace": true
+    },
+    "candidate": {
+     "rule_id": "248ac9f178:41#1",
+     "clause_id": "248ac9f178:41",
+     "kind": "temporal",
+     "unit": "years",
+     "role": "limit",
+     "anchor": [
+      "account_opened",
+      "last_kyc_update"
+     ],
+     "anchor_mode": "latest",
+     "target": "kyc_updated",
+     "per_category": {
+      "field": "risk",
+      "values": {
+       "high": 2.0,
+       "medium": 8.0,
+       "low": 10.0
+      }
+     },
+     "grace": {
+      "when": {
+       "customer_type": "individual",
+       "risk": "low"
+      },
+      "extra": 1.0,
+      "unit": "years",
+      "until": "June 30, 2026",
+      "combine": "later"
+     }
+    },
+    "category": "All_India_Financial_Institutions",
+    "direction": "Reserve Bank of India (All India Financial Institutions - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G08_periodic_updation@0a209c9e20:41",
+    "clause": "0a209c9e20:41",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "unit": true,
+     "per_category": true,
+     "grace": true
+    },
+    "candidate": {
+     "rule_id": "0a209c9e20:41#1",
+     "clause_id": "0a209c9e20:41",
+     "kind": "temporal",
+     "unit": "years",
+     "role": "limit",
+     "anchor": [
+      "account_opened",
+      "last_kyc_update"
+     ],
+     "anchor_mode": "latest",
+     "target": "kyc_updated",
+     "per_category": {
+      "field": "risk",
+      "values": {
+       "high": 2.0,
+       "medium": 8.0,
+       "low": 10.0
+      }
+     },
+     "grace": {
+      "when": {
+       "customer_type": "individual",
+       "risk": "low"
+      },
+      "extra": 1.0,
+      "unit": "years",
+      "until": "June 30, 2026",
+      "combine": "later"
+     }
+    },
+    "category": "Asset_Reconstruction_Companies",
+    "direction": "Reserve Bank of India (Asset Reconstruction Companies - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G08_periodic_updation@b3d4cfd332:42",
+    "clause": "b3d4cfd332:42",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "unit": true,
+     "per_category": true,
+     "grace": true
+    },
+    "candidate": {
+     "rule_id": "b3d4cfd332:42#1",
+     "clause_id": "b3d4cfd332:42",
+     "kind": "temporal",
+     "unit": "years",
+     "role": "limit",
+     "anchor": [
+      "account_opened",
+      "last_kyc_update"
+     ],
+     "anchor_mode": "latest",
+     "target": "kyc_updated",
+     "per_category": {
+      "field": "risk",
+      "values": {
+       "high": 2.0,
+       "medium": 8.0,
+       "low": 10.0
+      }
+     },
+     "grace": {
+      "when": {
+       "customer_type": "individual",
+       "risk": "low"
+      },
+      "extra": 1.0,
+      "unit": "years",
+      "until": "June 30, 2026",
+      "combine": "later"
+     }
+    },
+    "category": "NBFC",
+    "direction": "Reserve Bank of India (Non-Banking Financial Companies - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G08_periodic_updation@9f303816f3:41",
+    "clause": "9f303816f3:41",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "unit": true,
+     "per_category": true,
+     "grace": true
+    },
+    "candidate": {
+     "rule_id": "9f303816f3:41#1",
+     "clause_id": "9f303816f3:41",
+     "kind": "temporal",
+     "unit": "years",
+     "role": "limit",
+     "anchor": [
+      "account_opened",
+      "last_kyc_update"
+     ],
+     "anchor_mode": "latest",
+     "target": "kyc_updated",
+     "per_category": {
+      "field": "risk",
+      "values": {
+       "high": 2.0,
+       "medium": 8.0,
+       "low": 10.0
+      }
+     },
+     "grace": {
+      "when": {
+       "customer_type": "individual",
+       "risk": "low"
+      },
+      "extra": 1.0,
+      "unit": "years",
+      "until": "June 30, 2026",
+      "combine": "later"
+     }
+    },
+    "category": "Regional_Rural_Bank",
+    "direction": "Reserve Bank of India (Regional Rural Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G08_periodic_updation@e510d3e0e7:41",
+    "clause": "e510d3e0e7:41",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "unit": true,
+     "per_category": true,
+     "grace": true
+    },
+    "candidate": {
+     "rule_id": "e510d3e0e7:41#1",
+     "clause_id": "e510d3e0e7:41",
+     "kind": "temporal",
+     "unit": "years",
+     "role": "limit",
+     "anchor": [
+      "account_opened",
+      "last_kyc_update"
+     ],
+     "anchor_mode": "latest",
+     "target": "kyc_updated",
+     "per_category": {
+      "field": "risk",
+      "values": {
+       "high": 2.0,
+       "medium": 8.0,
+       "low": 10.0
+      }
+     },
+     "grace": {
+      "when": {
+       "customer_type": "individual",
+       "risk": "low"
+      },
+      "extra": 1.0,
+      "unit": "years",
+      "until": "June 30, 2026",
+      "combine": "later"
+     }
+    },
+    "category": "Rural_Cooperative_Bank",
+    "direction": "Reserve Bank of India (Rural Co-operative Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G08_periodic_updation@59eb085a8a:41",
+    "clause": "59eb085a8a:41",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "unit": true,
+     "per_category": true,
+     "grace": true
+    },
+    "candidate": {
+     "rule_id": "59eb085a8a:41#1",
+     "clause_id": "59eb085a8a:41",
+     "kind": "temporal",
+     "unit": "years",
+     "role": "limit",
+     "anchor": [
+      "account_opened",
+      "last_kyc_update"
+     ],
+     "anchor_mode": "latest",
+     "target": "kyc_updated",
+     "per_category": {
+      "field": "risk",
+      "values": {
+       "high": 2.0,
+       "medium": 8.0,
+       "low": 10.0
+      }
+     },
+     "grace": {
+      "when": {
+       "customer_type": "individual",
+       "risk": "low"
+      },
+      "extra": 1.0,
+      "unit": "years",
+      "until": "June 30, 2026",
+      "combine": "later"
+     }
+    },
+    "category": "Urban_Cooperative_Bank",
+    "direction": "Reserve Bank of India (Urban Co-operative Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G08_periodic_updation@b94be66351:41",
+    "clause": "b94be66351:41",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "unit": true,
+     "per_category": true,
+     "grace": true
+    },
+    "candidate": {
+     "rule_id": "b94be66351:41#1",
+     "clause_id": "b94be66351:41",
+     "kind": "temporal",
+     "unit": "years",
+     "role": "limit",
+     "anchor": [
+      "account_opened",
+      "last_kyc_update"
+     ],
+     "anchor_mode": "latest",
+     "target": "kyc_updated",
+     "per_category": {
+      "field": "risk",
+      "values": {
+       "high": 2.0,
+       "medium": 8.0,
+       "low": 10.0
+      }
+     },
+     "grace": {
+      "when": {
+       "customer_type": "individual",
+       "risk": "low"
+      },
+      "extra": 1.0,
+      "unit": "years",
+      "until": "June 30, 2026",
+      "combine": "later"
+     }
+    },
+    "category": "local area banks",
+    "direction": "Reserve Bank of India (Local Area Banks - Know Your Customer) Directions,"
+   },
+   {
+    "gold": "G08_periodic_updation@37d6f921dc:42",
+    "clause": "37d6f921dc:42",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "unit": true,
+     "per_category": true,
+     "grace": true
+    },
+    "candidate": {
+     "rule_id": "37d6f921dc:42#1",
+     "clause_id": "37d6f921dc:42",
+     "kind": "temporal",
+     "unit": "years",
+     "role": "limit",
+     "anchor": [
+      "account_opened",
+      "last_kyc_update"
+     ],
+     "anchor_mode": "latest",
+     "target": "kyc_updated",
+     "per_category": {
+      "field": "risk",
+      "values": {
+       "high": 2.0,
+       "medium": 8.0,
+       "low": 10.0
+      }
+     },
+     "grace": {
+      "when": {
+       "customer_type": "individual",
+       "risk": "low"
+      },
+      "extra": 1.0,
+      "unit": "years",
+      "until": "June 30, 2026",
+      "combine": "later"
+     }
+    },
+    "category": "payment banks",
+    "direction": "Reserve Bank of India (Payments Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G08_periodic_updation@845ce004f7:43",
+    "clause": "845ce004f7:43",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "unit": true,
+     "per_category": true,
+     "grace": true
+    },
+    "candidate": {
+     "rule_id": "845ce004f7:43#1",
+     "clause_id": "845ce004f7:43",
+     "kind": "temporal",
+     "unit": "years",
+     "role": "limit",
+     "anchor": [
+      "account_opened",
+      "last_kyc_update"
+     ],
+     "anchor_mode": "latest",
+     "target": "kyc_updated",
+     "per_category": {
+      "field": "risk",
+      "values": {
+       "high": 2.0,
+       "medium": 8.0,
+       "low": 10.0
+      }
+     },
+     "grace": {
+      "when": {
+       "customer_type": "individual",
+       "risk": "low"
+      },
+      "extra": 1.0,
+      "unit": "years",
+      "until": "June 30, 2026",
+      "combine": "later"
+     }
+    },
+    "category": "small financial banks",
+    "direction": "Reserve Bank of India (Small Finance Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G09_advance_intimations@9f303816f3:41",
+    "clause": "9f303816f3:41",
+    "kind": "cardinality",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "op": true,
+     "value": true,
+     "sub": true,
+     "when": true
+    },
+    "candidate": {
+     "rule_id": "9f303816f3:41#5",
+     "clause_id": "9f303816f3:41",
+     "kind": "cardinality",
+     "field": "advance_intimations",
+     "op": ">=",
+     "value": 3.0,
+     "unit": "count",
+     "role": "limit",
+     "sub": {
+      "filter": {
+       "mode": "letter"
+      },
+      "op": ">=",
+      "value": 1.0
+     },
+     "when": "before_due"
+    },
+    "category": "Regional_Rural_Bank",
+    "direction": "Reserve Bank of India (Regional Rural Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G09_advance_intimations@e510d3e0e7:41",
+    "clause": "e510d3e0e7:41",
+    "kind": "cardinality",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "op": true,
+     "value": true,
+     "sub": true,
+     "when": true
+    },
+    "candidate": {
+     "rule_id": "e510d3e0e7:41#5",
+     "clause_id": "e510d3e0e7:41",
+     "kind": "cardinality",
+     "field": "advance_intimations",
+     "op": ">=",
+     "value": 3.0,
+     "unit": "count",
+     "role": "limit",
+     "sub": {
+      "filter": {
+       "mode": "letter"
+      },
+      "op": ">=",
+      "value": 1.0
+     },
+     "when": "before_due"
+    },
+    "category": "Rural_Cooperative_Bank",
+    "direction": "Reserve Bank of India (Rural Co-operative Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G09_advance_intimations@59eb085a8a:41",
+    "clause": "59eb085a8a:41",
+    "kind": "cardinality",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "op": true,
+     "value": true,
+     "sub": true,
+     "when": true
+    },
+    "candidate": {
+     "rule_id": "59eb085a8a:41#5",
+     "clause_id": "59eb085a8a:41",
+     "kind": "cardinality",
+     "field": "advance_intimations",
+     "op": ">=",
+     "value": 3.0,
+     "unit": "count",
+     "role": "limit",
+     "sub": {
+      "filter": {
+       "mode": "letter"
+      },
+      "op": ">=",
+      "value": 1.0
+     },
+     "when": "before_due"
+    },
+    "category": "Urban_Cooperative_Bank",
+    "direction": "Reserve Bank of India (Urban Co-operative Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G09_advance_intimations@b94be66351:41",
+    "clause": "b94be66351:41",
+    "kind": "cardinality",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "op": true,
+     "value": true,
+     "sub": true,
+     "when": true
+    },
+    "candidate": {
+     "rule_id": "b94be66351:41#5",
+     "clause_id": "b94be66351:41",
+     "kind": "cardinality",
+     "field": "advance_intimations",
+     "op": ">=",
+     "value": 3.0,
+     "unit": "count",
+     "role": "limit",
+     "sub": {
+      "filter": {
+       "mode": "letter"
+      },
+      "op": ">=",
+      "value": 1.0
+     },
+     "when": "before_due"
+    },
+    "category": "local area banks",
+    "direction": "Reserve Bank of India (Local Area Banks - Know Your Customer) Directions,"
+   },
+   {
+    "gold": "G09_advance_intimations@37d6f921dc:42",
+    "clause": "37d6f921dc:42",
+    "kind": "cardinality",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "op": true,
+     "value": true,
+     "sub": true,
+     "when": true
+    },
+    "candidate": {
+     "rule_id": "37d6f921dc:42#5",
+     "clause_id": "37d6f921dc:42",
+     "kind": "cardinality",
+     "field": "advance_intimations",
+     "op": ">=",
+     "value": 3.0,
+     "unit": "count",
+     "role": "limit",
+     "sub": {
+      "filter": {
+       "mode": "letter"
+      },
+      "op": ">=",
+      "value": 1.0
+     },
+     "when": "before_due"
+    },
+    "category": "payment banks",
+    "direction": "Reserve Bank of India (Payments Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G09_advance_intimations@845ce004f7:43",
+    "clause": "845ce004f7:43",
+    "kind": "cardinality",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "op": true,
+     "value": true,
+     "sub": true,
+     "when": true
+    },
+    "candidate": {
+     "rule_id": "845ce004f7:43#5",
+     "clause_id": "845ce004f7:43",
+     "kind": "cardinality",
+     "field": "advance_intimations",
+     "op": ">=",
+     "value": 3.0,
+     "unit": "count",
+     "role": "limit",
+     "sub": {
+      "filter": {
+       "mode": "letter"
+      },
+      "op": ">=",
+      "value": 1.0
+     },
+     "when": "before_due"
+    },
+    "category": "small financial banks",
+    "direction": "Reserve Bank of India (Small Finance Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G10_reminders@9f303816f3:41",
+    "clause": "9f303816f3:41",
+    "kind": "cardinality",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "op": true,
+     "value": true,
+     "sub": true,
+     "when": true
+    },
+    "candidate": {
+     "rule_id": "9f303816f3:41#6",
+     "clause_id": "9f303816f3:41",
+     "kind": "cardinality",
+     "field": "reminders",
+     "op": ">=",
+     "value": 3.0,
+     "unit": "count",
+     "role": "limit",
+     "sub": {
+      "filter": {
+       "mode": "letter"
+      },
+      "op": ">=",
+      "value": 1.0
+     },
+     "when": "after_due"
+    },
+    "category": "Regional_Rural_Bank",
+    "direction": "Reserve Bank of India (Regional Rural Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G10_reminders@e510d3e0e7:41",
+    "clause": "e510d3e0e7:41",
+    "kind": "cardinality",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "op": true,
+     "value": true,
+     "sub": true,
+     "when": true
+    },
+    "candidate": {
+     "rule_id": "e510d3e0e7:41#6",
+     "clause_id": "e510d3e0e7:41",
+     "kind": "cardinality",
+     "field": "reminders",
+     "op": ">=",
+     "value": 3.0,
+     "unit": "count",
+     "role": "limit",
+     "sub": {
+      "filter": {
+       "mode": "letter"
+      },
+      "op": ">=",
+      "value": 1.0
+     },
+     "when": "after_due"
+    },
+    "category": "Rural_Cooperative_Bank",
+    "direction": "Reserve Bank of India (Rural Co-operative Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G10_reminders@59eb085a8a:41",
+    "clause": "59eb085a8a:41",
+    "kind": "cardinality",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "op": true,
+     "value": true,
+     "sub": true,
+     "when": true
+    },
+    "candidate": {
+     "rule_id": "59eb085a8a:41#6",
+     "clause_id": "59eb085a8a:41",
+     "kind": "cardinality",
+     "field": "reminders",
+     "op": ">=",
+     "value": 3.0,
+     "unit": "count",
+     "role": "limit",
+     "sub": {
+      "filter": {
+       "mode": "letter"
+      },
+      "op": ">=",
+      "value": 1.0
+     },
+     "when": "after_due"
+    },
+    "category": "Urban_Cooperative_Bank",
+    "direction": "Reserve Bank of India (Urban Co-operative Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G10_reminders@b94be66351:41",
+    "clause": "b94be66351:41",
+    "kind": "cardinality",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "op": true,
+     "value": true,
+     "sub": true,
+     "when": true
+    },
+    "candidate": {
+     "rule_id": "b94be66351:41#6",
+     "clause_id": "b94be66351:41",
+     "kind": "cardinality",
+     "field": "reminders",
+     "op": ">=",
+     "value": 3.0,
+     "unit": "count",
+     "role": "limit",
+     "sub": {
+      "filter": {
+       "mode": "letter"
+      },
+      "op": ">=",
+      "value": 1.0
+     },
+     "when": "after_due"
+    },
+    "category": "local area banks",
+    "direction": "Reserve Bank of India (Local Area Banks - Know Your Customer) Directions,"
+   },
+   {
+    "gold": "G10_reminders@37d6f921dc:42",
+    "clause": "37d6f921dc:42",
+    "kind": "cardinality",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "op": true,
+     "value": true,
+     "sub": true,
+     "when": true
+    },
+    "candidate": {
+     "rule_id": "37d6f921dc:42#6",
+     "clause_id": "37d6f921dc:42",
+     "kind": "cardinality",
+     "field": "reminders",
+     "op": ">=",
+     "value": 3.0,
+     "unit": "count",
+     "role": "limit",
+     "sub": {
+      "filter": {
+       "mode": "letter"
+      },
+      "op": ">=",
+      "value": 1.0
+     },
+     "when": "after_due"
+    },
+    "category": "payment banks",
+    "direction": "Reserve Bank of India (Payments Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G10_reminders@845ce004f7:43",
+    "clause": "845ce004f7:43",
+    "kind": "cardinality",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "field": true,
+     "op": true,
+     "value": true,
+     "sub": true,
+     "when": true
+    },
+    "candidate": {
+     "rule_id": "845ce004f7:43#6",
+     "clause_id": "845ce004f7:43",
+     "kind": "cardinality",
+     "field": "reminders",
+     "op": ">=",
+     "value": 3.0,
+     "unit": "count",
+     "role": "limit",
+     "sub": {
+      "filter": {
+       "mode": "letter"
+      },
+      "op": ">=",
+      "value": 1.0
+     },
+     "when": "after_due"
+    },
+    "category": "small financial banks",
+    "direction": "Reserve Bank of India (Small Finance Banks - Know Your Customer) Directions, 2025 (Updated as on December 29, 2025)"
+   },
+   {
+    "gold": "G11_card_closure@3c0e1d6e39:19",
+    "clause": "3c0e1d6e39:19",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true,
+     "remediation": true
+    },
+    "candidate": {
+     "rule_id": "3c0e1d6e39:19#1",
+     "clause_id": "3c0e1d6e39:19",
+     "kind": "temporal",
+     "unit": "working_days",
+     "role": "limit",
+     "anchor": [
+      "closure_requested",
+      "dues_cleared"
+     ],
+     "anchor_mode": "latest",
+     "target": "card_closed",
+     "window": 7.0,
+     "remediation": {
+      "per_day": 500.0,
+      "unit": "INR"
+     }
+    },
+    "category": "NBFC",
+    "direction": "Reserve Bank of India (Non-Banking Financial Companies - Credit Cards: Issuance and Conduct) Directions, 2025"
+   },
+   {
+    "gold": "G11_card_closure@49d07c2eb7:19",
+    "clause": "49d07c2eb7:19",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true,
+     "remediation": true
+    },
+    "candidate": {
+     "rule_id": "49d07c2eb7:19#1",
+     "clause_id": "49d07c2eb7:19",
+     "kind": "temporal",
+     "unit": "working_days",
+     "role": "limit",
+     "anchor": [
+      "closure_requested",
+      "dues_cleared"
+     ],
+     "anchor_mode": "latest",
+     "target": "card_closed",
+     "window": 7.0,
+     "remediation": {
+      "per_day": 500.0,
+      "unit": "INR"
+     }
+    },
+    "category": "Regional_Rural_Bank",
+    "direction": "Reserve Bank of India (Regional Rural Banks - Credit Cards and Debit Cards: Issuance and Conduct) Directions, 2025"
+   },
+   {
+    "gold": "G11_card_closure@f609117d19:19",
+    "clause": "f609117d19:19",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true,
+     "remediation": true
+    },
+    "candidate": {
+     "rule_id": "f609117d19:19#1",
+     "clause_id": "f609117d19:19",
+     "kind": "temporal",
+     "unit": "working_days",
+     "role": "limit",
+     "anchor": [
+      "closure_requested",
+      "dues_cleared"
+     ],
+     "anchor_mode": "latest",
+     "target": "card_closed",
+     "window": 7.0,
+     "remediation": {
+      "per_day": 500.0,
+      "unit": "INR"
+     }
+    },
+    "category": "Urban_Cooperative_Bank",
+    "direction": "Reserve Bank of India (Urban Co-operative Banks - Credit Cards and Debit Cards: Issuance and Conduct) Directions, 2025"
+   },
+   {
+    "gold": "G11_card_closure@971491ad5b:19",
+    "clause": "971491ad5b:19",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true,
+     "remediation": true
+    },
+    "candidate": {
+     "rule_id": "971491ad5b:19#1",
+     "clause_id": "971491ad5b:19",
+     "kind": "temporal",
+     "unit": "working_days",
+     "role": "limit",
+     "anchor": [
+      "closure_requested",
+      "dues_cleared"
+     ],
+     "anchor_mode": "latest",
+     "target": "card_closed",
+     "window": 7.0,
+     "remediation": {
+      "per_day": 500.0,
+      "unit": "INR"
+     }
+    },
+    "category": "small financial banks",
+    "direction": "Reserve Bank of India (Small Finance Banks - Credit Cards and Debit Cards: Issuance and Conduct) Directions, 2025"
+   },
+   {
+    "gold": "G12_card_cic_update@3c0e1d6e39:20",
+    "clause": "3c0e1d6e39:20",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "3c0e1d6e39:20#2",
+     "clause_id": "3c0e1d6e39:20",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "card_closed"
+     ],
+     "target": "cic_updated",
+     "window": 30.0
+    },
+    "category": "NBFC",
+    "direction": "Reserve Bank of India (Non-Banking Financial Companies - Credit Cards: Issuance and Conduct) Directions, 2025"
+   },
+   {
+    "gold": "G12_card_cic_update@49d07c2eb7:20",
+    "clause": "49d07c2eb7:20",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "49d07c2eb7:20#2",
+     "clause_id": "49d07c2eb7:20",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "card_closed"
+     ],
+     "target": "cic_updated",
+     "window": 30.0
+    },
+    "category": "Regional_Rural_Bank",
+    "direction": "Reserve Bank of India (Regional Rural Banks - Credit Cards and Debit Cards: Issuance and Conduct) Directions, 2025"
+   },
+   {
+    "gold": "G12_card_cic_update@f609117d19:20",
+    "clause": "f609117d19:20",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "f609117d19:20#2",
+     "clause_id": "f609117d19:20",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "card_closed"
+     ],
+     "target": "cic_updated",
+     "window": 30.0
+    },
+    "category": "Urban_Cooperative_Bank",
+    "direction": "Reserve Bank of India (Urban Co-operative Banks - Credit Cards and Debit Cards: Issuance and Conduct) Directions, 2025"
+   },
+   {
+    "gold": "G12_card_cic_update@971491ad5b:20",
+    "clause": "971491ad5b:20",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "971491ad5b:20#2",
+     "clause_id": "971491ad5b:20",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "card_closed"
+     ],
+     "target": "cic_updated",
+     "window": 30.0
+    },
+    "category": "small financial banks",
+    "direction": "Reserve Bank of India (Small Finance Banks - Credit Cards and Debit Cards: Issuance and Conduct) Directions, 2025"
+   },
+   {
+    "gold": "G13_io_decision@c37dc60904:14",
+    "clause": "c37dc60904:14",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "c37dc60904:14#2",
+     "clause_id": "c37dc60904:14",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "complaint_received"
+     ],
+     "target": "decision_communicated",
+     "window": 30.0
+    },
+    "category": "cross-sector",
+    "direction": "Reserve Bank of India (Small Finance Banks - Internal Ombudsman) Directions, In exercise of the powers conferred by Section 35A of Banking Regulation Act, 1949, the"
+   },
+   {
+    "gold": "G13_io_decision@c0b9a42d9a:14",
+    "clause": "c0b9a42d9a:14",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "c0b9a42d9a:14#2",
+     "clause_id": "c0b9a42d9a:14",
+     "kind": "temporal",
+     "unit": "days",
+     "role": "limit",
+     "anchor": [
+      "complaint_received"
+     ],
+     "target": "decision_communicated",
+     "window": 30.0
+    },
+    "category": "cross-sector",
+    "direction": "Reserve Bank of India (Payments Banks - Internal Ombudsman) Directions, In exercise of the powers conferred by Section 35A of Banking Regulation Act, 1949,"
+   },
+   {
+    "gold": "G14_cyber_reporting@57dbf49105:51",
+    "clause": "57dbf49105:51",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "57dbf49105:51#1",
+     "clause_id": "57dbf49105:51",
+     "kind": "temporal",
+     "unit": "hours",
+     "role": "limit",
+     "anchor": [
+      "incident_detected"
+     ],
+     "target": "incident_reported_rbi",
+     "window": 6.0
+    },
+    "category": "Urban_Cooperative_Bank",
+    "direction": "Reserve Bank of India (Urban Co-operative Banks - Managing Risks in Outsourcing) Directions, 2025"
+   },
+   {
+    "gold": "G14_cyber_reporting@629b0c7495:14",
+    "clause": "629b0c7495:14",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "629b0c7495:14#1",
+     "clause_id": "629b0c7495:14",
+     "kind": "temporal",
+     "unit": "hours",
+     "role": "limit",
+     "anchor": [
+      "incident_detected"
+     ],
+     "target": "incident_reported_rbi",
+     "window": 6.0
+    },
+    "category": "local area banks",
+    "direction": "Reserve Bank of India (Local Area Banks - Managing Risks in Outsourcing) Directions, 2025"
+   },
+   {
+    "gold": "G14_cyber_reporting@addcff6027:56",
+    "clause": "addcff6027:56",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "addcff6027:56#1",
+     "clause_id": "addcff6027:56",
+     "kind": "temporal",
+     "unit": "hours",
+     "role": "limit",
+     "anchor": [
+      "incident_detected"
+     ],
+     "target": "incident_reported_rbi",
+     "window": 6.0
+    },
+    "category": "payment banks",
+    "direction": "Reserve Bank of India (Payments Banks - Managing Risks in Outsourcing) Directions, 2025"
+   },
+   {
+    "gold": "G14_cyber_reporting@8871c983ef:56",
+    "clause": "8871c983ef:56",
+    "kind": "temporal",
+    "exact": true,
+    "operational": true,
+    "params": {
+     "anchor": true,
+     "target": true,
+     "window": true,
+     "unit": true
+    },
+    "candidate": {
+     "rule_id": "8871c983ef:56#1",
+     "clause_id": "8871c983ef:56",
+     "kind": "temporal",
+     "unit": "hours",
+     "role": "limit",
+     "anchor": [
+      "incident_detected"
+     ],
+     "target": "incident_reported_rbi",
+     "window": 6.0
+    },
+    "category": "small financial banks",
+    "direction": "Reserve Bank of India (Small Finance Banks - Managing Risks in Outsourcing) Directions, 2025"
+   }
+  ],
+  "exact": 86,
+  "n": 86,
+  "per_param": {
+   "aggregate": 1.0,
+   "anchor": 1.0,
+   "conditions": 1.0,
+   "exceptions": 1.0,
+   "field": 1.0,
+   "grace": 1.0,
+   "op": 1.0,
+   "per_category": 1.0,
+   "period": 1.0,
+   "remediation": 1.0,
+   "required": 1.0,
+   "sub": 1.0,
+   "target": 1.0,
+   "unit": 1.0,
+   "value": 1.0,
+   "when": 1.0,
+   "window": 1.0
+  },
+  "operational_recall": 1.0,
+  "extracted": 140,
+  "extra": [
+   {
+    "rule_id": "248ac9f178:69#1",
+    "clause_id": "248ac9f178:69",
+    "kind": "threshold",
+    "sentence": "In case of domestic wire transfers below ₹ 50,000 where the originator is not an account holder of the ordering AIFIs and where the information accompanying the wire transfer can be made available to the beneficiary RE and appropriate authorities by other means, it is sufficient for the ordering AIFI to include a unique transaction reference number, provided that this number or identifier will permit the transaction to be traced back to the originator or the beneficiary.",
+    "op": "<",
+    "value": 50000.0,
+    "unit": "INR",
+    "role": "limit",
+    "conditions": {
+     "cross_border": true
+    }
+   },
+   {
+    "rule_id": "248ac9f178:69#2",
+    "clause_id": "248ac9f178:69",
+    "kind": "threshold",
+    "sentence": "(b) Customer Identification shall be made if a customer, who is not an account holder of the ordering AIFI , is intentionally structuring domestic wire transfers below ₹ 50,000 to avoid reporting or monitoring.",
+    "op": "<",
+    "value": 50000.0,
+    "unit": "INR",
+    "role": "limit",
+    "conditions": {
+     "cross_border": true
+    }
+   },
+   {
+    "rule_id": "248ac9f178:69#3",
+    "clause_id": "248ac9f178:69",
+    "kind": "temporal",
+    "sentence": "Existing agreements / arrangements, if any, with such entities shall be reviewed within three months to ensure aforementioned requirements.",
+    "unit": "months",
+    "role": "limit",
+    "window": 3.0,
+    "conditions": {
+     "cross_border": true
+    }
+   },
+   {
+    "rule_id": "b3d4cfd332:69#1",
+    "clause_id": "b3d4cfd332:69",
+    "kind": "threshold",
+    "sentence": "(b) Customer Identification shall be made if a customer, who is not an account holder of the ordering NBFC, is intentionally structuring domestic wire transfers below ₹50,000 to avoid reporting or monitoring.",
+    "op": "<",
+    "value": 50000.0,
+    "unit": "INR",
+    "role": "limit",
+    "conditions": {
+     "cross_border": true
+    }
+   },
+   {
+    "rule_id": "b3d4cfd332:69#2",
+    "clause_id": "b3d4cfd332:69",
+    "kind": "temporal",
+    "sentence": "Existing agreements / arrangements, if any, with such entities shall be reviewed within three months to ensure aforementioned requirements.",
+    "unit": "months",
+    "role": "limit",
+    "window": 3.0,
+    "conditions": {
+     "cross_border": true
+    }
+   },
+   {
+    "rule_id": "9f303816f3:73#1",
+    "clause_id": "9f303816f3:73",
+    "kind": "threshold",
+    "sentence": "In case of domestic wire transfers below ₹50,000 where the originator is not an account holder of the ordering banks and where the information accompanying the wire transfer can be made available to the beneficiary RE and appropriate authorities by other means, it is sufficient for the ordering bank to include a unique transaction reference number, provided that this number or identifier will permit the transaction to be traced back to the originator or the beneficiary.",
+    "op": "<",
+    "value": 50000.0,
+    "unit": "INR",
+    "role": "limit",
+    "conditions": {
+     "cross_border": true
+    }
+   },
+   {
+    "rule_id": "9f303816f3:73#2",
+    "clause_id": "9f303816f3:73",
+    "kind": "threshold",
+    "sentence": "(b) Customer Identification shall be made if a customer, who is not an account holder of the ordering bank, is intentionally structuring domestic wire transfers below ₹50,000 to avoid reporting or monitoring.",
+    "op": "<",
+    "value": 50000.0,
+    "unit": "INR",
+    "role": "limit",
+    "conditions": {
+     "cross_border": true
+    }
+   },
+   {
+    "rule_id": "9f303816f3:73#3",
+    "clause_id": "9f303816f3:73",
+    "kind": "temporal",
+    "sentence": "Existing agreements / arrangements, if any, with such entities shall be reviewed within three months to ensure aforementioned requirements.",
+    "unit": "months",
+    "role": "limit",
+    "window": 3.0,
+    "conditions": {
+     "cross_border": true
+    }
+   },
+   {
+    "rule_id": "e510d3e0e7:73#1",
+    "clause_id": "e510d3e0e7:73",
+    "kind": "threshold",
+    "sentence": "In case of domestic wire transfers below ₹50,000 where the originator is not an account holder of the ordering banks and where the information accompanying the wire transfer can be made available to the beneficiary RE and appropriate authorities by other means, it is sufficient for the ordering bank to include a unique transaction reference number, provided that this number or identifier will permit the transaction to be traced back to the originator or the beneficiary.",
+    "op": "<",
+    "value": 50000.0,
+    "unit": "INR",
+    "role": "limit",
+    "conditions": {
+     "cross_border": true
+    }
+   },
+   {
+    "rule_id": "e510d3e0e7:73#2",
+    "clause_id": "e510d3e0e7:73",
+    "kind": "threshold",
+    "sentence": "(b) Customer Identification shall be made if a customer, who is not an account holder of the ordering bank, is intentionally structuring domestic wire transfers below ₹50,000 to avoid reporting or monitoring.",
+    "op": "<",
+    "value": 50000.0,
+    "unit": "INR",
+    "role": "limit",
+    "conditions": {
+     "cross_border": true
+    }
+   },
+   {
+    "rule_id": "e510d3e0e7:73#3",
+    "clause_id": "e510d3e0e7:73",
+    "kind": "temporal",
+    "sentence": "Existing agreements / arrangements, if any, with such entities shall be reviewed within three months to ensure aforementioned requirements.",
+    "unit": "months",
+    "role": "limit",
+    "window": 3.0,
+    "conditions": {
+     "cross_border": true
+    }
+   },
+   {
+    "rule_id": "59eb085a8a:73#1",
+    "clause_id": "59eb085a8a:73",
+    "kind": "threshold",
+    "sentence": "In case of domestic wire transfers below ₹50,000 where the originator is not an account holder of the ordering banks and where the information accompanying the wire transfer can be made available to the beneficiary RE and appropriate authorities by other means, it is sufficient for the ordering bank to include a unique transaction reference number, provided that this number or identifier will permit the transaction to be traced back to the originator or the beneficiary.",
+    "op": "<",
+    "value": 50000.0,
+    "unit": "INR",
+    "role": "limit",
+    "conditions": {
+     "cross_border": true
+    }
+   },
+   {
+    "rule_id": "59eb085a8a:73#2",
+    "clause_id": "59eb085a8a:73",
+    "kind": "threshold",
+    "sentence": "(b) Customer Identification shall be made if a customer, who is not an account holder of the ordering bank, is intentionally structuring domestic wire transfers below ₹50,000 to avoid reporting or monitoring.",
+    "op": "<",
+    "value": 50000.0,
+    "unit": "INR",
+    "role": "limit",
+    "conditions": {
+     "cross_border": true
+    }
+   },
+   {
+    "rule_id": "59eb085a8a:73#3",
+    "clause_id": "59eb085a8a:73",
+    "kind": "temporal",
+    "sentence": "Existing agreements / arrangements, if any, with such entities shall be reviewed within three months to ensure aforementioned requirements.",
+    "unit": "months",
+    "role": "limit",
+    "window": 3.0,
+    "conditions": {
+     "cross_border": true
+    }
+   },
+   {
+    "rule_id": "b94be66351:73#1",
+    "clause_id": "b94be66351:73",
+    "kind": "threshold",
+    "sentence": "In case of domestic wire transfers below ₹50,000 where the originator is not an account holder of the ordering banks and where the information accompanying the wire transfer can be made available to the beneficiary RE and appropriate authorities by other means, it is sufficient for the ordering bank to include a unique transaction reference number, provided that this number or identifier will permit the transaction to be traced back to the originator or the beneficiary.",
+    "op": "<",
+    "value": 50000.0,
+    "unit": "INR",
+    "role": "limit",
+    "conditions": {
+     "cross_border": true
+    }
+   },
+   {
+    "rule_id": "b94be66351:73#2",
+    "clause_id": "b94be66351:73",
+    "kind": "threshold",
+    "sentence": "(b) Customer Identification shall be made if a customer, who is not an account holder of the ordering bank, is intentionally structuring domestic wire transfers below ₹ 50,000 to avoid reporting or monitoring.",
+    "op": "<",
+    "value": 50000.0,
+    "unit": "INR",
+    "role": "limit",
+    "conditions": {
+     "cross_border": true
+    }
+   },
+   {
+    "rule_id": "b94be66351:73#3",
+    "clause_id": "b94be66351:73",
+    "kind": "temporal",
+    "sentence": "Existing agreements / arrangements, if any, with such entities shall be reviewed within three months to ensure aforementioned requirements.",
+    "unit": "months",
+    "role": "limit",
+    "window": 3.0,
+    "conditions": {
+     "cross_border": true
+    }
+   },
+   {
+    "rule_id": "37d6f921dc:74#1",
+    "clause_id": "37d6f921dc:74",
+    "kind": "threshold",
+    "sentence": "(b) Customer Identification shall be made if a customer, who is not an account holder of the ordering bank, is intentionally structuring domestic wire transfers below ₹50,000 to avoid reporting or monitoring.",
+    "op": "<",
+    "value": 50000.0,
+    "unit": "INR",
+    "role": "limit",
+    "conditions": {
+     "cross_border": true
+    }
+   },
+   {
+    "rule_id": "37d6f921dc:74#2",
+    "clause_id": "37d6f921dc:74",
+    "kind": "temporal",
+    "sentence": "Existing agreements / arrangements, if any, with such entities shall be reviewed within three months to ensure aforementioned requirements.",
+    "unit": "months",
+    "role": "limit",
+    "window": 3.0,
+    "conditions": {
+     "cross_border": true
+    }
+   },
+   {
+    "rule_id": "845ce004f7:75#1",
+    "clause_id": "845ce004f7:75",
+    "kind": "threshold",
+    "sentence": "In case of domestic wire transfers below ₹50,000 where the originator is not an account holder of the ordering banks and where the information accompanying the wire transfer can be made available to the beneficiary RE and appropriate authorities by other means, it is sufficient for the ordering bank to include a unique transaction reference number, provided that this number or identifier will permit the transaction to be traced back to the originator or the beneficiary.",
+    "op": "<",
+    "value": 50000.0,
+    "unit": "INR",
+    "role": "limit",
+    "conditions": {
+     "cross_border": true
+    }
+   },
+   {
+    "rule_id": "845ce004f7:75#2",
+    "clause_id": "845ce004f7:75",
+    "kind": "threshold",
+    "sentence": "(b) Customer Identification shall be made if a customer, who is not an account holder of the ordering bank , is intentionally structuring domestic wire transfers below ₹ 50,000 to avoid reporting or monitoring.",
+    "op": "<",
+    "value": 50000.0,
+    "unit": "INR",
+    "role": "limit",
+    "conditions": {
+     "cross_border": true
+    }
+   },
+   {
+    "rule_id": "845ce004f7:75#3",
+    "clause_id": "845ce004f7:75",
+    "kind": "temporal",
+    "sentence": "Existing agreements / arrangements, if any, with such entities shall be reviewed within three months to ensure aforementioned requirements.",
+    "unit": "months",
+    "role": "limit",
+    "window": 3.0,
+    "conditions": {
+     "cross_border": true
+    }
+   },
+   {
+    "rule_id": "9f303816f3:64#2",
+    "clause_id": "9f303816f3:64",
+    "kind": "temporal",
+    "sentence": "Also, whenever the bank obtains additional or updated information from any customer as per clause (10) below in this paragraph or Rule 9 (1C) of the PML Rules, the bank shall within seven days or within such period as may be notified by the Central Government, furnish the updated information to CKYC R, which shall update the KYC records of the existing customer in CKYCR.",
+    "unit": "days",
+    "role": "limit",
+    "anchor": [
+     "updated_info_obtained"
+    ],
+    "window": 7.0
+   },
+   {
+    "rule_id": "e510d3e0e7:64#2",
+    "clause_id": "e510d3e0e7:64",
+    "kind": "temporal",
+    "sentence": "Also, whenever the bank obtains additional or updated information from any customer as per clause (10) below in this paragraph or Rule 9 (1C) of the PML Rules, the bank shall within seven days or within such period as may be notified by the Central Government, furnish the updated information to CKYC R, which shall update the KYC records of the existing customer in CKYCR.",
+    "unit": "days",
+    "role": "limit",
+    "anchor": [
+     "updated_info_obtained"
+    ],
+    "window": 7.0
+   },
+   {
+    "rule_id": "248ac9f178:41#3",
+    "clause_id": "248ac9f178:41",
+    "kind": "temporal",
+    "sentence": "(3) Individuals: (i) No change in KYC information: In case of no change in the K YC information, the AIFI shall obtain a self-declaration from the customer in this regard through the customer's email-id registered with the AIFI, customer's mobile number registered with the AIFI or digital channels (such as mobile application of AIFI) letter, etc. (ii) Change in address: In case of a change only in the address details of the customer, the AIFI shall obtain a self-declaration of the new address from the customer through customer's email-id registered with the AIFI, customer's mobile number registered with the AIFI, ATMs, digital channels (mobile application of AIFI ), letter, etc., and shall verify the declared address through positive confirmation within two months, by means such as address verification letter, contact point verification, deliverables, etc. (iii) Accounts of customers, who were minor at the time of opening account, on their becoming major: In case of customers for whom account was opened when they were minor, fresh photographs shall be obtained on their becoming a major and at that time it shall be ensured that CDD documents as per the current CDD standards are available with the REs.",
+    "unit": "months",
+    "role": "limit",
+    "window": 2.0
+   },
+   {
+    "rule_id": "248ac9f178:41#4",
+    "clause_id": "248ac9f178:41",
+    "kind": "temporal",
+    "sentence": "This shall be done within 30 days of the update to the documents for the purpose of updating the records at the AIFI's end.",
+    "unit": "days",
+    "role": "limit",
+    "window": 30.0
+   },
+   {
+    "rule_id": "0a209c9e20:41#3",
+    "clause_id": "0a209c9e20:41",
+    "kind": "temporal",
+    "sentence": "(3) Individuals: (i) No change in KYC information: In case of no change in the KYC information, the ARC shall obtain a self-declaration from the customer in this regard through the customer's email-id registered with the ARC, customer's mobile number registered with the ARC, letter, etc. (ii) Change in address: In case of a change only in the address details of the customer, the ARC shall obtain a self-declaration of the new address from the customer through customer's email-id registered with the ARC, customer's mobile number registered with the ARC, , etc., and shall verify the declared address through positive confirmation within two months, by means such as address verification letter, contact point verification, deliverables, etc. (iii) Further, the ARC at its option, may obtain a copy of OVD or deemed OVD, as defined in sub-clause (xiv) of clause (1) of paragraph 4 or the equivalent e-documents thereof, as defined in sub-clause (x) of clause (1) of paragraph 4 for the purpose of proof of address, declared by the customer at the time of updation / periodic updation.",
+    "unit": "months",
+    "role": "limit",
+    "target": "kyc_updated",
+    "window": 2.0
+   },
+   {
+    "rule_id": "0a209c9e20:41#4",
+    "clause_id": "0a209c9e20:41",
+    "kind": "temporal",
+    "sentence": "This shall be done within 30 days of the update to the documents for the purpose of updating the records at the ARC's end.",
+    "unit": "days",
+    "role": "limit",
+    "window": 30.0
+   },
+   {
+    "rule_id": "b3d4cfd332:42#3",
+    "clause_id": "b3d4cfd332:42",
+    "kind": "temporal",
+    "sentence": "(3) Individuals: (i) No change in KYC information: In case of no change in the KYC information, the NBFC shall obtain a self-declaration from the customer in this regard through the customer's email-id registered with the NBFC, customer's mobile number registered with the NBFC, digital channels (including mobile application of NBFC) letter, etc. (ii) Change in address: In case of a change only in the address details of the customer, the NBFC shall obtain a self-declaration of the new address from the customer through customer's email-id registered with the NBFC, customer's mobile number registered with the NBFC, ATMs, digital channels (including mobile application of NBFC), letter, etc., and shall verify the declared address through positive confirmation within two months, by means such as address verification letter, contact point verification, deliverables, etc. (iii) Further, the NBFC at its option, may obtain a copy of OVD or deemed OVD, as defined in sub-clause (xiv) of clause (1) of paragraph 5 or the equivalent e-documents thereof, as defined in sub-clause (x) of clause (1) of paragraph 5 for the purpose of proof of address, declared by the customer at the time of updation / periodic updation.",
+    "unit": "months",
+    "role": "limit",
+    "target": "kyc_updated",
+    "window": 2.0
+   },
+   {
+    "rule_id": "b3d4cfd332:42#4",
+    "clause_id": "b3d4cfd332:42",
+    "kind": "temporal",
+    "sentence": "This shall be done within 30 days of the update to the documents for the purpose of updating the records at the NBFC's end.",
+    "unit": "days",
+    "role": "limit",
+    "window": 30.0
+   },
+   {
+    "rule_id": "9f303816f3:41#3",
+    "clause_id": "9f303816f3:41",
+    "kind": "temporal",
+    "sentence": "(3) Individuals: (i) No change in KYC information: In case of no change in the KYC information, the bank shall obtain a self-declaration from the customer in this regard through the customer's email-id registered with the bank, customer's mobile number registered with the bank, ATMs, or digital channels (such as online banking / internet banking, mobile application of bank) letter, etc. (ii) Change in address: In case of a change only in the address details of the customer, the bank shall obtain a self-declaration of the new address from the customer through customer's email-id registered with the bank, customer's mobile number registered with the bank, ATMs, digital channels (such as online banking / internet banking, mobile application of bank), letter, etc., and shall verify the declared address through positive confirmation within two months, by means such as address verification letter, contact point verification, deliverables, etc. (iii) Further, the bank at its option, may obtain a copy of OVD or deemed OVD, as defined in sub-clause(xiv) of clause (1) of paragraph 4, or the equivalent e-documents thereof, as defined in sub-clause(x) of clause (1) of paragraph 4, for the purpose of proof of address, declared by the customer at the time of updation / periodic updation.",
+    "unit": "months",
+    "role": "limit",
+    "target": "kyc_updated",
+    "window": 2.0
+   },
+   {
+    "rule_id": "9f303816f3:41#4",
+    "clause_id": "9f303816f3:41",
+    "kind": "temporal",
+    "sentence": "This shall be done within 30 days of the update to the documents for the purpose of updating the records at the bank's end.",
+    "unit": "days",
+    "role": "limit",
+    "window": 30.0
+   },
+   {
+    "rule_id": "e510d3e0e7:41#3",
+    "clause_id": "e510d3e0e7:41",
+    "kind": "temporal",
+    "sentence": "(3) Individuals: (i) No change in KYC information: In case of no change in the KYC information, the bank shall obtain a self-declaration from the customer in this regard through the customer's email-id registered with the bank, customer's mobile number registered with the bank, ATMs, or digital channels (such as online banking / internet banking, mobile application of bank) letter, etc. (ii) Change in address: In case of a change only in the address details of the customer, the bank shall obtain a self-declaration of the new address from the customer through customer's email-id registered with the bank, customer's mobile number registered with the bank, ATMs, digital channels (such as online banking / internet banking, mobile application of bank), letter, etc., and shall verify the declared address through positive confirmation within two months, by means such as address verification letter, contact point verification, deliverables, etc. (iii) Further, the bank at its option, may obtain a copy of OVD or deemed OVD, as defined in sub clause (xiv) of clause (1) of paragraph 4, or the equivalent e-documents thereof, as defined in sub clause (x) of clause (1) of paragraph 4, for the purpose of proof of address, declared by the customer at the time of updation / periodic updation.",
+    "unit": "months",
+    "role": "limit",
+    "target": "kyc_updated",
+    "window": 2.0
+   },
+   {
+    "rule_id": "e510d3e0e7:41#4",
+    "clause_id": "e510d3e0e7:41",
+    "kind": "temporal",
+    "sentence": "This shall be done within 30 days of the update to the documents for the purpose of updating the records at the bank's end.",
+    "unit": "days",
+    "role": "limit",
+    "window": 30.0
+   },
+   {
+    "rule_id": "59eb085a8a:41#3",
+    "clause_id": "59eb085a8a:41",
+    "kind": "temporal",
+    "sentence": "(3) Individuals: (i) No change in KYC information: In case of no change in the KYC information, the bank shall obtain a self-declaration from the customer in this regard through the customer's email-id registered with the bank, customer's mobile number registered with the bank, ATMs, or digital channels (such as online banking / internet banking, mobile application of bank) letter, etc. (ii) Change in address: In case of a change only in the address details of the customer, the bank shall obtain a self-declaration of the new address from the customer through customer's email-id registered with the bank, customer's mobile number registered with the bank, ATMs, digital channels (such as online banking / internet banking, mobile application of bank), letter, etc., and shall verify the declared address through positive confirmation within two months, by means such as address verification letter, contact point verification, deliverables, etc. (iii) Further, the bank at its option, may obtain a copy of OVD or deemed OVD, as defined in sub-clause (xiv) of clause (1) of paragraph 4, or the equivalent e-documents thereof, as defined in sub-clause (x) of clause (1) of paragraph 4, for the purpose of proof of address, declared by the customer at the time of updation / periodic updation.",
+    "unit": "months",
+    "role": "limit",
+    "target": "kyc_updated",
+    "window": 2.0
+   },
+   {
+    "rule_id": "59eb085a8a:41#4",
+    "clause_id": "59eb085a8a:41",
+    "kind": "temporal",
+    "sentence": "This shall be done within 30 days of the update to the documents for the purpose of updating the records at the bank's end.",
+    "unit": "days",
+    "role": "limit",
+    "window": 30.0
+   },
+   {
+    "rule_id": "b94be66351:41#3",
+    "clause_id": "b94be66351:41",
+    "kind": "temporal",
+    "sentence": "(3) Individuals: (i) No change in KYC information: In case of no change in the KYC information, the bank shall obtain a self-declaration from the customer in this regard through the customer's email-id registered with the bank, customer's mobile number registered with the bank, ATMs, or digital channels (such as online banking / internet banking, mobile application of bank) letter, etc. (ii) Change in address: In case of a change only in the address details of the customer, the bank shall obtain a self-declaration of the new address from the customer through customer's email-id registered with the bank, customer's mobile number registered with the bank, ATMs, digital channels (such as online banking / internet banking, mobile application of bank), letter, etc., and shall verify the declared address through positive confirmation within two months, by means such as address verification letter, contact point verification, deliverables, etc. (iii) Further, the bank at its option, may obtain a copy of OVD or deemed OVD, as defined in sub-clause (xiv) of clause (1) of paragraph 4, or the equivalent e-documents thereof, as defined in sub-clause(x) of clause (1) of paragraph 4, for the purpose of proof of address, declared by the customer at the time of updation / periodic updation.",
+    "unit": "months",
+    "role": "limit",
+    "target": "kyc_updated",
+    "window": 2.0
+   },
+   {
+    "rule_id": "b94be66351:41#4",
+    "clause_id": "b94be66351:41",
+    "kind": "temporal",
+    "sentence": "This shall be done within 30 days of the update to the documents for the purpose of updating the records at the bank's end.",
+    "unit": "days",
+    "role": "limit",
+    "window": 30.0
+   },
+   {
+    "rule_id": "37d6f921dc:42#3",
+    "clause_id": "37d6f921dc:42",
+    "kind": "temporal",
+    "sentence": "(3) Individuals: (i) No change in KYC information: In case of no change in the KYC information, the bank shall obtain a self-declaration from the customer in this regard through the customer's email-id registered with the bank, customer's mobile number registered with the bank, ATMs, or digital channels (such as online banking / internet banking, mobile application of bank) letter, etc. (ii) Change in address: In case of a change only in the address details of the customer, the bank shall obtain a self-declaration of the new address from the customer through customer's email-id registered with the bank, customer's mobile number registered with the bank, ATMs, digital channels (such as online banking / internet banking, mobile application of bank), letter, etc., and shall verify the declared address through positive confirmation within two months, by means such as address verification letter, contact point verification, deliverables, etc. (iii) Further, the bank at its option, may obtain a copy of OVD or deemed OVD, as defined in sub-clause (xiv) of clause (1) of paragraph 5(1), or the equivalent e-documents thereof, as defined in clause (x) of clause (1) of paragraph 5, for the purpose of proof of address, declared by the customer at the time of updation / periodic updation.",
+    "unit": "months",
+    "role": "limit",
+    "target": "kyc_updated",
+    "window": 2.0
+   },
+   {
+    "rule_id": "37d6f921dc:42#4",
+    "clause_id": "37d6f921dc:42",
+    "kind": "temporal",
+    "sentence": "This shall be done within 30 days of the update to the documents for the purpose of updating the records at the bank's end.",
+    "unit": "days",
+    "role": "limit",
+    "window": 30.0
+   },
+   {
+    "rule_id": "845ce004f7:43#3",
+    "clause_id": "845ce004f7:43",
+    "kind": "temporal",
+    "sentence": "(3) Individuals: (i) No change in KYC information: In case of no change in the KYC information, the bank shall obtain a self-declaration from the customer in this regard through the customer's email-id registered with the bank, customer's mobile number registered with the bank, ATMs, or digital channels (such as online banking / internet banking, mobile application of bank) letter, etc. (ii) Change in address: In case of a change only in the address details of the customer, the bank shall obtain a self-declaration of the new address from the customer through customer's email-id registered with the bank, customer's mobile number registered with the bank, ATMs, digital channels (such as online banking / internet banking, mobile application of bank), letter, etc., and shall verify the declared address through positive confirmation within two months, by means such as address verification letter, contact point verification, deliverables, etc. (iii) Further, the bank at its option, may obtain a copy of OVD or deemed OVD, as defined in sub-clause (xiv) of clause (1) of paragraph 5, or the equivalent e-documents thereof, as defined in sub-clause (x) of clause (1) of paragraph 5, for the purpose of proof of address, declared by the customer at the time of updation / periodic updation.",
+    "unit": "months",
+    "role": "limit",
+    "target": "kyc_updated",
+    "window": 2.0
+   },
+   {
+    "rule_id": "845ce004f7:43#4",
+    "clause_id": "845ce004f7:43",
+    "kind": "temporal",
+    "sentence": "This shall be done within 30 days of the update to the documents for the purpose of updating the records at the bank's end.",
+    "unit": "days",
+    "role": "limit",
+    "window": 30.0
+   },
+   {
+    "rule_id": "3c0e1d6e39:20#1",
+    "clause_id": "3c0e1d6e39:20",
+    "kind": "temporal",
+    "sentence": "If no reply is received from the cardholder within a period of 30 days, the card account shall be closed by the card-issuer, subject to payment of all dues by the cardholder.",
+    "unit": "days",
+    "role": "limit",
+    "target": "card_closed",
+    "window": 30.0
+   },
+   {
+    "rule_id": "49d07c2eb7:20#1",
+    "clause_id": "49d07c2eb7:20",
+    "kind": "temporal",
+    "sentence": "If no reply is received from the cardholder within a period of 30 days, the card account shall be closed by the card-issuer, subject to payment of all dues by the cardholder.",
+    "unit": "days",
+    "role": "limit",
+    "target": "card_closed",
+    "window": 30.0
+   },
+   {
+    "rule_id": "f609117d19:20#1",
+    "clause_id": "f609117d19:20",
+    "kind": "temporal",
+    "sentence": "If no reply is received from the cardholder within a period of 30 days, the card account shall be closed by the card-issuer, subject to payment of all dues by the cardholder.",
+    "unit": "days",
+    "role": "limit",
+    "target": "card_closed",
+    "window": 30.0
+   },
+   {
+    "rule_id": "971491ad5b:20#1",
+    "clause_id": "971491ad5b:20",
+    "kind": "temporal",
+    "sentence": "If no reply is received from the cardholder within a period of 30 days, the card account shall be closed by the card-issuer, subject to payment of all dues by the cardholder.",
+    "unit": "days",
+    "role": "limit",
+    "target": "card_closed",
+    "window": 30.0
+   },
+   {
+    "rule_id": "c37dc60904:14#1",
+    "clause_id": "c37dc60904:14",
+    "kind": "temporal",
+    "sentence": "IO gets at least 10 days for review of such complaints to enable final decision to be communicated to the complainants within the timelines prescribed by Reserve Bank of India, National Payments Corporation of India, or card network, as applicable; b) in all other cases, within 20 days of receipt.",
+    "unit": "days",
+    "role": "limit",
+    "anchor": [
+     "decision_communicated"
+    ],
+    "window": 20.0
+   },
+   {
+    "rule_id": "c0b9a42d9a:14#1",
+    "clause_id": "c0b9a42d9a:14",
+    "kind": "temporal",
+    "sentence": "IO gets at least 10 days for review of such complaints to enable final decision to be communicated to the complainants within the timelines prescribed by Reserve Bank of India, National Payments Corporation of India, or card network, as applicable; b) in all other cases, within 20 days of receipt.",
+    "unit": "days",
+    "role": "limit",
+    "anchor": [
+     "decision_communicated"
+    ],
+    "window": 20.0
+   }
+  ]
+ },
+ "B_by_category": {
+  "Regional_Rural_Bank": [
+   11,
+   11
+  ],
+  "Rural_Cooperative_Bank": [
+   9,
+   9
+  ],
+  "Urban_Cooperative_Bank": [
+   13,
+   13
+  ],
+  "local area banks": [
+   11,
+   11
+  ],
+  "payment banks": [
+   11,
+   11
+  ],
+  "small financial banks": [
+   13,
+   13
+  ],
+  "All_India_Financial_Institutions": [
+   5,
+   5
+  ],
+  "NBFC": [
+   7,
+   7
+  ],
+  "Asset_Reconstruction_Companies": [
+   4,
+   4
+  ],
+  "cross-sector": [
+   2,
+   2
+  ]
+ },
+ "C_numeric": {
+  "n": 62,
+  "located": 60,
+  "value_recall": 0.7333333333333333,
+  "strict_recall": 0.7333333333333333,
+  "lenient_recall": 0.7333333333333333,
+  "operational_recall": 0.9666666666666667,
+  "by_set": {
+   "figures": {
+    "n": 24,
+    "strict": 24
+   },
+   "network": {
+    "n": 36,
+    "strict": 20
+   }
+  },
+  "rows": [
+   {
+    "key": "cb_crar",
+    "set": "figures",
+    "located": true,
+    "clause": "96772cb01b:11",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 14
+   },
+   {
+    "key": "cb_cet1",
+    "set": "figures",
+    "located": true,
+    "clause": "96772cb01b:11",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 14
+   },
+   {
+    "key": "cb_tier1",
+    "set": "figures",
+    "located": true,
+    "clause": "96772cb01b:11",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 14
+   },
+   {
+    "key": "cb_crar_ccb",
+    "set": "figures",
+    "located": true,
+    "clause": "96772cb01b:251",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 5
+   },
+   {
+    "key": "cb_cet1_ccb",
+    "set": "figures",
+    "located": true,
+    "clause": "96772cb01b:251",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 5
+   },
+   {
+    "key": "cb_leverage_dsib",
+    "set": "figures",
+    "located": true,
+    "clause": "96772cb01b:262",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 2
+   },
+   {
+    "key": "cb_leverage",
+    "set": "figures",
+    "located": true,
+    "clause": "96772cb01b:262",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 2
+   },
+   {
+    "key": "cb_lcr",
+    "set": "figures",
+    "located": true,
+    "clause": "77cb3d17c1:102",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 1
+   },
+   {
+    "key": "cb_nsfr",
+    "set": "figures",
+    "located": true,
+    "clause": "77cb3d17c1:211",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 1
+   },
+   {
+    "key": "cb_psl",
+    "set": "figures",
+    "located": false
+   },
+   {
+    "key": "sfb_crar",
+    "set": "figures",
+    "located": true,
+    "clause": "c0e8e24712:10",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 9
+   },
+   {
+    "key": "sfb_cet1",
+    "set": "figures",
+    "located": true,
+    "clause": "c0e8e24712:10",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 9
+   },
+   {
+    "key": "sfb_tier1",
+    "set": "figures",
+    "located": true,
+    "clause": "c0e8e24712:10",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 9
+   },
+   {
+    "key": "sfb_leverage",
+    "set": "figures",
+    "located": true,
+    "clause": "c0e8e24712:199",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 1
+   },
+   {
+    "key": "sfb_lcr",
+    "set": "figures",
+    "located": true,
+    "clause": "536b35c0a3:99",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 1
+   },
+   {
+    "key": "sfb_nsfr",
+    "set": "figures",
+    "located": true,
+    "clause": "536b35c0a3:204",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 1
+   },
+   {
+    "key": "pb_crar",
+    "set": "figures",
+    "located": true,
+    "clause": "fd919335cc:8",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 11
+   },
+   {
+    "key": "pb_cet1",
+    "set": "figures",
+    "located": true,
+    "clause": "fd919335cc:8",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 11
+   },
+   {
+    "key": "pb_tier1",
+    "set": "figures",
+    "located": true,
+    "clause": "fd919335cc:8",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 11
+   },
+   {
+    "key": "pb_leverage",
+    "set": "figures",
+    "located": true,
+    "clause": "fd919335cc:84",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 1
+   },
+   {
+    "key": "ucb_crar",
+    "set": "figures",
+    "located": false
+   },
+   {
+    "key": "ucb_net_worth",
+    "set": "figures",
+    "located": true,
+    "clause": "ddb34dca35:6",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 11
+   },
+   {
+    "key": "rrb_crar",
+    "set": "figures",
+    "located": true,
+    "clause": "b98fef85c5:6",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 1
+   },
+   {
+    "key": "rrb_tier1",
+    "set": "figures",
+    "located": true,
+    "clause": "b98fef85c5:10",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 2
+   },
+   {
+    "key": "lab_crar",
+    "set": "figures",
+    "located": true,
+    "clause": "00dc2a2dd9:6",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 1
+   },
+   {
+    "key": "rcb_crar",
+    "set": "figures",
+    "located": true,
+    "clause": "4c4e41f3db:7",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 1
+   },
+   {
+    "key": "cb_single",
+    "set": "network",
+    "located": true,
+    "clause": "2f303b1dec:15",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 1
+   },
+   {
+    "key": "cb_interbank",
+    "set": "network",
+    "located": true,
+    "clause": "2f303b1dec:62",
+    "operational": true,
+    "value": false,
+    "strict": false,
+    "lenient": false,
+    "extracted_thresholds": 0
+   },
+   {
+    "key": "cb_nbfc_single",
+    "set": "network",
+    "located": true,
+    "clause": "2f303b1dec:79",
+    "operational": false,
+    "value": false,
+    "strict": false,
+    "lenient": false,
+    "extracted_thresholds": 0
+   },
+   {
+    "key": "cb_gold_nbfc",
+    "set": "network",
+    "located": true,
+    "clause": "2f303b1dec:80",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 1
+   },
+   {
+    "key": "cb_group",
+    "set": "network",
+    "located": true,
+    "clause": "2f303b1dec:16",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 1
+   },
+   {
+    "key": "cb_connected_nbfc",
+    "set": "network",
+    "located": true,
+    "clause": "2f303b1dec:81",
+    "operational": false,
+    "value": false,
+    "strict": false,
+    "lenient": false,
+    "extracted_thresholds": 0
+   },
+   {
+    "key": "cb_ite_single_nonfin",
+    "set": "network",
+    "located": true,
+    "clause": "2f303b1dec:116",
+    "operational": true,
+    "value": false,
+    "strict": false,
+    "lenient": false,
+    "extracted_thresholds": 0
+   },
+   {
+    "key": "cb_ite_single_fin",
+    "set": "network",
+    "located": true,
+    "clause": "2f303b1dec:116",
+    "operational": true,
+    "value": false,
+    "strict": false,
+    "lenient": false,
+    "extracted_thresholds": 0
+   },
+   {
+    "key": "cb_ite_agg_nonfin",
+    "set": "network",
+    "located": true,
+    "clause": "2f303b1dec:116",
+    "operational": true,
+    "value": false,
+    "strict": false,
+    "lenient": false,
+    "extracted_thresholds": 0
+   },
+   {
+    "key": "cb_ite_agg_all",
+    "set": "network",
+    "located": true,
+    "clause": "2f303b1dec:116",
+    "operational": true,
+    "value": false,
+    "strict": false,
+    "lenient": false,
+    "extracted_thresholds": 0
+   },
+   {
+    "key": "sfb_single",
+    "set": "network",
+    "located": true,
+    "clause": "42a9ab6b3b:10",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 2
+   },
+   {
+    "key": "sfb_group",
+    "set": "network",
+    "located": true,
+    "clause": "42a9ab6b3b:10",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 2
+   },
+   {
+    "key": "sfb_nbfc_single",
+    "set": "network",
+    "located": true,
+    "clause": "42a9ab6b3b:14",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 2
+   },
+   {
+    "key": "sfb_nbfc_group",
+    "set": "network",
+    "located": true,
+    "clause": "42a9ab6b3b:14",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 2
+   },
+   {
+    "key": "sfb_ite_single_nonfin",
+    "set": "network",
+    "located": true,
+    "clause": "42a9ab6b3b:48",
+    "operational": true,
+    "value": false,
+    "strict": false,
+    "lenient": false,
+    "extracted_thresholds": 0
+   },
+   {
+    "key": "sfb_ite_single_fin",
+    "set": "network",
+    "located": true,
+    "clause": "42a9ab6b3b:48",
+    "operational": true,
+    "value": false,
+    "strict": false,
+    "lenient": false,
+    "extracted_thresholds": 0
+   },
+   {
+    "key": "sfb_ite_agg_nonfin",
+    "set": "network",
+    "located": true,
+    "clause": "42a9ab6b3b:48",
+    "operational": true,
+    "value": false,
+    "strict": false,
+    "lenient": false,
+    "extracted_thresholds": 0
+   },
+   {
+    "key": "sfb_ite_agg_all",
+    "set": "network",
+    "located": true,
+    "clause": "42a9ab6b3b:48",
+    "operational": true,
+    "value": false,
+    "strict": false,
+    "lenient": false,
+    "extracted_thresholds": 0
+   },
+   {
+    "key": "lab_single",
+    "set": "network",
+    "located": true,
+    "clause": "a04bf6b28a:7",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 2
+   },
+   {
+    "key": "lab_group",
+    "set": "network",
+    "located": true,
+    "clause": "a04bf6b28a:7",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 2
+   },
+   {
+    "key": "lab_nbfc_single",
+    "set": "network",
+    "located": true,
+    "clause": "a04bf6b28a:10",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 2
+   },
+   {
+    "key": "lab_nbfc_group",
+    "set": "network",
+    "located": true,
+    "clause": "a04bf6b28a:10",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 2
+   },
+   {
+    "key": "rrb_single",
+    "set": "network",
+    "located": true,
+    "clause": "0061d54d65:7",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 2
+   },
+   {
+    "key": "rrb_group",
+    "set": "network",
+    "located": true,
+    "clause": "0061d54d65:7",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 2
+   },
+   {
+    "key": "ucb_single",
+    "set": "network",
+    "located": true,
+    "clause": "e0fa110cc0:6",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 2
+   },
+   {
+    "key": "ucb_group",
+    "set": "network",
+    "located": true,
+    "clause": "e0fa110cc0:6",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 2
+   },
+   {
+    "key": "nbfc_ml_single",
+    "set": "network",
+    "located": true,
+    "clause": "bc7f6da4ef:13",
+    "operational": true,
+    "value": false,
+    "strict": false,
+    "lenient": false,
+    "extracted_thresholds": 0
+   },
+   {
+    "key": "nbfc_ml_group",
+    "set": "network",
+    "located": true,
+    "clause": "bc7f6da4ef:13",
+    "operational": true,
+    "value": false,
+    "strict": false,
+    "lenient": false,
+    "extracted_thresholds": 0
+   },
+   {
+    "key": "nbfc_ifc_single",
+    "set": "network",
+    "located": true,
+    "clause": "bc7f6da4ef:14",
+    "operational": true,
+    "value": false,
+    "strict": false,
+    "lenient": false,
+    "extracted_thresholds": 0
+   },
+   {
+    "key": "nbfc_ifc_group",
+    "set": "network",
+    "located": true,
+    "clause": "bc7f6da4ef:14",
+    "operational": true,
+    "value": false,
+    "strict": false,
+    "lenient": false,
+    "extracted_thresholds": 0
+   },
+   {
+    "key": "nbfc_ul_single",
+    "set": "network",
+    "located": true,
+    "clause": "bc7f6da4ef:33",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 1
+   },
+   {
+    "key": "nbfc_ul_ifc_single",
+    "set": "network",
+    "located": true,
+    "clause": "bc7f6da4ef:34",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 2
+   },
+   {
+    "key": "nbfc_ul_group",
+    "set": "network",
+    "located": true,
+    "clause": "bc7f6da4ef:35",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 1
+   },
+   {
+    "key": "nbfc_ul_ifc_group",
+    "set": "network",
+    "located": true,
+    "clause": "bc7f6da4ef:35",
+    "operational": true,
+    "value": false,
+    "strict": false,
+    "lenient": false,
+    "extracted_thresholds": 1
+   },
+   {
+    "key": "aifi_single",
+    "set": "network",
+    "located": true,
+    "clause": "2fbaf134d9:11",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 2
+   },
+   {
+    "key": "aifi_group",
+    "set": "network",
+    "located": true,
+    "clause": "2fbaf134d9:12",
+    "operational": true,
+    "value": true,
+    "strict": true,
+    "lenient": true,
+    "extracted_thresholds": 1
+   }
+  ],
+  "main_system": {
+   "n": 62,
+   "exact_recall": 0.855,
+   "value_recall": 0.855,
+   "operator_accuracy": 1,
+   "taxonomy_agreement": 0.855
+  }
+ },
+ "generated_at": "2026-10-09T17:16:44+00:00"
+}
