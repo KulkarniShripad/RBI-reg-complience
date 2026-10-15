@@ -1,0 +1,230 @@
+{
+  "easy": {
+    "arrays": [
+      {
+        "slug": "two-sum",
+        "url": "https://leetcode.com/problems/two-sum/"
+      },
+      {
+        "slug": "contains-duplicate",
+        "url": "https://leetcode.com/problems/contains-duplicate/"
+      },
+      {
+        "slug": "valid-anagram",
+        "url": "https://leetcode.com/problems/valid-anagram/"
+      },
+      {
+        "slug": "ransom-note",
+        "url": "https://leetcode.com/problems/ransom-note/"
+      },
+      {
+        "slug": "intersection-of-two-arrays",
+        "url": "https://leetcode.com/problems/intersection-of-two-arrays/"
+      },
+      {
+        "slug": "missing-number",
+        "url": "https://leetcode.com/problems/missing-number/"
+      },
+      {
+        "slug": "find-all-numbers-disappeared-in-an-array",
+        "url": "https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/"
+      },
+      {
+        "slug": "number-of-good-pairs",
+        "url": "https://leetcode.com/problems/number-of-good-pairs/"
+      },
+      {
+        "slug": "isomorphic-strings",
+        "url": "https://leetcode.com/problems/isomorphic-strings/"
+      },
+      {
+        "slug": "word-pattern",
+        "url": "https://leetcode.com/problems/word-pattern/"
+      }
+    ],
+    "window": [
+      {
+        "slug": "valid-palindrome",
+        "url": "https://leetcode.com/problems/valid-palindrome/"
+      },
+      {
+        "slug": "reverse-string",
+        "url": "https://leetcode.com/problems/reverse-string/"
+      },
+      {
+        "slug": "remove-duplicates-from-sorted-array",
+        "url": "https://leetcode.com/problems/remove-duplicates-from-sorted-array/"
+      },
+      {
+        "slug": "remove-element",
+        "url": "https://leetcode.com/problems/remove-element/"
+      },
+      {
+        "slug": "move-zeroes",
+        "url": "https://leetcode.com/problems/move-zeroes/"
+      },
+      {
+        "slug": "merge-sorted-array",
+        "url": "https://leetcode.com/problems/merge-sorted-array/"
+      },
+      {
+        "slug": "squares-of-a-sorted-array",
+        "url": "https://leetcode.com/problems/squares-of-a-sorted-array/"
+      },
+      {
+        "slug": "maximum-average-subarray-i",
+        "url": "https://leetcode.com/problems/maximum-average-subarray-i/"
+      },
+      {
+        "slug": "best-time-to-buy-and-sell-stock",
+        "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/"
+      },
+      {
+        "slug": "is-subsequence",
+        "url": "https://leetcode.com/problems/is-subsequence/"
+      }
+    ],
+    "recursion": [
+      {
+        "slug": "maximum-depth-of-binary-tree",
+        "url": "https://leetcode.com/problems/maximum-depth-of-binary-tree/"
+      },
+      {
+        "slug": "invert-binary-tree",
+        "url": "https://leetcode.com/problems/invert-binary-tree/"
+      },
+      {
+        "slug": "same-tree",
+        "url": "https://leetcode.com/problems/same-tree/"
+      },
+      {
+        "slug": "symmetric-tree",
+        "url": "https://leetcode.com/problems/symmetric-tree/"
+      },
+      {
+        "slug": "path-sum",
+        "url": "https://leetcode.com/problems/path-sum/"
+      },
+      {
+        "slug": "diameter-of-binary-tree",
+        "url": "https://leetcode.com/problems/diameter-of-binary-tree/"
+      },
+      {
+        "slug": "balanced-binary-tree",
+        "url": "https://leetcode.com/problems/balanced-binary-tree/"
+      },
+      {
+        "slug": "subtree-of-another-tree",
+        "url": "https://leetcode.com/problems/subtree-of-another-tree/"
+      },
+      {
+        "slug": "merge-two-sorted-lists",
+        "url": "https://leetcode.com/problems/merge-two-sorted-lists/"
+      },
+      {
+        "slug": "reverse-linked-list",
+        "url": "https://leetcode.com/problems/reverse-linked-list/"
+      }
+    ],
+    "dp": [
+      {
+        "slug": "climbing-stairs",
+        "url": "https://leetcode.com/problems/climbing-stairs/"
+      },
+      {
+        "slug": "min-cost-climbing-stairs",
+        "url": "https://leetcode.com/problems/min-cost-climbing-stairs/"
+      },
+      {
+        "slug": "fibonacci-number",
+        "url": "https://leetcode.com/problems/fibonacci-number/"
+      },
+      {
+        "slug": "n-th-tribonacci-number",
+        "url": "https://leetcode.com/problems/n-th-tribonacci-number/"
+      },
+      {
+        "slug": "pascals-triangle",
+        "url": "https://leetcode.com/problems/pascals-triangle/"
+      },
+      {
+        "slug": "pascals-triangle-ii",
+        "url": "https://leetcode.com/problems/pascals-triangle-ii/"
+      },
+      {
+        "slug": "counting-bits",
+        "url": "https://leetcode.com/problems/counting-bits/"
+      },
+      {
+        "slug": "divisor-game",
+        "url": "https://leetcode.com/problems/divisor-game/"
+      },
+      {
+        "slug": "get-maximum-in-generated-array",
+        "url": "https://leetcode.com/problems/get-maximum-in-generated-array/"
+      },
+      {
+        "slug": "best-time-to-buy-and-sell-stock",
+        "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/"
+      }
+    ]
+  },
+  "medium": {
+    "arrays": [
+      {
+        "slug": "top-k-frequent-elements",
+        "url": "https://leetcode.com/problems/top-k-frequent-elements/"
+      },
+      {
+        "slug": "valid-sudoku",
+        "url": "https://leetcode.com/problems/valid-sudoku/"
+      },
+      {
+        "slug": "contiguous-array",
+        "url": "https://leetcode.com/problems/contiguous-array/"
+      }
+    ],
+    "window": [
+      {
+        "slug": "3sum",
+        "url": "https://leetcode.com/problems/3sum/"
+      },
+      {
+        "slug": "permutation-in-string",
+        "url": "https://leetcode.com/problems/permutation-in-string/"
+      },
+      {
+        "slug": "max-consecutive-ones-iii",
+        "url": "https://leetcode.com/problems/max-consecutive-ones-iii/"
+      }
+    ],
+    "recursion": [
+      {
+        "slug": "construct-binary-tree-from-preorder-and-inorder-traversal",
+        "url": "https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/"
+      },
+      {
+        "slug": "kth-smallest-element-in-a-bst",
+        "url": "https://leetcode.com/problems/kth-smallest-element-in-a-bst/"
+      },
+      {
+        "slug": "palindrome-partitioning",
+        "url": "https://leetcode.com/problems/palindrome-partitioning/"
+      }
+    ],
+    "dp": [
+      {
+        "slug": "longest-palindromic-substring",
+        "url": "https://leetcode.com/problems/longest-palindromic-substring/"
+      },
+      {
+        "slug": "maximum-product-subarray",
+        "url": "https://leetcode.com/problems/maximum-product-subarray/"
+      },
+      {
+        "slug": "longest-common-subsequence",
+        "url": "https://leetcode.com/problems/longest-common-subsequence/"
+      }
+    ]
+  }
+}

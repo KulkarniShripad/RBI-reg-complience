@@ -1,0 +1,13 @@
+node_modules/
+dist/
+export/
+.env
+.env.*
+!.env.example
+# Firebase service-account keys used by scripts/export.mjs — never commit
+service-account*.json
+*-firebase-adminsdk-*.json
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+.firebase/

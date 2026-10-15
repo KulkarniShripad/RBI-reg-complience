@@ -1,0 +1,43 @@
+{
+  "appVersion": "1.0.0",
+  "studyName": "DSA Self-Check",
+  "questionsPerBlock": 8,
+  "confidence": {
+    "min": 0,
+    "max": 100,
+    "step": 5,
+    "default": 50
+  },
+  "rating": {
+    "min": 1,
+    "max": 7
+  },
+  "feedbackMinSeconds": 8,
+  "gapLabel": {
+    "overAbove": 15,
+    "underBelow": -15
+  },
+  "stratification": {
+    "scoreBandLowMax": 4
+  },
+  "fastAnswerMs": 5000,
+  "attentionCheck": {
+    "itemId": "AC",
+    "passValue": 2
+  },
+  "beatsPctFallback": 50,
+  "report": {
+    "topicStrongMin": 3,
+    "topicMidMin": 2
+  },
+  "feedbackTopicRow": {
+    "strong": 2,
+    "mid": 1
+  },
+  "pilotPrefix": "pilot_",
+  "defaultLanguage": "python",
+  "profileLimits": {
+    "solvedCountMax": 5000,
+    "streakMax": 2000
+  }
+}

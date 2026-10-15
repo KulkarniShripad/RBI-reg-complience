@@ -1,0 +1,614 @@
+{
+  "version": "1.0",
+  "languages": [
+    {
+      "id": "python",
+      "label": "Python 3"
+    },
+    {
+      "id": "cpp",
+      "label": "C++"
+    },
+    {
+      "id": "java",
+      "label": "Java"
+    }
+  ],
+  "blank": "______",
+  "sets": {
+    "S1": [
+      "S1-01",
+      "S1-02",
+      "S1-03",
+      "S1-04",
+      "S1-05",
+      "S1-06",
+      "S1-07",
+      "S1-08"
+    ],
+    "S2": [
+      "S2-01",
+      "S2-02",
+      "S2-03",
+      "S2-04",
+      "S2-05",
+      "S2-06",
+      "S2-07",
+      "S2-08"
+    ]
+  },
+  "questions": [
+    {
+      "id": "S1-01",
+      "set": "S1",
+      "topic": "arrays",
+      "type": "trace",
+      "basedOn": "LeetCode 560",
+      "stem": "What does f return for a = [1, 2, 1, 2, 1] and k = 3?",
+      "code": {
+        "python": "def f(a, k):\n    seen = {0: 1}\n    total = count = 0\n    for x in a:\n        total += x\n        count += seen.get(total - k, 0)\n        seen[total] = seen.get(total, 0) + 1\n    return count",
+        "cpp": "int f(vector<int> a, int k) {\n    unordered_map<int, int> seen;\n    seen[0] = 1;\n    int total = 0, count = 0;\n    for (int x : a) {\n        total += x;\n        count += seen[total - k];\n        seen[total]++;\n    }\n    return count;\n}",
+        "java": "static int f(int[] a, int k) {\n    Map<Integer, Integer> seen = new HashMap<>();\n    seen.put(0, 1);\n    int total = 0, count = 0;\n    for (int x : a) {\n        total += x;\n        count += seen.getOrDefault(total - k, 0);\n        seen.put(total, seen.getOrDefault(total, 0) + 1);\n    }\n    return count;\n}"
+      },
+      "showLineNumbers": false,
+      "options": [
+        {
+          "id": "a",
+          "text": "2"
+        },
+        {
+          "id": "b",
+          "text": "3"
+        },
+        {
+          "id": "c",
+          "text": "4"
+        },
+        {
+          "id": "d",
+          "text": "5"
+        }
+      ],
+      "correct": "c"
+    },
+    {
+      "id": "S1-02",
+      "set": "S1",
+      "topic": "arrays",
+      "type": "debug",
+      "basedOn": "LeetCode 1",
+      "stem": "two should return two different indices whose values add to target. For a = [3, 2, 4], target = 6 it returns [0, 0]. What's wrong?",
+      "code": {
+        "python": "def two(a, target):\n    seen = {}\n    for i in range(len(a)):\n        seen[a[i]] = i\n        if target - a[i] in seen:\n            return [seen[target - a[i]], i]\n    return []",
+        "cpp": "vector<int> two(vector<int> a, int target) {\n    unordered_map<int, int> seen;\n    for (int i = 0; i < a.size(); i++) {\n        seen[a[i]] = i;\n        if (seen.count(target - a[i]))\n            return {seen[target - a[i]], i};\n    }\n    return {};\n}",
+        "java": "static int[] two(int[] a, int target) {\n    Map<Integer, Integer> seen = new HashMap<>();\n    for (int i = 0; i < a.length; i++) {\n        seen.put(a[i], i);\n        if (seen.containsKey(target - a[i]))\n            return new int[]{seen.get(target - a[i]), i};\n    }\n    return new int[]{};\n}"
+      },
+      "showLineNumbers": true,
+      "options": [
+        {
+          "id": "a",
+          "text": "Line 2: seen should be a list, not a map"
+        },
+        {
+          "id": "b",
+          "text": "Line 4 should come after lines 5–6"
+        },
+        {
+          "id": "c",
+          "text": "Line 6: the two indices are in the wrong order"
+        },
+        {
+          "id": "d",
+          "text": "No bug: [0, 0] is correct"
+        }
+      ],
+      "correct": "b"
+    },
+    {
+      "id": "S1-03",
+      "set": "S1",
+      "topic": "window",
+      "type": "complete",
+      "basedOn": "LeetCode 3",
+      "stem": "longest should return the length of the longest substring with no repeated character. Fill the blank.",
+      "code": {
+        "python": "def longest(s):\n    last = {}\n    left = best = 0\n    for right in range(len(s)):\n        c = s[right]\n        if c in last and ______:\n            left = last[c] + 1\n        last[c] = right\n        best = max(best, right - left + 1)\n    return best",
+        "cpp": "int longest(string s) {\n    unordered_map<char, int> last;\n    int left = 0, best = 0;\n    for (int right = 0; right < s.size(); right++) {\n        char c = s[right];\n        if (last.count(c) && ______)\n            left = last[c] + 1;\n        last[c] = right;\n        best = max(best, right - left + 1);\n    }\n    return best;\n}",
+        "java": "static int longest(String s) {\n    Map<Character, Integer> last = new HashMap<>();\n    int left = 0, best = 0;\n    for (int right = 0; right < s.length(); right++) {\n        char c = s.charAt(right);\n        if (last.containsKey(c) && ______)\n            left = last.get(c) + 1;\n        last.put(c, right);\n        best = Math.max(best, right - left + 1);\n    }\n    return best;\n}"
+      },
+      "showLineNumbers": false,
+      "options": [
+        {
+          "id": "a",
+          "text": {
+            "python": "last[c] >= left",
+            "cpp": "last[c] >= left",
+            "java": "last.get(c) >= left"
+          }
+        },
+        {
+          "id": "b",
+          "text": {
+            "python": "last[c] > right",
+            "cpp": "last[c] > right",
+            "java": "last.get(c) > right"
+          }
+        },
+        {
+          "id": "c",
+          "text": "left < right"
+        },
+        {
+          "id": "d",
+          "text": {
+            "python": "last[c] == left - 1",
+            "cpp": "last[c] == left - 1",
+            "java": "last.get(c) == left - 1"
+          }
+        }
+      ],
+      "correct": "a"
+    },
+    {
+      "id": "S1-04",
+      "set": "S1",
+      "topic": "window",
+      "type": "pattern",
+      "basedOn": "LeetCode 76",
+      "stem": "Find the shortest part of string s that contains every letter of t (with repeats).\nExample: s = \"ADOBECODEBANC\", t = \"ABC\" → \"BANC\"\nBest approach?",
+      "code": null,
+      "showLineNumbers": false,
+      "options": [
+        {
+          "id": "a",
+          "text": "A window that grows until it covers t, then shrinks while it still does"
+        },
+        {
+          "id": "b",
+          "text": "A fixed-size window of length len(t), slid across s"
+        },
+        {
+          "id": "c",
+          "text": "2D DP over s and t, like longest common subsequence"
+        },
+        {
+          "id": "d",
+          "text": "Sort both strings, then use two pointers"
+        }
+      ],
+      "correct": "a"
+    },
+    {
+      "id": "S1-05",
+      "set": "S1",
+      "topic": "recursion",
+      "type": "pattern",
+      "basedOn": "LeetCode 39",
+      "stem": "Return every list of numbers (each number can be reused) that adds up to target.\nExample: [2, 3, 6, 7], target 7 → [[2, 2, 3], [7]]\nBest approach?",
+      "code": null,
+      "showLineNumbers": false,
+      "options": [
+        {
+          "id": "a",
+          "text": "A DP table counting the ways to make each sum"
+        },
+        {
+          "id": "b",
+          "text": "Backtracking: pick a number, recurse on what's left, undo the pick"
+        },
+        {
+          "id": "c",
+          "text": "Greedy: always take the largest number that still fits"
+        },
+        {
+          "id": "d",
+          "text": "Two pointers on the sorted array"
+        }
+      ],
+      "correct": "b"
+    },
+    {
+      "id": "S1-06",
+      "set": "S1",
+      "topic": "recursion",
+      "type": "trace",
+      "basedOn": "LeetCode 509",
+      "stem": "If you call g(5), how many times is g called in total (including that first call)?",
+      "code": {
+        "python": "def g(n):\n    if n <= 1:\n        return n\n    return g(n - 1) + g(n - 2)",
+        "cpp": "int g(int n) {\n    if (n <= 1)\n        return n;\n    return g(n - 1) + g(n - 2);\n}",
+        "java": "static int g(int n) {\n    if (n <= 1)\n        return n;\n    return g(n - 1) + g(n - 2);\n}"
+      },
+      "showLineNumbers": false,
+      "options": [
+        {
+          "id": "a",
+          "text": "8"
+        },
+        {
+          "id": "b",
+          "text": "9"
+        },
+        {
+          "id": "c",
+          "text": "15"
+        },
+        {
+          "id": "d",
+          "text": "16"
+        }
+      ],
+      "correct": "c"
+    },
+    {
+      "id": "S1-07",
+      "set": "S1",
+      "topic": "dp",
+      "type": "debug",
+      "basedOn": "LeetCode 518",
+      "stem": "ways should count the combinations of coins that make amount (order doesn't matter). ways(5, [1, 2, 5]) should be 4 but returns 9. What's wrong?",
+      "code": {
+        "python": "def ways(amount, coins):\n    dp = [0] * (amount + 1)\n    dp[0] = 1\n    for a in range(1, amount + 1):\n        for c in coins:\n            if c <= a:\n                dp[a] += dp[a - c]\n    return dp[amount]",
+        "cpp": "int ways(int amount, vector<int> coins) {\n    vector<int> dp(amount + 1, 0);\n    dp[0] = 1;\n    for (int a = 1; a <= amount; a++)\n        for (int c : coins)\n            if (c <= a)\n                dp[a] += dp[a - c];\n    return dp[amount];\n}",
+        "java": "static int ways(int amount, int[] coins) {\n    int[] dp = new int[amount + 1];\n    dp[0] = 1;\n    for (int a = 1; a <= amount; a++)\n        for (int c : coins)\n            if (c <= a)\n                dp[a] += dp[a - c];\n    return dp[amount];\n}"
+      },
+      "showLineNumbers": true,
+      "options": [
+        {
+          "id": "a",
+          "text": "Line 3: dp[0] should be 0"
+        },
+        {
+          "id": "b",
+          "text": "Lines 4–5: the loops are swapped, so different orders get counted separately"
+        },
+        {
+          "id": "c",
+          "text": "Line 7: it should add dp[a − c] + 1"
+        },
+        {
+          "id": "d",
+          "text": "Line 8: it should return dp[amount − 1]"
+        }
+      ],
+      "correct": "b"
+    },
+    {
+      "id": "S1-08",
+      "set": "S1",
+      "topic": "dp",
+      "type": "complete",
+      "basedOn": "LeetCode 91",
+      "stem": "Letters are encoded A = 1 … Z = 26. decode counts the ways to decode a digit string (e.g. \"226\" → 3). Fill the blank.",
+      "code": {
+        "python": "def decode(s):\n    n = len(s)\n    dp = [0] * (n + 1)\n    dp[0] = 1\n    for i in range(1, n + 1):\n        if s[i - 1] != '0':\n            dp[i] += dp[i - 1]\n        two = int(s[i - 2:i]) if i >= 2 else 0\n        if i >= 2 and ______:\n            dp[i] += dp[i - 2]\n    return dp[n]",
+        "cpp": "int decode(string s) {\n    int n = s.size();\n    vector<int> dp(n + 1, 0);\n    dp[0] = 1;\n    for (int i = 1; i <= n; i++) {\n        if (s[i - 1] != '0')\n            dp[i] += dp[i - 1];\n        int two = i >= 2 ? stoi(s.substr(i - 2, 2)) : 0;\n        if (i >= 2 && ______)\n            dp[i] += dp[i - 2];\n    }\n    return dp[n];\n}",
+        "java": "static int decode(String s) {\n    int n = s.length();\n    int[] dp = new int[n + 1];\n    dp[0] = 1;\n    for (int i = 1; i <= n; i++) {\n        if (s.charAt(i - 1) != '0')\n            dp[i] += dp[i - 1];\n        int two = i >= 2 ? Integer.parseInt(s.substring(i - 2, i)) : 0;\n        if (i >= 2 && ______)\n            dp[i] += dp[i - 2];\n    }\n    return dp[n];\n}"
+      },
+      "showLineNumbers": false,
+      "options": [
+        {
+          "id": "a",
+          "text": {
+            "python": "10 <= two <= 26",
+            "cpp": "two >= 10 && two <= 26",
+            "java": "two >= 10 && two <= 26"
+          }
+        },
+        {
+          "id": "b",
+          "text": "two <= 26"
+        },
+        {
+          "id": "c",
+          "text": {
+            "python": "s[i - 2] != '0'",
+            "cpp": "s[i - 2] != '0'",
+            "java": "s.charAt(i - 2) != '0'"
+          }
+        },
+        {
+          "id": "d",
+          "text": {
+            "python": "1 <= two <= 26",
+            "cpp": "two >= 1 && two <= 26",
+            "java": "two >= 1 && two <= 26"
+          }
+        }
+      ],
+      "correct": "a"
+    },
+    {
+      "id": "S2-01",
+      "set": "S2",
+      "topic": "arrays",
+      "type": "trace",
+      "basedOn": "LeetCode 974",
+      "stem": "What does d return for a = [3, 2, 5, 1, 4] and k = 5?",
+      "code": {
+        "python": "def d(a, k):\n    seen = {0: 1}\n    r = count = 0\n    for x in a:\n        r = (r + x) % k\n        count += seen.get(r, 0)\n        seen[r] = seen.get(r, 0) + 1\n    return count",
+        "cpp": "int d(vector<int> a, int k) {\n    unordered_map<int, int> seen;\n    seen[0] = 1;\n    int r = 0, count = 0;\n    for (int x : a) {\n        r = (r + x) % k;\n        count += seen[r];\n        seen[r]++;\n    }\n    return count;\n}",
+        "java": "static int d(int[] a, int k) {\n    Map<Integer, Integer> seen = new HashMap<>();\n    seen.put(0, 1);\n    int r = 0, count = 0;\n    for (int x : a) {\n        r = (r + x) % k;\n        count += seen.getOrDefault(r, 0);\n        seen.put(r, seen.getOrDefault(r, 0) + 1);\n    }\n    return count;\n}"
+      },
+      "showLineNumbers": false,
+      "options": [
+        {
+          "id": "a",
+          "text": "4"
+        },
+        {
+          "id": "b",
+          "text": "5"
+        },
+        {
+          "id": "c",
+          "text": "6"
+        },
+        {
+          "id": "d",
+          "text": "7"
+        }
+      ],
+      "correct": "c"
+    },
+    {
+      "id": "S2-02",
+      "set": "S2",
+      "topic": "arrays",
+      "type": "complete",
+      "basedOn": "LeetCode 49",
+      "stem": "group should put words that are anagrams of each other (same letters, any order) into the same group. Fill the blank.",
+      "code": {
+        "python": "def group(words):\n    groups = {}\n    for w in words:\n        key = ______\n        groups.setdefault(key, []).append(w)\n    return list(groups.values())",
+        "cpp": "vector<vector<string>> group(vector<string> words) {\n    map<string, vector<string>> groups;\n    for (string w : words) {\n        string key = w;\n        ______;\n        groups[key].push_back(w);\n    }\n    vector<vector<string>> res;\n    for (auto& [k, v] : groups) res.push_back(v);\n    return res;\n}",
+        "java": "static Collection<List<String>> group(String[] words) {\n    Map<String, List<String>> groups = new HashMap<>();\n    for (String w : words) {\n        char[] key = w.toCharArray();\n        ______;\n        groups.computeIfAbsent(new String(key), x -> new ArrayList<>()).add(w);\n    }\n    return groups.values();\n}"
+      },
+      "showLineNumbers": false,
+      "options": [
+        {
+          "id": "a",
+          "text": {
+            "python": "''.join(sorted(w))",
+            "cpp": "sort(key.begin(), key.end())",
+            "java": "Arrays.sort(key)"
+          }
+        },
+        {
+          "id": "b",
+          "text": {
+            "python": "w[::-1]",
+            "cpp": "reverse(key.begin(), key.end())",
+            "java": "key = new StringBuilder(w).reverse().toString().toCharArray()"
+          }
+        },
+        {
+          "id": "c",
+          "text": {
+            "python": "w[0]",
+            "cpp": "key = key.substr(0, 1)",
+            "java": "key = new char[]{key[0]}"
+          }
+        },
+        {
+          "id": "d",
+          "text": {
+            "python": "str(len(w))",
+            "cpp": "key = to_string(key.size())",
+            "java": "key = String.valueOf(w.length()).toCharArray()"
+          }
+        }
+      ],
+      "correct": "a"
+    },
+    {
+      "id": "S2-03",
+      "set": "S2",
+      "topic": "window",
+      "type": "trace",
+      "basedOn": "LeetCode 424",
+      "stem": "What does r return for s = \"AABABBA\" and k = 1?",
+      "code": {
+        "python": "def r(s, k):\n    count = {}\n    left = top = best = 0\n    for right in range(len(s)):\n        count[s[right]] = count.get(s[right], 0) + 1\n        top = max(top, count[s[right]])\n        while (right - left + 1) - top > k:\n            count[s[left]] -= 1\n            left += 1\n        best = max(best, right - left + 1)\n    return best",
+        "cpp": "int r(string s, int k) {\n    int count[26] = {0};\n    int left = 0, top = 0, best = 0;\n    for (int right = 0; right < s.size(); right++) {\n        count[s[right] - 'A']++;\n        top = max(top, count[s[right] - 'A']);\n        while ((right - left + 1) - top > k) {\n            count[s[left] - 'A']--;\n            left++;\n        }\n        best = max(best, right - left + 1);\n    }\n    return best;\n}",
+        "java": "static int r(String s, int k) {\n    int[] count = new int[26];\n    int left = 0, top = 0, best = 0;\n    for (int right = 0; right < s.length(); right++) {\n        count[s.charAt(right) - 'A']++;\n        top = Math.max(top, count[s.charAt(right) - 'A']);\n        while ((right - left + 1) - top > k) {\n            count[s.charAt(left) - 'A']--;\n            left++;\n        }\n        best = Math.max(best, right - left + 1);\n    }\n    return best;\n}"
+      },
+      "showLineNumbers": false,
+      "options": [
+        {
+          "id": "a",
+          "text": "3"
+        },
+        {
+          "id": "b",
+          "text": "4"
+        },
+        {
+          "id": "c",
+          "text": "5"
+        },
+        {
+          "id": "d",
+          "text": "6"
+        }
+      ],
+      "correct": "b"
+    },
+    {
+      "id": "S2-04",
+      "set": "S2",
+      "topic": "window",
+      "type": "complete",
+      "basedOn": "LeetCode 209",
+      "stem": "shortest should return the length of the shortest subarray with sum ≥ target (0 if none). Fill the blank.",
+      "code": {
+        "python": "def shortest(target, a):\n    left = total = 0\n    best = float('inf')\n    for right in range(len(a)):\n        total += a[right]\n        while ______:\n            best = min(best, right - left + 1)\n            total -= a[left]\n            left += 1\n    return 0 if best == float('inf') else best",
+        "cpp": "int shortest(int target, vector<int> a) {\n    int left = 0, total = 0, best = INT_MAX;\n    for (int right = 0; right < a.size(); right++) {\n        total += a[right];\n        while (______) {\n            best = min(best, right - left + 1);\n            total -= a[left];\n            left++;\n        }\n    }\n    return best == INT_MAX ? 0 : best;\n}",
+        "java": "static int shortest(int target, int[] a) {\n    int left = 0, total = 0, best = Integer.MAX_VALUE;\n    for (int right = 0; right < a.length; right++) {\n        total += a[right];\n        while (______) {\n            best = Math.min(best, right - left + 1);\n            total -= a[left];\n            left++;\n        }\n    }\n    return best == Integer.MAX_VALUE ? 0 : best;\n}"
+      },
+      "showLineNumbers": false,
+      "options": [
+        {
+          "id": "a",
+          "text": "total >= target"
+        },
+        {
+          "id": "b",
+          "text": "total > target"
+        },
+        {
+          "id": "c",
+          "text": "left < right"
+        },
+        {
+          "id": "d",
+          "text": "total <= target"
+        }
+      ],
+      "correct": "a"
+    },
+    {
+      "id": "S2-05",
+      "set": "S2",
+      "topic": "recursion",
+      "type": "debug",
+      "basedOn": "LeetCode 78",
+      "stem": "This should collect all 8 subsets of [1, 2, 3] in res (call go(nums, 0)). Instead, res holds [1, 2, 3] eight times. What's wrong?",
+      "code": {
+        "python": "res, path = [], []\ndef go(nums, i):\n    if i == len(nums):\n        res.append(path[:])\n        return\n    path.append(nums[i])\n    go(nums, i + 1)\n    go(nums, i + 1)\n    path.pop()",
+        "cpp": "vector<vector<int>> res;\nvector<int> path;\nvoid go(vector<int>& nums, int i) {\n    if (i == nums.size()) {\n        res.push_back(path);\n        return;\n    }\n    path.push_back(nums[i]);\n    go(nums, i + 1);\n    go(nums, i + 1);\n    path.pop_back();\n}",
+        "java": "static List<List<Integer>> res = new ArrayList<>();\nstatic List<Integer> path = new ArrayList<>();\nstatic void go(int[] nums, int i) {\n    if (i == nums.length) {\n        res.add(new ArrayList<>(path));\n        return;\n    }\n    path.add(nums[i]);\n    go(nums, i + 1);\n    go(nums, i + 1);\n    path.remove(path.size() - 1);\n}"
+      },
+      "showLineNumbers": true,
+      "options": [
+        {
+          "id": "a",
+          "text": {
+            "python": "Line 3: it should be i > len(nums)",
+            "cpp": "Line 4: it should be i > nums.size()",
+            "java": "Line 4: it should be i > nums.length"
+          }
+        },
+        {
+          "id": "b",
+          "text": {
+            "python": "Line 4: it should save path itself, not a copy",
+            "cpp": "Line 5: it should save a reference to path, not a copy",
+            "java": "Line 5: it should add path itself, not a copy"
+          }
+        },
+        {
+          "id": "c",
+          "text": {
+            "python": "Line 9 must move up between lines 7 and 8: undo the pick before exploring without it",
+            "cpp": "Line 11 must move up between lines 9 and 10: undo the pick before exploring without it",
+            "java": "Line 11 must move up between lines 9 and 10: undo the pick before exploring without it"
+          }
+        },
+        {
+          "id": "d",
+          "text": {
+            "python": "Line 6: it should append nums[i + 1]",
+            "cpp": "Line 8: it should push nums[i + 1]",
+            "java": "Line 8: it should add nums[i + 1]"
+          }
+        }
+      ],
+      "correct": "c"
+    },
+    {
+      "id": "S2-06",
+      "set": "S2",
+      "topic": "recursion",
+      "type": "pattern",
+      "basedOn": "LeetCode 79",
+      "stem": "Can a word be traced through neighbouring cells of a letter grid (up, down, left, right), using each cell at most once?\nBest approach?",
+      "code": null,
+      "showLineNumbers": false,
+      "options": [
+        {
+          "id": "a",
+          "text": "DFS from each start cell: mark it used, try the 4 neighbours, unmark it on return"
+        },
+        {
+          "id": "b",
+          "text": "BFS to find the shortest path between the first and last letters"
+        },
+        {
+          "id": "c",
+          "text": "2D DP over the grid, like Unique Paths"
+        },
+        {
+          "id": "d",
+          "text": "A sliding window over each row and each column"
+        }
+      ],
+      "correct": "a"
+    },
+    {
+      "id": "S2-07",
+      "set": "S2",
+      "topic": "dp",
+      "type": "pattern",
+      "basedOn": "LeetCode 139",
+      "stem": "Can string s be split into a sequence of dictionary words?\nExample: s = \"applepenapple\", words = [\"apple\", \"pen\"] → true\nBest approach?",
+      "code": null,
+      "showLineNumbers": false,
+      "options": [
+        {
+          "id": "a",
+          "text": "Greedy: always take the longest dictionary word that matches next"
+        },
+        {
+          "id": "b",
+          "text": "DP: ok[i] is true if some ok[j] is true and s[j..i) is a word"
+        },
+        {
+          "id": "c",
+          "text": "Two pointers moving in from both ends"
+        },
+        {
+          "id": "d",
+          "text": "Sort the dictionary, then binary-search each prefix"
+        }
+      ],
+      "correct": "b"
+    },
+    {
+      "id": "S2-08",
+      "set": "S2",
+      "topic": "dp",
+      "type": "debug",
+      "basedOn": "LeetCode 416",
+      "stem": "split should say whether nums can be divided into two groups with equal sums. split([1, 2, 5]) should be false but returns true. What's wrong?",
+      "code": {
+        "python": "def split(nums):\n    t = sum(nums)\n    if t % 2 == 1:\n        return False\n    t //= 2\n    ok = [False] * (t + 1)\n    ok[0] = True\n    for x in nums:\n        for s in range(x, t + 1):\n            ok[s] = ok[s] or ok[s - x]\n    return ok[t]",
+        "cpp": "bool split(vector<int> nums) {\n    int t = accumulate(nums.begin(), nums.end(), 0);\n    if (t % 2 == 1)\n        return false;\n    t /= 2;\n    vector<bool> ok(t + 1, false);\n    ok[0] = true;\n    for (int x : nums)\n        for (int s = x; s <= t; s++)\n            ok[s] = ok[s] || ok[s - x];\n    return ok[t];\n}",
+        "java": "static boolean split(int[] nums) {\n    int t = Arrays.stream(nums).sum();\n    if (t % 2 == 1)\n        return false;\n    t /= 2;\n    boolean[] ok = new boolean[t + 1];\n    ok[0] = true;\n    for (int x : nums)\n        for (int s = x; s <= t; s++)\n            ok[s] = ok[s] || ok[s - x];\n    return ok[t];\n}"
+      },
+      "showLineNumbers": true,
+      "options": [
+        {
+          "id": "a",
+          "text": "Line 3: it should check t % 2 == 0"
+        },
+        {
+          "id": "b",
+          "text": "Line 7: ok[0] should be false"
+        },
+        {
+          "id": "c",
+          "text": "Line 9: counting up lets the same number be used twice; it must count down from t to x"
+        },
+        {
+          "id": "d",
+          "text": {
+            "python": "Line 10: or should be and",
+            "cpp": "Line 10: || should be &&",
+            "java": "Line 10: || should be &&"
+          }
+        }
+      ],
+      "correct": "c"
+    }
+  ]
+}
