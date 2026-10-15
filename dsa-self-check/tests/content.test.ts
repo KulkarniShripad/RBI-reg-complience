@@ -70,6 +70,14 @@ describe('content files', () => {
     expect(problems((r) => (r.config.feedbackMinSeconds = '8')).join('\n')).toMatch(/feedbackMinSeconds/);
   });
 
+  it('fails when a **bold** marker is not closed', () => {
+    expect(problems((r) => (r.feedback.lines.tip = '→ Tip: **{tip}')).join('\n')).toMatch(/unclosed \*\*/);
+  });
+
+  it('fails when questionFeedbackBlocks is not a list of block numbers', () => {
+    expect(problems((r) => (r.config.questionFeedbackBlocks = [3])).join('\n')).toMatch(/questionFeedbackBlocks/);
+  });
+
   it('fails when a set is unbalanced across topics', () => {
     expect(problems((r) => (r.questions.questions[0].topic = 'dp')).join('\n')).toMatch(/should have 2/);
   });

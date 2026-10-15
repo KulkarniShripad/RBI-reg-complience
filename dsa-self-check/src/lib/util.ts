@@ -9,6 +9,11 @@ export function fill(template: string, vars: Record<string, string | number>): s
   return template.replace(/\{(\w+)\}/g, (m, key: string) => (key in vars ? String(vars[key]) : m));
 }
 
+/** Removes the **bold** markers (for stored and exported text). */
+export function plain(text: string): string {
+  return text.replace(/\*\*/g, '');
+}
+
 /** Fisher-Yates shuffle; returns a new array. */
 export function shuffle<T>(items: readonly T[], rng: Rng = Math.random): T[] {
   const a = items.slice();

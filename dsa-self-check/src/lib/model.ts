@@ -28,6 +28,9 @@ export interface Answer {
   timeMs: number;
   langAtAnswer: LangId;
   langSwitches: number;
+  /** Blocks with per-question feedback only: the lines shown after the answer, and the time spent on them. */
+  feedbackShown?: string[];
+  feedbackMs?: number;
 }
 
 export interface PlannedQuestion {
@@ -117,6 +120,8 @@ export interface Participant {
   rev: number;
   /** The code language tab currently selected; carries over between questions and across reloads. */
   lang: LangId;
+  /** qid whose per-question feedback is on screen (so a reload shows it again), else null. */
+  reviewing: string | null;
 
   blockOrder: BlockOrder | null;
   group: Group | null;

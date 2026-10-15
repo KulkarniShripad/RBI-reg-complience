@@ -116,6 +116,12 @@
     "confHigh": "Certain",
     "button": "Continue"
   },
+  "questionFeedback": {
+    "correct": "✔ Correct",
+    "wrong": "✘ Not quite",
+    "soFar": "**{score} / {n}** correct so far",
+    "button": "Next"
+  },
   "blockEnd": {
     "scoreGuess": "How many of these 8 did you get right?",
     "rankGuess": "Your rank on this block among 100 students?"

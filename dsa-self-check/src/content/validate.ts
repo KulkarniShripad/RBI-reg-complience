@@ -152,6 +152,7 @@ const UI_STRINGS = [
   'statements.title', 'statements.low', 'statements.high', 'statements.rankGuess', 'statements.scoreGuess',
   'howItWorks.title', 'howItWorks.line', 'howItWorks.langNote', 'howItWorks.button',
   'question.counter', 'question.confidence', 'question.confLow', 'question.confHigh', 'question.button',
+  'questionFeedback.correct', 'questionFeedback.wrong', 'questionFeedback.soFar', 'questionFeedback.button',
   'blockEnd.scoreGuess', 'blockEnd.rankGuess',
   'endRatings.title', 'endRatings.low', 'endRatings.high',
   'pack.title', 'pack.sub', 'pack.topicLabel', 'pack.easy', 'pack.medium',
@@ -255,12 +256,23 @@ function checkConfig(cfg: unknown, p: string[]) {
     if (!isStr(get(cfg, k))) p.push(`${f}: "${k}" must be a non-empty string`);
   }
   if (!LANG_IDS.includes(cfg.defaultLanguage as never)) p.push(`${f}: "defaultLanguage" must be one of ${LANG_IDS.join(', ')}`);
+  const qfb = cfg.questionFeedbackBlocks;
+  if (!Array.isArray(qfb) || !qfb.every((b) => b === 1 || b === 2)) p.push(`${f}: "questionFeedbackBlocks" must be a list of block numbers (1, 2), e.g. [2] or []`);
+  if (typeof cfg.showHowItWorks !== 'boolean') p.push(`${f}: "showHowItWorks" must be true or false`);
   const c = cfg.confidence as Obj | undefined;
   if (c && isNum(c.min) && isNum(c.max) && isNum(c.default) && (c.default < c.min || c.default > c.max || c.min >= c.max)) {
     p.push(`${f}: confidence needs min < max and min ≤ default ≤ max`);
   }
   const r = cfg.rating as Obj | undefined;
   if (r && isNum(r.min) && isNum(r.max) && r.min >= r.max) p.push(`${f}: rating.min must be below rating.max`);
+}
+
+/** Every **bold** marker in the text files must be closed. */
+function checkBold(value: unknown, where: string, p: string[]) {
+  if (typeof value === 'string') {
+    if ((value.match(/\*\*/g) ?? []).length % 2 !== 0) p.push(`${where}: unclosed ** (bold) marker in "${value}"`);
+  } else if (Array.isArray(value)) value.forEach((v, i) => checkBold(v, `${where}[${i}]`, p));
+  else if (isObj(value)) for (const [k, v] of Object.entries(value)) checkBold(v, `${where}.${k}`, p);
 }
 
 /** Validates the raw JSON and returns it typed. Throws ContentError listing every problem. */
@@ -277,6 +289,8 @@ export function validateContent(raw: {
   checkUi(raw.ui, raw.config, p);
   checkFeedback(raw.feedback, p);
   checkPacks(raw.packs, p);
+  checkBold(raw.ui, 'ui-text.json', p);
+  checkBold(raw.feedback, 'feedback.json', p);
   if (p.length) throw new ContentError(p);
 
   const questions = raw.questions as QuestionsFile;

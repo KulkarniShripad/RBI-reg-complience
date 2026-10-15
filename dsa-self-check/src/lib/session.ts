@@ -115,6 +115,7 @@ export function newParticipant(uid: string, c: Content, flags: Flags): Participa
     currentStepName: STEPS[step],
     rev: 0,
     lang: c.config.defaultLanguage,
+    reviewing: null,
     blockOrder: null,
     group: null,
     stratum: null,

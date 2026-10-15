@@ -13,6 +13,10 @@
     "max": 7
   },
   "feedbackMinSeconds": 8,
+  "questionFeedbackBlocks": [
+    2
+  ],
+  "showHowItWorks": false,
   "gapLabel": {
     "overAbove": 15,
     "underBelow": -15

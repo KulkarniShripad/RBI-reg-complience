@@ -86,6 +86,7 @@ export interface UiText {
   };
   howItWorks: { title: string; line: string; langNote: string; button: string };
   question: { counter: string; confidence: string; confLow: string; confHigh: string; button: string };
+  questionFeedback: { correct: string; wrong: string; soFar: string; button: string };
   blockEnd: { scoreGuess: string; rankGuess: string };
   endRatings: { title: string; low: string; high: string; items: IdText[] };
   pack: { title: string; sub: string; topicLabel: string; easy: string; medium: string };
@@ -149,6 +150,10 @@ export interface ConfigFile {
   confidence: { min: number; max: number; step: number; default: number };
   rating: { min: number; max: number };
   feedbackMinSeconds: number;
+  /** Blocks (1 and/or 2) that show right/wrong feedback after every question. */
+  questionFeedbackBlocks: number[];
+  /** Show the "8 questions, then a short break, then 8 more" screen before Block 1. */
+  showHowItWorks: boolean;
   gapLabel: { overAbove: number; underBelow: number };
   stratification: { scoreBandLowMax: number };
   fastAnswerMs: number;

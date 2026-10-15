@@ -167,7 +167,7 @@ part" from then on. To test again in the same browser, use the debug reset or a 
 - End-to-end in Chromium at 360 × 740 (mobile, touch), against the Firestore emulator with the real rules:
   - full sessions for both groups, with no horizontal page scroll on any screen;
   - same-stratum participants alternating A/B and 12/21;
-  - 10 tabs pressing *Begin* and then the group step at the same moment, giving exactly 5/5 block orders,
+  - 10 tabs starting Block 1 and then reaching the group step at the same moment, giving exactly 5/5 block orders,
     5/5 groups and unique uids;
   - `?pilot=1` using only the pilot counters and stats;
   - a reload mid-block resuming at the same question with the same group, order and language tab, with no
@@ -189,7 +189,7 @@ All study content lives in `src/content/`:
 | `ui-text.json` | every on-screen string, grouped by screen; `{placeholders}` are filled at runtime |
 | `feedback.json` | topic names, ✔/△/✘ symbols, encouragements, line templates, Group-B `templates[topic][type]` |
 | `packs.json` | practice packs: `easy[topic]` (10) and `medium[topic]` (3) as `{ slug, url }`; titles come from the slug |
-| `config.json` | every number: block size, slider, timers, thresholds, pilot prefix, default language, `appVersion` |
+| `config.json` | every number: block size, slider, timers, thresholds, pilot prefix, default language, `appVersion`, and two switches (below) |
 
 **Workflow:** edit → `npm test` → commit → Vercel redeploys. The same validation runs when the app starts, and
 a malformed file shows a "Content error" page listing every problem instead of starting a session. It checks,
@@ -212,6 +212,16 @@ among other things, that:
 - Keep option ids stable. Correctness is decided by option id, never by text, and options are shuffled per
   participant (the order is stored as `optionOrder`).
 - Text in `ui-text.json` and `feedback.json` can be reworded freely, but keep the `{placeholders}`.
+- **Bold:** wrap words in `**…**` in `ui-text.json` or `feedback.json` to show them in bold, e.g.
+  `"workOn": "✘ Work on: **{topic}**, **{skill}**"`. The markers are removed from the stored and exported text,
+  and validation rejects an unclosed `**`.
+
+**Switches in `config.json`:**
+
+| Key | Default | Effect |
+| --- | --- | --- |
+| `questionFeedbackBlocks` | `[2]` | Blocks that show feedback after every question (right/wrong, score so far; Group B also the question's Strong or Work on + Tip line). `[]` turns it off, `[1, 2]` uses it in both blocks (in Block 1 the group is not assigned yet, so everyone gets right/wrong only). |
+| `showHowItWorks` | `false` | `true` brings back the "8 questions, then a short break, then 8 more" screen before Block 1. When `false`, the statements screen goes straight to the first question. |
 - Do not reorder the steps in `src/lib/steps.ts`. `currentStep` is stored as an index into that list.
 
 ---
@@ -231,7 +241,7 @@ This needs Node 18+. It writes three UTF-8 CSVs, with a BOM so Excel shows ✔/�
 | File | Rows | Columns |
 | --- | --- | --- |
 | `participants.csv` | one per participant | every field, flattened with dot-names: `profile.language`, `derived.confGap1`, `ratingMid.dp`, `feedback1.linesShown` … Timestamps are ISO-8601 UTC; lists are `|`-separated. |
-| `answers.csv` | one per answer | `uid, group, blockOrder, block, setId, position, qid, topic, type, chosen, correct, confidence, timeMs, langAtAnswer, langSwitches` |
+| `answers.csv` | one per answer | `uid, group, blockOrder, block, setId, position, qid, topic, type, chosen, correct, confidence, timeMs, langAtAnswer, langSwitches, feedbackMs, feedbackShown` (the last two only in blocks with per-question feedback) |
 | `feedback.csv` | one per feedback screen | `uid, group, block, blockScore, beatsPct, strongTopic, strongType, workOnTopic, workOnType, tip, timeOnScreenMs` |
 
 Participants who dropped out are included with whatever they completed. Filter on `status == completed` for
@@ -252,13 +262,13 @@ is the same step by name.
 | 0 | consent: anonymous sign-in and the participant document are created on Start | `uid, device, pilot, appVersion…` |
 | 1 | profile | `profile` |
 | 2 | rate yourself | `ratingStart` |
-| 3 | statements | `statements, rankGuessStart, scoreGuessStart` |
-| 4 | how it works; **Begin** assigns the block order | `blockOrder` |
+| 3 | statements; Continue assigns the block order and opens Question 1 | `statements, rankGuessStart, scoreGuessStart, blockOrder` |
+| 4 | how it works: **skipped** unless `config.showHowItWorks` is `true` (then its Begin assigns the block order) | |
 | 5 | Block 1: 8 questions in random order, options shuffled | `block1.answers[]` (one write per answer) |
 | 6 | block end; Continue assigns the **group** | `block1.scoreGuess/rankGuess, derived, group, stratum` |
 | 7 | feedback screen 1 (Continue unlocks after `feedbackMinSeconds`) | `feedback1` |
 | 8 | rate yourself again | `ratingMid` |
-| 9–10 | Block 2 + block end | `block2` |
+| 9–10 | Block 2 + block end. After each answer (and its confidence rating) the same screen shows that question's feedback, with the right option marked, then **Next** | `block2.answers[]` incl. `feedbackShown`, `feedbackMs` |
 | 11 | feedback screen 2 | `feedback2` |
 | 12 | rate again | `ratingEnd` |
 | 13 | end ratings (PC, CF, SC, KN1, KN2, AC in random order) | `endItems, endItemsOrder, attentionPassed` |
@@ -308,6 +318,12 @@ unchanged, so retries, double taps and reloads can never re-assign.
   - The topic row: ✔ = 2 correct, △ = 1, ✘ = 0, per `feedbackTopicRow`.
 - Every line shown is stored in `feedbackN` (structured fields plus `linesShown`). The group is never revealed
   before the debrief.
+- **Per-question feedback** (blocks in `questionFeedbackBlocks`, Block 2 by default) appears only after the answer
+  and its confidence are recorded, so `confidence` is never influenced by it. Everyone sees ✔ Correct / ✘ Not
+  quite, the score so far and the right option marked; Group B also sees the Strong line (right) or the Work on +
+  Tip lines (wrong) for that question's topic and type. The exact lines are stored on the answer as
+  `feedbackShown`, and the reading time as `feedbackMs`. A reload during this feedback shows it again.
+- **Bold:** the topic, skill and tip in the Strong / Work on / Tip lines are bold (set in `feedback.json` with `**…**`).
 
 ---
 
@@ -324,6 +340,7 @@ resume and analysis.
   device: { userAgent, screenW, screenH, isMobile },
   currentStep, currentStepName†, rev†,       // rev: save counter used to reconcile on resume
   lang†,                                     // code tab currently selected
+  reviewing†,                                // qid whose per-question feedback is on screen, else null
   blockOrder: "12" | "21", group: "A" | "B", stratum,
   profile: { year, platform, solvedCount, streak, ownPct, language },
   ratingStart / ratingMid / ratingEnd: { arrays, window, recursion, dp },   // 1-7
@@ -332,7 +349,8 @@ resume and analysis.
     setId, startedAt, endedAt, score, scoreGuess, rankGuess,
     plan†: [{ qid, optionOrder }],           // drawn at block start, so a reload shows the same order
     answers: [{ qid, topic, type, position, optionOrder, chosen, correct,
-                confidence, timeMs, langAtAnswer, langSwitches }]
+                confidence, timeMs, langAtAnswer, langSwitches,
+                feedbackShown†, feedbackMs† }]  // † only in blocks with per-question feedback
   },
   feedback1 / feedback2: {
     shownAt, timeOnScreenMs, blockScore, beatsPct, profileLine, encouragement,

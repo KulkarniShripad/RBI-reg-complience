@@ -2,10 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { loadContent } from '../src/content';
 import { beatsPct, counterId, gapLabel, nextBlockOrder, nextGroup, stratumKey } from '../src/lib/assignment';
 import { blockMeasures, computeDerived } from '../src/lib/derived';
-import { buildFeedback, chooseStrong, chooseWorkOn, reportTopicRow } from '../src/lib/feedback';
+import { buildFeedback, chooseStrong, chooseWorkOn, questionFeedbackLines, reportTopicRow } from '../src/lib/feedback';
 import { makeBlock } from '../src/lib/flow';
 import type { Answer, BlockData } from '../src/lib/model';
-import { fill, slugTitle } from '../src/lib/util';
+import { fill, plain, slugTitle } from '../src/lib/util';
 import { splitHtmlLines, highlightLines } from '../src/components/CodeBlock';
 import { progressOf } from '../src/lib/steps';
 
@@ -160,6 +160,28 @@ describe('Group B feedback lines', () => {
   });
 });
 
+describe('per-question feedback', () => {
+  it('gives everyone right/wrong and the running score', () => {
+    const a1 = answer('S2-01', true);
+    const a2 = answer('S2-05', false);
+    expect(questionFeedbackLines(a2, [a1, a2], 'A', c)).toEqual(['✘ Not quite', '**1 / 2** correct so far']);
+    expect(questionFeedbackLines(a1, [a1], null, c)).toEqual(['✔ Correct', '**1 / 1** correct so far']);
+  });
+  it('adds the concept lines for Group B, with bold focus words', () => {
+    const wrong = answer('S2-05', false); // recursion / debug
+    const lines = questionFeedbackLines(wrong, [wrong], 'B', c);
+    expect(lines.slice(2)).toEqual(['✘ Work on: **Recursion**, **undo order**', '→ Tip: **Undo a pick right after exploring with it.**']);
+    expect(lines.map(plain)[2]).toBe('✘ Work on: Recursion, undo order');
+    const right = answer('S2-01', true); // arrays / trace
+    expect(questionFeedbackLines(right, [right], 'B', c).slice(2)).toEqual(['✔ Strong: **Arrays & Hashing**, **tracking the map**']);
+  });
+  it('stores feedback screen text without the bold markers', () => {
+    const fb = buildFeedback({ block: 1, group: 'B', answers: block('S1', ['S1-01']).answers, beatsPct: 40, profile: null, sessionCorrect: 1, rng: Math.random }, c);
+    expect(fb.linesShown.join(' ')).not.toContain('**');
+    expect(fb.tip).not.toContain('**');
+  });
+});
+
 describe('report topic row', () => {
   it('uses the 3 / 2 thresholds over all 16 questions', () => {
     const answers = [...block('S1', ['S1-01', 'S1-02', 'S1-03']).answers, ...block('S2', ['S2-01', 'S2-03', 'S2-04']).answers];
@@ -199,5 +221,7 @@ describe('progress', () => {
     expect(progressOf('consent', 0, 8)).toBe(0);
     expect(progressOf('block1', 4, 8)).toBeGreaterThan(progressOf('block1', 0, 8));
     expect(progressOf('thanks', 0, 8)).toBe(1);
+    // a hidden step adds nothing: statements → block 1 is one step
+    expect(progressOf('block1', 0, 8, ['howItWorks'])).toBe(progressOf('howItWorks', 0, 8, ['howItWorks']));
   });
 });

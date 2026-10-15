@@ -28,9 +28,9 @@ export type StepId = (typeof STEPS)[number];
 
 export const stepIndex = (id: StepId) => STEPS.indexOf(id);
 
-/** Overall progress 0-1; each question counts as one screen. */
-export function progressOf(step: StepId, answeredInBlock: number, perBlock: number): number {
-  const weight = (s: StepId) => (s === 'block1' || s === 'block2' ? perBlock : s === 'thanks' ? 0 : 1);
+/** Overall progress 0-1; each question counts as one screen, hidden steps count as none. */
+export function progressOf(step: StepId, answeredInBlock: number, perBlock: number, hidden: StepId[] = []): number {
+  const weight = (s: StepId) => (s === 'block1' || s === 'block2' ? perBlock : s === 'thanks' || hidden.includes(s) ? 0 : 1);
   const total = STEPS.reduce((sum, s) => sum + weight(s), 0);
   const idx = stepIndex(step);
   let done = 0;

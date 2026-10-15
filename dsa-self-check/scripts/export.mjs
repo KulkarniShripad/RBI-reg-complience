@@ -105,7 +105,8 @@ const cols = [...seen]
   .sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
 writeCsv('participants.csv', cols, flat);
 
-const answerCols = ['uid', 'group', 'blockOrder', 'block', 'setId', 'position', 'qid', 'topic', 'type', 'chosen', 'correct', 'confidence', 'timeMs', 'langAtAnswer', 'langSwitches'];
+// feedbackMs / feedbackShown are filled only in blocks with per-question feedback (config.questionFeedbackBlocks).
+const answerCols = ['uid', 'group', 'blockOrder', 'block', 'setId', 'position', 'qid', 'topic', 'type', 'chosen', 'correct', 'confidence', 'timeMs', 'langAtAnswer', 'langSwitches', 'feedbackMs', 'feedbackShown'];
 const answers = [];
 for (const p of kept) {
   for (const block of [1, 2]) {

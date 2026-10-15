@@ -7,7 +7,7 @@ import { ProgressBar, SavingPill } from './components/ProgressBar';
 import { PrimaryButton, Screen } from './components/ui';
 import { stratumKey } from './lib/assignment';
 import { computeDerived } from './lib/derived';
-import { buildFeedback } from './lib/feedback';
+import { buildFeedback, questionFeedbackLines } from './lib/feedback';
 import { blockScore, debugFill, makeBlock } from './lib/flow';
 import { SERVER_TIME, type Answer, type Participant, type ParticipantPatch } from './lib/model';
 import {
@@ -22,8 +22,9 @@ import {
   type Session,
 } from './lib/session';
 import { STEPS, progressOf, stepIndex, type StepId } from './lib/steps';
+import { plain } from './lib/util';
 import { getStore, localMode, preloadStore } from './lib/store';
-import { BlockEnd, QuestionScreen } from './screens/Block';
+import { BlockEnd, QuestionReview, QuestionScreen } from './screens/Block';
 import { Close, EndRatings, FeedbackScreen, Pack, PreferenceScreen, Report } from './screens/End';
 import { Consent, HowItWorks, Message, ProfileScreen, Statements, TopicRatings } from './screens/Intro';
 
@@ -148,28 +149,72 @@ export default function App({ c }: { c: Content }) {
       else attach(res);
     });
 
-  const onBegin = () =>
+  /** Assigns the block order and opens Block 1 (from "Begin", or straight from the statements). */
+  const startBlock1 = (patch: ParticipantPatch = {}) =>
     runBusy(async () => {
+      if (Object.keys(patch).length) session!.save(patch);
       await session!.assignBlockOrder();
       const cur = session!.p;
       go('block1', { block1: cur.block1 ?? makeBlock(1, cur, c) });
     });
 
+  // The how-it-works screen is off (config.showHowItWorks): a session resumed on it goes straight on.
+  useEffect(() => {
+    if (step === 'howItWorks' && !c.config.showHowItWorks && session && !busy) startBlock1();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, session, busy]);
+
   const onLang = (lang: LangId) => session!.save({ lang });
+
+  const withQuestionFeedback = (n: 1 | 2) => c.config.questionFeedbackBlocks.includes(n);
 
   const onAnswer = (n: 1 | 2, a: Answer) => {
     const key = n === 1 ? 'block1' : 'block2';
-    const b = session!.p[key]!;
+    const cur = session!.p;
+    const b = cur[key]!;
     if (b.answers.some((x) => x.qid === a.qid)) return; // already answered
-    const answers = [...b.answers, a];
+    const showFeedback = withQuestionFeedback(n);
+    // Store exactly what the participant is about to see after this answer.
+    const answer = showFeedback ? { ...a, feedbackShown: questionFeedbackLines(a, [...b.answers, a], cur.group, c).map(plain) } : a;
+    const answers = [...b.answers, answer];
     const complete = answers.length >= b.plan.length;
     const block = complete ? { ...b, answers, endedAt: new Date(), score: answers.filter((x) => x.correct).length } : { ...b, answers };
-    if (complete) go(n === 1 ? 'block1End' : 'block2End', { [key]: block, lang: session!.p.lang });
+    if (showFeedback) {
+      // Show this question's feedback before moving on (see onReviewNext).
+      session!.save({ [key]: block, lang: cur.lang, reviewing: a.qid });
+      window.scrollTo(0, 0);
+    } else if (complete) go(n === 1 ? 'block1End' : 'block2End', { [key]: block, lang: cur.lang });
     else {
-      session!.save({ [key]: block, lang: session!.p.lang });
+      session!.save({ [key]: block, lang: cur.lang });
       window.scrollTo(0, 0);
     }
   };
+
+  const onReviewNext = (n: 1 | 2, feedbackMs: number) => {
+    const key = n === 1 ? 'block1' : 'block2';
+    const b = session!.p[key]!;
+    const qid = session!.p.reviewing;
+    const block = { ...b, answers: b.answers.map((x) => (x.qid === qid ? { ...x, feedbackMs } : x)) };
+    if (block.answers.length >= block.plan.length) go(n === 1 ? 'block1End' : 'block2End', { [key]: block, reviewing: null });
+    else {
+      session!.save({ [key]: block, reviewing: null });
+      window.scrollTo(0, 0);
+    }
+  };
+
+  // A finished block with nothing left to review always moves on to its block-end screen.
+  const blockDone =
+    (step === 'block1' || step === 'block2') &&
+    p !== null &&
+    !p.reviewing &&
+    (() => {
+      const b = step === 'block1' ? p.block1 : p.block2;
+      return !!b && b.answers.length >= b.plan.length;
+    })();
+  useEffect(() => {
+    if (blockDone && session) go(step === 'block1' ? 'block1End' : 'block2End');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [blockDone, session]);
 
   const assignGroupFromBlock1 = async () => {
     const cur = session!.p;
@@ -245,7 +290,7 @@ export default function App({ c }: { c: Content }) {
       session.save(debugFill(idx, session.p, c, (id) => stepIndex(id as StepId)));
       if (idx > stepIndex('block1End') && !session.p.group) await assignGroupFromBlock1();
       setWithdrawnNow(false);
-      go(target, { withdrawn: false, status: 'started' });
+      go(target, { withdrawn: false, status: 'started', reviewing: null });
     });
 
   const debugReset = async () => {
@@ -263,7 +308,8 @@ export default function App({ c }: { c: Content }) {
   // ---------- render ----------
 
   const answeredInBlock = step === 'block1' ? (p?.block1?.answers.length ?? 0) : step === 'block2' ? (p?.block2?.answers.length ?? 0) : 0;
-  const progress = phase === 'done' ? 1 : progressOf(step, answeredInBlock, c.config.questionsPerBlock);
+  const progress =
+    phase === 'done' ? 1 : progressOf(step, answeredInBlock, c.config.questionsPerBlock, c.config.showHowItWorks ? [] : ['howItWorks']);
 
   let screen: ReactNode = null;
   if (phase === 'done') screen = <Message text={c.ui.consent.alreadyDone} />;
@@ -283,17 +329,39 @@ export default function App({ c }: { c: Content }) {
         return (
           <Statements
             c={c}
-            onDone={(statements, rankGuessStart, scoreGuessStart) => go('howItWorks', { statements, rankGuessStart, scoreGuessStart })}
+            onDone={(statements, rankGuessStart, scoreGuessStart) =>
+              c.config.showHowItWorks
+                ? go('howItWorks', { statements, rankGuessStart, scoreGuessStart })
+                : startBlock1({ statements, rankGuessStart, scoreGuessStart })
+            }
           />
         );
       case 'howItWorks':
-        return <HowItWorks c={c} onBegin={onBegin} />;
+        return c.config.showHowItWorks ? <HowItWorks c={c} onBegin={() => startBlock1()} /> : null;
       case 'block1':
       case 'block2': {
         const n = step === 'block1' ? 1 : 2;
         const b = n === 1 ? cur.block1 : cur.block2;
-        const planned = b?.plan[b.answers.length];
-        if (!b || !planned) return null;
+        if (!b) return null;
+        const reviewIdx = cur.reviewing ? b.answers.findIndex((x) => x.qid === cur.reviewing) : -1;
+        if (reviewIdx >= 0) {
+          const ans = b.answers[reviewIdx];
+          return (
+            <QuestionReview
+              key={`review-${ans.qid}`}
+              c={c}
+              q={c.byId[ans.qid]}
+              answer={ans}
+              position={reviewIdx + 1}
+              lines={questionFeedbackLines(ans, b.answers.slice(0, reviewIdx + 1), cur.group, c)}
+              lang={cur.lang}
+              onLang={onLang}
+              onNext={(ms) => onReviewNext(n, ms)}
+            />
+          );
+        }
+        const planned = b.plan[b.answers.length];
+        if (!planned) return null;
         return (
           <QuestionScreen
             key={planned.qid}
@@ -382,7 +450,7 @@ export default function App({ c }: { c: Content }) {
           <span className="h-6 w-6 animate-spin rounded-full border-2 border-slate-300 border-t-accent-600" />
         </div>
       )}
-      <div key={`${step}-${answeredInBlock}`} className={busy ? 'pointer-events-none' : undefined}>
+      <div key={`${step}-${answeredInBlock}-${p?.reviewing ?? ''}`} className={busy ? 'pointer-events-none' : undefined}>
         {screen}
       </div>
       {debug && (

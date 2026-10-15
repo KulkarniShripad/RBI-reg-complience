@@ -1,9 +1,9 @@
 // Builds the feedback screens (section 6) and the report topic row.
 // Every value comes from the participant's own answers and profile.
 
-import { TOPIC_IDS, type Content, type TopicId } from '../content/types';
+import { TOPIC_IDS, type Content, type QType, type TopicId } from '../content/types';
 import type { Answer, FeedbackData, FeedbackLine, Group, Profile, TopicRecord } from './model';
-import { fill, pick, type Rng } from './util';
+import { fill, pick, plain, type Rng } from './util';
 
 export function topicAccuracy(answers: Answer[]): TopicRecord<number | null> {
   const out = {} as TopicRecord<number | null>;
@@ -72,10 +72,18 @@ export function profileLine(profile: Profile | null, sessionCorrect: number, c: 
     : fill(L.profileNoStreak, { solved, sessionCorrect });
 }
 
+/** A Strong / Work on line for one question's topic and type, with its **bold** markers (for display). */
+export function conceptLine(template: string, topic: TopicId, type: QType, c: Content): string {
+  return fill(template, { topic: c.feedback.topics[topic].name, skill: c.feedback.templates[topic][type].skill });
+}
+
+/** The Tip line for one question's topic and type, with its **bold** markers (for display). */
+export function tipLine(topic: TopicId, type: QType, c: Content): string {
+  return fill(c.feedback.lines.tip, { tip: c.feedback.templates[topic][type].tip });
+}
+
 function line(a: Answer, template: string, c: Content): FeedbackLine {
-  const t = c.feedback.topics[a.topic as TopicId];
-  const skill = c.feedback.templates[a.topic][a.type].skill;
-  return { qid: a.qid, topic: a.topic, type: a.type, text: fill(template, { topic: t.name, skill }) };
+  return { qid: a.qid, topic: a.topic, type: a.type, text: plain(conceptLine(template, a.topic, a.type, c)) };
 }
 
 /** Group B extras: Strong / Work on / Tip / topic row. */
@@ -86,7 +94,7 @@ export function groupBExtras(answers: Answer[], c: Content, rng: Rng) {
   return {
     strong: s ? line(s, L.strong, c) : null,
     workOn: w ? line(w, L.workOn, c) : null,
-    tip: w ? fill(L.tip, { tip: c.feedback.templates[w.topic][w.type].tip }) : null,
+    tip: w ? plain(tipLine(w.topic, w.type, c)) : null,
     topicRow: blockTopicRow(answers, c),
   };
 }
@@ -131,6 +139,23 @@ export function buildFeedback(input: FeedbackInput, c: Content): FeedbackData {
     workOn: extras?.workOn ?? null,
     tip: extras?.tip ?? null,
     topicRow: extras?.topicRow ?? null,
-    linesShown: lines,
+    linesShown: lines.map(plain),
   };
+}
+
+/**
+ * Feedback shown right after one question (blocks listed in config.questionFeedbackBlocks):
+ * right / wrong and the running score for everyone; Group B also gets the question's
+ * Strong line (if right) or Work on + Tip lines (if wrong). Lines keep their **bold** markers.
+ */
+export function questionFeedbackLines(answer: Answer, answersSoFar: Answer[], group: Group | null, c: Content): string[] {
+  const u = c.ui.questionFeedback;
+  const L = c.feedback.lines;
+  const score = answersSoFar.filter((a) => a.correct).length;
+  const lines = [answer.correct ? u.correct : u.wrong, fill(u.soFar, { score, n: answersSoFar.length })];
+  if (group === 'B') {
+    if (answer.correct) lines.push(conceptLine(L.strong, answer.topic, answer.type, c));
+    else lines.push(conceptLine(L.workOn, answer.topic, answer.type, c), tipLine(answer.topic, answer.type, c));
+  }
+  return lines;
 }

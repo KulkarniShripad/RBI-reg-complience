@@ -2,6 +2,7 @@
 // size; Group B also sees the Strong / Work on / Tip lines and the topic row.
 
 import { TOPIC_IDS, type Content, type TopicId } from '../content/types';
+import { conceptLine, tipLine } from '../lib/feedback';
 import type { FeedbackData, TopicRecord } from '../lib/model';
 import { fill } from '../lib/util';
 import { cx } from './ui';
@@ -14,18 +15,43 @@ export function symbolColor(symbol: string, c: Content): string {
   return 'text-accent-600';
 }
 
+/** Renders **bold** markers from the content files as bold text. */
+export function RichText({ text }: { text: string }) {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return (
+    <>
+      {parts.map((part, i) =>
+        part.length > 4 && part.startsWith('**') && part.endsWith('**') ? (
+          <strong key={i} className="font-semibold text-slate-900">
+            {part.slice(2, -2)}
+          </strong>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  );
+}
+
 /** Colours a line's leading symbol (✔ / ✘ / → …); the words always stay, so colour is never the only signal. */
-function SymbolLine({ text, c }: { text: string; c: Content }) {
+export function SymbolLine({ text, c, className }: { text: string; c: Content; className?: string }) {
   const space = text.indexOf(' ');
   const head = space > 0 ? text.slice(0, space) : '';
-  const isSymbol = head !== '' && !/[\p{L}\p{N}]/u.test(head);
-  if (!isSymbol) return <p>{text}</p>;
+  const isSymbol = head !== '' && !/[\p{L}\p{N}*]/u.test(head);
+  if (!isSymbol)
+    return (
+      <p className={className}>
+        <RichText text={text} />
+      </p>
+    );
   return (
-    <p className="flex gap-2">
+    <p className={cx('flex gap-2', className)}>
       <span aria-hidden className={cx('flex-none font-semibold', symbolColor(head, c))}>
         {head}
       </span>
-      <span>{text.slice(space + 1)}</span>
+      <span>
+        <RichText text={text.slice(space + 1)} />
+      </span>
     </p>
   );
 }
@@ -59,14 +85,14 @@ export function FeedbackCard({
     <section className="card space-y-3 p-5 text-[17px] leading-snug text-slate-800">
       <h2 className="text-[22px] font-semibold tracking-tight text-slate-900">{fill(L.title, { block })}</h2>
       <p className="font-semibold text-slate-900">
-        {fill(L.score, { score: fb.blockScore, total: c.config.questionsPerBlock, beatsPct: fb.beatsPct })}
+        <RichText text={fill(L.score, { score: fb.blockScore, total: c.config.questionsPerBlock, beatsPct: fb.beatsPct })} />
       </p>
       <p>{fb.profileLine}</p>
       {showGroupB && (
         <div className="space-y-3 border-t border-slate-100 pt-3">
-          <SymbolLine text={fb.strong?.text ?? L.strongNone} c={c} />
-          <SymbolLine text={fb.workOn?.text ?? L.workOnNone} c={c} />
-          {fb.tip && <SymbolLine text={fb.tip} c={c} />}
+          <SymbolLine text={fb.strong ? conceptLine(L.strong, fb.strong.topic, fb.strong.type, c) : L.strongNone} c={c} />
+          <SymbolLine text={fb.workOn ? conceptLine(L.workOn, fb.workOn.topic, fb.workOn.type, c) : L.workOnNone} c={c} />
+          {fb.tip && fb.workOn && <SymbolLine text={tipLine(fb.workOn.topic, fb.workOn.type, c)} c={c} />}
           {fb.topicRow && <TopicRow row={fb.topicRow} c={c} />}
         </div>
       )}

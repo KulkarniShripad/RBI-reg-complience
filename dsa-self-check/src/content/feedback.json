@@ -32,9 +32,9 @@
     "score": "{score} / {total} solved · Beats {beatsPct}%",
     "profile": "Profile: {solved} + {sessionCorrect} solved · {streak}-day streak",
     "profileNoStreak": "Profile: {solved} + {sessionCorrect} solved",
-    "strong": "✔ Strong: {topic}, {skill}",
-    "workOn": "✘ Work on: {topic}, {skill}",
-    "tip": "→ Tip: {tip}",
+    "strong": "✔ Strong: **{topic}**, **{skill}**",
+    "workOn": "✘ Work on: **{topic}**, **{skill}**",
+    "tip": "→ Tip: **{tip}**",
     "strongNone": "✔ Strong: none this block",
     "workOnNone": "✘ Work on: none this block"
   },
