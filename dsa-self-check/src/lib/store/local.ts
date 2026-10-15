@@ -11,9 +11,33 @@ import type { Store } from './types';
 const PREFIX = 'dsa_localdb:';
 const AUTH_KEY = `${PREFIX}auth`;
 
+// Falls back to memory when localStorage is blocked (e.g. some private windows).
+const memory = new Map<string, string>();
+const getItem = (key: string) => {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return memory.get(key) ?? null;
+  }
+};
+const setItem = (key: string, value: string) => {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    memory.set(key, value);
+  }
+};
+const removeItem = (key: string) => {
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    memory.delete(key);
+  }
+};
+
 function read<T>(path: string): T | null {
   try {
-    const raw = localStorage.getItem(PREFIX + path);
+    const raw = getItem(PREFIX + path);
     return raw ? (revive(JSON.parse(raw)) as T) : null;
   } catch {
     return null;
@@ -21,7 +45,7 @@ function read<T>(path: string): T | null {
 }
 
 function write(path: string, value: unknown) {
-  localStorage.setItem(PREFIX + path, JSON.stringify(prepare(value, () => new Date())));
+  setItem(PREFIX + path, JSON.stringify(prepare(value, () => new Date())));
 }
 
 function newUid(): string {
@@ -41,20 +65,20 @@ export function createLocalStore(cfg: ConfigFile): Store {
     kind: 'local',
 
     async existingUid() {
-      return localStorage.getItem(AUTH_KEY);
+      return getItem(AUTH_KEY);
     },
 
     async signIn() {
-      let uid = localStorage.getItem(AUTH_KEY);
+      let uid = getItem(AUTH_KEY);
       if (!uid) {
         uid = newUid();
-        localStorage.setItem(AUTH_KEY, uid);
+        setItem(AUTH_KEY, uid);
       }
       return uid;
     },
 
     async signOut() {
-      localStorage.removeItem(AUTH_KEY);
+      removeItem(AUTH_KEY);
     },
 
     async load(uid) {
