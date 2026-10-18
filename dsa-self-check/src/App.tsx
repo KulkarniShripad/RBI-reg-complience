@@ -22,11 +22,11 @@ import {
   type Session,
 } from './lib/session';
 import { STEPS, progressOf, stepIndex, type StepId } from './lib/steps';
-import { plain } from './lib/util';
 import { getStore, localMode, preloadStore } from './lib/store';
+import { plain } from './lib/util';
 import { BlockEnd, QuestionReview, QuestionScreen } from './screens/Block';
-import { Close, EndRatings, FeedbackScreen, Pack, PreferenceScreen, Report } from './screens/End';
-import { Consent, HowItWorks, Message, ProfileScreen, Statements, TopicRatings } from './screens/Intro';
+import { EndSurveyScreen, FeedbackScreen, Pack, Report } from './screens/End';
+import { BeforeScreen, Consent, Message, ProfileScreen, TopicRatings } from './screens/Intro';
 
 type Phase = 'boot' | 'run' | 'done';
 
@@ -104,33 +104,36 @@ export default function App({ c }: { c: Content }) {
   useEffect(() => {
     if (!p || phase !== 'run') return;
     const onBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (finished && !session?.pending) return;
+      if ((finished || step === 'report') && !session?.pending) return;
       e.preventDefault();
       e.returnValue = c.ui.leaveWarning;
       return c.ui.leaveWarning;
     };
     window.addEventListener('beforeunload', onBeforeUnload);
     return () => window.removeEventListener('beforeunload', onBeforeUnload);
-  }, [p, phase, finished, session, c.ui.leaveWarning]);
+  }, [p, phase, finished, step, session, c.ui.leaveWarning]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [step]);
 
-  const runBusy = useCallback(async (fn: () => Promise<void>) => {
-    if (busyRef.current) return;
-    busyRef.current = true;
-    setBusy(true);
-    try {
-      await fn();
-    } catch (err) {
-      console.error(err);
-      onError(err);
-    } finally {
-      busyRef.current = false;
-      setBusy(false);
-    }
-  }, [onError]);
+  const runBusy = useCallback(
+    async (fn: () => Promise<void>) => {
+      if (busyRef.current) return;
+      busyRef.current = true;
+      setBusy(true);
+      try {
+        await fn();
+      } catch (err) {
+        console.error(err);
+        onError(err);
+      } finally {
+        busyRef.current = false;
+        setBusy(false);
+      }
+    },
+    [onError],
+  );
 
   const go = useCallback(
     (next: StepId, patch: ParticipantPatch = {}) => {
@@ -138,6 +141,9 @@ export default function App({ c }: { c: Content }) {
     },
     [session],
   );
+
+  /** Recomputes the derived measures from the participant plus a pending patch. */
+  const derive = (patch: ParticipantPatch) => computeDerived({ ...session!.p, ...patch }, c);
 
   // ---------- step handlers ----------
 
@@ -149,20 +155,14 @@ export default function App({ c }: { c: Content }) {
       else attach(res);
     });
 
-  /** Assigns the block order and opens Block 1 (from "Begin", or straight from the statements). */
-  const startBlock1 = (patch: ParticipantPatch = {}) =>
+  /** Saves the "before you start" answers, assigns the block order and opens Block 1. */
+  const onBefore = (patch: ParticipantPatch) =>
     runBusy(async () => {
-      if (Object.keys(patch).length) session!.save(patch);
+      session!.save(patch);
       await session!.assignBlockOrder();
       const cur = session!.p;
       go('block1', { block1: cur.block1 ?? makeBlock(1, cur, c) });
     });
-
-  // The how-it-works screen is off (config.showHowItWorks): a session resumed on it goes straight on.
-  useEffect(() => {
-    if (step === 'howItWorks' && !c.config.showHowItWorks && session && !busy) startBlock1();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step, session, busy]);
 
   const onLang = (lang: LangId) => session!.save({ lang });
 
@@ -180,7 +180,6 @@ export default function App({ c }: { c: Content }) {
     const complete = answers.length >= b.plan.length;
     const block = complete ? { ...b, answers, endedAt: new Date(), score: answers.filter((x) => x.correct).length } : { ...b, answers };
     if (showFeedback) {
-      // Show this question's feedback before moving on (see onReviewNext).
       session!.save({ [key]: block, lang: cur.lang, reviewing: a.qid });
       window.scrollTo(0, 0);
     } else if (complete) go(n === 1 ? 'block1End' : 'block2End', { [key]: block, lang: cur.lang });
@@ -223,12 +222,12 @@ export default function App({ c }: { c: Content }) {
     await session!.assignGroup(stratum);
   };
 
-  const onBlockEnd = (n: 1 | 2, scoreGuess: number, rankGuess: number) => {
+  const onBlockEnd = (n: 1 | 2, scoreGuess: number) => {
     const key = n === 1 ? 'block1' : 'block2';
-    const block = { ...session!.p[key]!, scoreGuess, rankGuess };
-    const derived = computeDerived({ ...session!.p, [key]: block }, c);
+    const block = { ...session!.p[key]!, scoreGuess };
+    const derived = derive({ [key]: block });
     if (n === 2) {
-      go('feedback2', { block2: block, derived });
+      go('endSurvey', { block2: block, derived });
       return;
     }
     runBusy(async () => {
@@ -238,32 +237,23 @@ export default function App({ c }: { c: Content }) {
     });
   };
 
-  // Build and store the feedback when a feedback step is reached without one (first visit).
-  const fbStep = step === 'feedback1' ? 1 : step === 'feedback2' ? 2 : 0;
-  const fbMissing = fbStep !== 0 && p !== null && !p[fbStep === 1 ? 'feedback1' : 'feedback2'];
+  // Build and store the Block 1 feedback when its step is reached without one (first visit).
+  const fbMissing = step === 'feedback1' && p !== null && !p.feedback1;
   useEffect(() => {
     if (!fbMissing || busy || !session) return;
-    const n = fbStep as 1 | 2;
     runBusy(async () => {
       if (!session.p.group) await assignGroupFromBlock1();
       const cur = session.p;
-      const block = (n === 1 ? cur.block1 : cur.block2)!;
+      const block = cur.block1!;
       const score = blockScore(block);
-      const sessionCorrect = blockScore(cur.block1) + (n === 2 ? score : 0);
-      await session.recordFeedback(n === 1 ? 'feedback1' : 'feedback2', block.setId, score, (beatsPct) =>
-        buildFeedback(
-          { block: n, group: cur.group!, answers: block.answers, beatsPct, profile: cur.profile, sessionCorrect, rng: Math.random },
-          c,
-        ),
+      await session.recordFeedback('feedback1', block.setId, score, (beatsPct) =>
+        buildFeedback({ block: 1, group: cur.group!, answers: block.answers, beatsPct, profile: cur.profile, sessionCorrect: score, rng: Math.random }, c),
       );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fbMissing, fbStep, busy, session]);
+  }, [fbMissing, busy, session]);
 
-  const onFeedbackDone = (n: 1 | 2, timeOnScreenMs: number) => {
-    const key = n === 1 ? 'feedback1' : 'feedback2';
-    go(n === 1 ? 'rateMid' : 'rateEnd', { [key]: { ...session!.p[key]!, timeOnScreenMs } });
-  };
+  const onFeedbackDone = (timeOnScreenMs: number) => go('rateMid', { feedback1: { ...session!.p.feedback1!, timeOnScreenMs } });
 
   const onWithdraw = () =>
     runBusy(async () => {
@@ -273,9 +263,9 @@ export default function App({ c }: { c: Content }) {
       markDone();
     });
 
-  const onPreference = (preference: Participant['preference']) =>
+  const onFinish = () =>
     runBusy(async () => {
-      go('thanks', { preference, status: 'completed', completedAt: SERVER_TIME });
+      go('thanks');
       await session!.flush();
       markDone();
     });
@@ -290,7 +280,7 @@ export default function App({ c }: { c: Content }) {
       session.save(debugFill(idx, session.p, c, (id) => stepIndex(id as StepId)));
       if (idx > stepIndex('block1End') && !session.p.group) await assignGroupFromBlock1();
       setWithdrawnNow(false);
-      go(target, { withdrawn: false, status: 'started', reviewing: null });
+      go(target, { withdrawn: false, status: idx >= stepIndex('report') ? 'completed' : 'started', reviewing: null });
     });
 
   const debugReset = async () => {
@@ -308,8 +298,7 @@ export default function App({ c }: { c: Content }) {
   // ---------- render ----------
 
   const answeredInBlock = step === 'block1' ? (p?.block1?.answers.length ?? 0) : step === 'block2' ? (p?.block2?.answers.length ?? 0) : 0;
-  const progress =
-    phase === 'done' ? 1 : progressOf(step, answeredInBlock, c.config.questionsPerBlock, c.config.showHowItWorks ? [] : ['howItWorks']);
+  const progress = phase === 'done' ? 1 : progressOf(step, answeredInBlock, c.config.questionsPerBlock);
 
   let screen: ReactNode = null;
   if (phase === 'done') screen = <Message text={c.ui.consent.alreadyDone} />;
@@ -322,22 +311,11 @@ export default function App({ c }: { c: Content }) {
     switch (step) {
       case 'consent':
       case 'profile':
-        return <ProfileScreen key="profile" c={c} onDone={(profile) => go('rateSelf', { profile, lang: profile.language })} />;
-      case 'rateSelf':
-        return <TopicRatings key="rateSelf" c={c} title={c.ui.rateSelf.title} sub={c.ui.rateSelf.sub} onDone={(r) => go('statements', { ratingStart: r })} />;
-      case 'statements':
+        return <ProfileScreen key="profile" c={c} onDone={(profile) => go('before', { profile, lang: profile.language })} />;
+      case 'before':
         return (
-          <Statements
-            c={c}
-            onDone={(statements, rankGuessStart, scoreGuessStart) =>
-              c.config.showHowItWorks
-                ? go('howItWorks', { statements, rankGuessStart, scoreGuessStart })
-                : startBlock1({ statements, rankGuessStart, scoreGuessStart })
-            }
-          />
+          <BeforeScreen c={c} onDone={(ratingStart, beliefStart, scoreGuessStart) => onBefore({ ratingStart, beliefStart, scoreGuessStart })} />
         );
-      case 'howItWorks':
-        return c.config.showHowItWorks ? <HowItWorks c={c} onBegin={() => startBlock1()} /> : null;
       case 'block1':
       case 'block2': {
         const n = step === 'block1' ? 1 : 2;
@@ -376,23 +354,21 @@ export default function App({ c }: { c: Content }) {
         );
       }
       case 'block1End':
-        return <BlockEnd key="be1" c={c} onDone={(s, r) => onBlockEnd(1, s, r)} />;
+        return <BlockEnd key="be1" c={c} onDone={(s) => onBlockEnd(1, s)} />;
       case 'block2End':
-        return <BlockEnd key="be2" c={c} onDone={(s, r) => onBlockEnd(2, s, r)} />;
-      case 'feedback1':
-      case 'feedback2': {
-        const n = step === 'feedback1' ? 1 : 2;
-        const fb = n === 1 ? cur.feedback1 : cur.feedback2;
+        return <BlockEnd key="be2" c={c} onDone={(s) => onBlockEnd(2, s)} />;
+      case 'feedback1': {
+        const fb = cur.feedback1;
         if (!fb || !cur.group) return <Screen>{null}</Screen>;
         return (
           <FeedbackScreen
-            key={step}
+            key="fb1"
             c={c}
-            block={n}
+            block={1}
             fb={fb}
             group={cur.group}
             minMs={debug ? 0 : c.config.feedbackMinSeconds * 1000}
-            onDone={(ms) => onFeedbackDone(n, ms)}
+            onDone={onFeedbackDone}
           />
         );
       }
@@ -401,34 +377,29 @@ export default function App({ c }: { c: Content }) {
           <TopicRatings
             key="rateMid"
             c={c}
-            title={c.ui.rateAgain.title}
-            sub={c.ui.rateAgain.sub}
             onDone={(r) => go('block2', { ratingMid: r, block2: session!.p.block2 ?? makeBlock(2, session!.p, c) })}
           />
         );
-      case 'rateEnd':
-        return <TopicRatings key="rateEnd" c={c} title={c.ui.rateAgain.title} sub={c.ui.rateAgain.sub} onDone={(r) => go('endRatings', { ratingEnd: r })} />;
-      case 'endRatings':
+      case 'endSurvey':
         return (
-          <EndRatings
+          <EndSurveyScreen
             c={c}
-            onDone={(endItems, endItemsOrder) =>
-              go('pack', {
-                endItems,
-                endItemsOrder,
-                attentionPassed: endItems[c.config.attentionCheck.itemId] === c.config.attentionCheck.passValue,
-              })
-            }
+            group={cur.group ?? 'A'}
+            onDone={(endSurvey) => go('pack', { endSurvey, derived: derive({ endSurvey }) })}
           />
         );
       case 'pack':
-        return <Pack c={c} onDone={(packTopic, packType) => go('close', { packTopic, packType })} />;
-      case 'close':
-        return <Close c={c} group={cur.group ?? 'A'} onDone={(close) => go('report', { close })} />;
+        return (
+          <Pack
+            c={c}
+            onDone={(packTopic, packType) =>
+              // All study data is in: the session counts as completed even if they close the report.
+              go('report', { packTopic, packType, derived: derive({ packTopic }), status: 'completed', completedAt: SERVER_TIME })
+            }
+          />
+        );
       case 'report':
-        return <Report c={c} p={cur} withdrawn={withdrawnNow || cur.withdrawn} onWithdraw={onWithdraw} onContinue={() => go('preference')} />;
-      case 'preference':
-        return <PreferenceScreen c={c} p={cur} onDone={onPreference} />;
+        return <Report c={c} p={cur} withdrawn={withdrawnNow || cur.withdrawn} onWithdraw={onWithdraw} onContinue={onFinish} />;
       case 'thanks':
         return <Message text={c.ui.thanks} />;
     }

@@ -1,13 +1,12 @@
-// Steps 5 and 8: one question per screen (with right/wrong feedback after each answer in the
-// blocks listed in config.questionFeedbackBlocks), then the block-end guesses.
+// Steps 3 and 7: one question per screen (with right/wrong feedback after each answer in the
+// blocks listed in config.questionFeedbackBlocks), then the block-end guess.
 
 import { useEffect, useRef, useState } from 'react';
 import type { Content, LangId, Question } from '../content/types';
 import { CodeBlock } from '../components/CodeBlock';
-import { LanguageTabs } from '../components/LanguageTabs';
 import { SymbolLine } from '../components/FeedbackCard';
-import { ChoiceGroup, Label, PrimaryButton, Screen, Slider, cx } from '../components/ui';
-import { SCALES } from '../lib/flow';
+import { LanguageTabs } from '../components/LanguageTabs';
+import { ChoiceGroup, ConfidencePicker, Label, PrimaryButton, Screen, cx } from '../components/ui';
 import type { Answer, PlannedQuestion } from '../lib/model';
 import { fill, langText } from '../lib/util';
 
@@ -28,6 +27,26 @@ function StemAndCode({ c, q, lang, onLang }: { c: Content; q: Question; lang: La
   );
 }
 
+/** Counts how often and how long the page is hidden (tab or app switch) while mounted. */
+function useAwayTracker() {
+  const away = useRef({ count: 0, ms: 0, since: 0 });
+  useEffect(() => {
+    const onVis = () => {
+      const a = away.current;
+      if (document.visibilityState === 'hidden') {
+        a.count += 1;
+        a.since = performance.now();
+      } else if (a.since) {
+        a.ms += performance.now() - a.since;
+        a.since = 0;
+      }
+    };
+    document.addEventListener('visibilitychange', onVis);
+    return () => document.removeEventListener('visibilitychange', onVis);
+  }, []);
+  return () => ({ awayCount: away.current.count, awayMs: Math.round(away.current.ms) });
+}
+
 export function QuestionScreen({
   c,
   q,
@@ -46,25 +65,24 @@ export function QuestionScreen({
   onSubmit: (a: Answer) => void;
 }) {
   const u = c.ui.question;
-  const conf = c.config.confidence;
   const [chosen, setChosen] = useState<string | null>(null);
-  const [confidence, setConfidence] = useState(conf.default);
-  const [touched, setTouched] = useState(false);
+  const [confidence, setConfidence] = useState<number | null>(null);
   const switches = useRef(0);
   const shownAt = useRef(performance.now());
   const submitted = useRef(false);
-  const sliderRef = useRef<HTMLDivElement>(null);
+  const confRef = useRef<HTMLDivElement>(null);
+  const awayNow = useAwayTracker();
 
   const byId = Object.fromEntries(q.options.map((o) => [o.id, o]));
 
-  // Bring the confidence slider into view the first time it appears.
+  // Bring the confidence buttons into view the first time they appear.
   const hasChoice = chosen !== null;
   useEffect(() => {
-    if (hasChoice) sliderRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (hasChoice) confRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, [hasChoice]);
 
   const submit = () => {
-    if (!chosen || !touched || submitted.current) return;
+    if (!chosen || confidence === null || submitted.current) return;
     submitted.current = true;
     onSubmit({
       qid: q.id,
@@ -76,13 +94,14 @@ export function QuestionScreen({
       correct: chosen === q.correct,
       confidence,
       timeMs: Math.round(performance.now() - shownAt.current),
+      ...awayNow(),
       langAtAnswer: lang,
       langSwitches: switches.current,
     });
   };
 
   return (
-    <Screen footer={<PrimaryButton label={u.button} disabled={!chosen || !touched} onClick={submit} />}>
+    <Screen footer={<PrimaryButton label={u.button} disabled={!chosen || confidence === null} onClick={submit} />}>
       <p className="text-[14px] font-medium text-slate-500">
         {fill(u.counter, { n: position, total: c.config.questionsPerBlock })}
       </p>
@@ -102,21 +121,13 @@ export function QuestionScreen({
         mono={q.type === 'complete'}
       />
       {hasChoice && (
-        <div ref={sliderRef} className="card fade-in scroll-mb-28 p-4">
-          <Slider
+        <div ref={confRef} className="card fade-in scroll-mb-28 p-4">
+          <ConfidencePicker
             label={u.confidence}
-            min={conf.min}
-            max={conf.max}
-            step={conf.step}
+            levels={c.config.confidence.levels}
+            names={u.confLevels}
             value={confidence}
-            touched={touched}
-            onChange={(v) => {
-              setConfidence(v);
-              setTouched(true);
-            }}
-            format={(v) => `${v}%`}
-            low={u.confLow}
-            high={u.confHigh}
+            onChange={setConfidence}
           />
         </div>
       )}
@@ -126,7 +137,7 @@ export function QuestionScreen({
 
 /**
  * Shown after Continue in a block with per-question feedback: right / wrong, the running
- * score (and Group B's concept lines) on top, then the question with the right option marked.
+ * score (and Group B's topic line and tip) on top, then the question with the right option marked.
  */
 export function QuestionReview({
   c,
@@ -153,7 +164,7 @@ export function QuestionReview({
   const shownAt = useRef(performance.now());
   const done = useRef(false);
   const byId = Object.fromEntries(q.options.map((o) => [o.id, o]));
-  const [verdict, soFar, ...concept] = lines;
+  const [verdict, soFar, concept, tip] = lines;
   const next = () => {
     if (done.current) return;
     done.current = true;
@@ -171,13 +182,18 @@ export function QuestionReview({
           answer.correct ? 'border-emerald-200 bg-emerald-50' : 'border-red-200 bg-red-50',
         )}
       >
-        <SymbolLine text={verdict} c={c} className="text-[19px] font-semibold text-slate-900" />
-        {soFar && <SymbolLine text={soFar} c={c} />}
-        {concept.length > 0 && (
+        <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+          <SymbolLine text={verdict} c={c} className="text-[19px] font-semibold text-slate-900" />
+          {soFar && <SymbolLine text={soFar} c={c} className="text-[15px] text-slate-700" />}
+        </div>
+        {concept && (
           <div className="space-y-2 border-t border-black/5 pt-2.5">
-            {concept.map((l, i) => (
-              <SymbolLine key={i} text={l} c={c} />
-            ))}
+            <SymbolLine text={concept} c={c} />
+            {tip && (
+              <p className="ml-6 rounded-lg bg-white/70 px-3 py-2">
+                <SymbolLine text={tip} c={c} />
+              </p>
+            )}
           </div>
         )}
       </section>
@@ -212,30 +228,15 @@ export function QuestionReview({
   );
 }
 
-export function BlockEnd({ c, onDone }: { c: Content; onDone: (scoreGuess: number, rankGuess: number) => void }) {
-  const u = c.ui.blockEnd;
+export function BlockEnd({ c, onDone }: { c: Content; onDone: (scoreGuess: number) => void }) {
+  const n = c.config.questionsPerBlock;
   const [score, setScore] = useState<number | null>(null);
-  const [rank, setRank] = useState(SCALES.rank.default);
-  const [rankTouched, setRankTouched] = useState(false);
-  const scores = Array.from({ length: c.config.questionsPerBlock + 1 }, (_, i) => ({ id: i, label: String(i) }));
-  const complete = score !== null && rankTouched;
+  const scores = Array.from({ length: n + 1 }, (_, i) => ({ id: i, label: String(i) }));
   return (
-    <Screen footer={<PrimaryButton label={c.ui.question.button} disabled={!complete} onClick={() => complete && onDone(score!, rank)} />}>
+    <Screen footer={<PrimaryButton label={c.ui.question.button} disabled={score === null} onClick={() => score !== null && onDone(score)} />}>
       <div className="card p-4">
-        <Label id="be-score">{u.scoreGuess}</Label>
-        <ChoiceGroup labelledBy="be-score" cols={9} compact options={scores} value={score} onChange={setScore} />
-      </div>
-      <div className="card p-4">
-        <Slider
-          label={u.rankGuess}
-          {...SCALES.rank}
-          value={rank}
-          touched={rankTouched}
-          onChange={(v) => {
-            setRank(v);
-            setRankTouched(true);
-          }}
-        />
+        <Label id="be-score">{fill(c.ui.blockEnd.scoreGuess, { n })}</Label>
+        <ChoiceGroup labelledBy="be-score" cols={n + 1 <= 9 ? n + 1 : 1} compact options={scores} value={score} onChange={setScore} />
       </div>
     </Screen>
   );

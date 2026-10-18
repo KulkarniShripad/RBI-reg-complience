@@ -1,14 +1,14 @@
 // Types for the five content files in this folder. The files are validated at
 // startup (see validate.ts) before being used through these types.
+// Topics and question types are not fixed in code: they come from the files
+// (ui-text.json → topics, feedback.json → templates).
 
 export type LangId = 'python' | 'cpp' | 'java';
-export type TopicId = 'arrays' | 'window' | 'recursion' | 'dp';
-export type QType = 'trace' | 'complete' | 'pattern' | 'debug';
+export type TopicId = string;
+export type QType = string;
 export type SetId = 'S1' | 'S2';
 
 export const LANG_IDS: LangId[] = ['python', 'cpp', 'java'];
-export const TOPIC_IDS: TopicId[] = ['arrays', 'window', 'recursion', 'dp'];
-export const QTYPES: QType[] = ['trace', 'complete', 'pattern', 'debug'];
 export const SET_IDS: SetId[] = ['S1', 'S2'];
 
 export type PerLang<T> = Record<LangId, T>;
@@ -45,16 +45,13 @@ export interface IdLabel {
   id: string;
   label: string;
 }
-export interface IdText {
-  id: string;
-  text: string;
-}
 
 export interface UiText {
   consent: {
     title: string;
     body: string;
     points: string;
+    honesty: string;
     checkbox: string;
     button: string;
     alreadyDone: string;
@@ -65,39 +62,31 @@ export interface UiText {
     platform: { label: string; options: string[] };
     solvedCount: string;
     streak: string;
-    ownPct: string;
+    ownPct: { label: string; options: IdLabel[] };
     language: { label: string; options: { id: LangId; label: string }[] };
   };
-  rateSelf: {
+  /** The study's topics, in display order. Ids match feedback.json → topics. */
+  topics: IdLabel[];
+  before: {
     title: string;
-    sub: string;
+    ratingQ: string;
     low: string;
     high: string;
-    topics: { id: TopicId; label: string }[];
-  };
-  rateAgain: { title: string; sub: string };
-  statements: {
-    title: string;
-    low: string;
-    high: string;
-    items: IdText[];
-    rankGuess: string;
+    belief: string;
+    beliefLow: string;
+    beliefHigh: string;
     scoreGuess: string;
   };
-  howItWorks: { title: string; line: string; langNote: string; button: string };
-  question: { counter: string; confidence: string; confLow: string; confHigh: string; button: string };
+  rateAgain: { title: string; sub: string };
+  question: { counter: string; confidence: string; confLevels: string[]; button: string };
   questionFeedback: { correct: string; wrong: string; soFar: string; button: string };
-  blockEnd: { scoreGuess: string; rankGuess: string };
-  endRatings: { title: string; low: string; high: string; items: IdText[] };
-  pack: { title: string; sub: string; topicLabel: string; easy: string; medium: string };
-  close: {
+  blockEnd: { scoreGuess: string };
+  endSurvey: {
     title: string;
-    M1: { text: string; dontRemember: string };
-    M2: { text: string; options: (IdLabel & { groupBOnly?: boolean })[] };
-    O1: { text: string; low: string; high: string };
-    O2: { text: string; options: IdLabel[] };
-    O3: { text: string; low: string; high: string };
+    judgedBy: { text: string; options: (IdLabel & { groupBOnly?: boolean })[] };
+    serious: { text: string; options: IdLabel[] };
   };
+  pack: { title: string; sub: string; topicLabel: string; easy: string; medium: string };
   report: {
     title: string;
     blockLine: string;
@@ -109,7 +98,6 @@ export interface UiText {
     withdraw: string;
     withdrawn: string;
   };
-  preference: { title: string; options: IdLabel[] };
   thanks: string;
   saving: string;
   leaveWarning: string;
@@ -119,17 +107,20 @@ export interface UiText {
 export interface FeedbackFile {
   topics: Record<TopicId, { name: string; short: string }>;
   symbols: { strong: string; mid: string; weak: string };
-  encouragements: string[];
   lines: {
     title: string;
     score: string;
     profile: string;
     profileNoStreak: string;
+    byTopic: string;
+    topicCount: string;
     strong: string;
     workOn: string;
     tip: string;
     strongNone: string;
     workOnNone: string;
+    qRight: string;
+    qWrong: string;
   };
   templates: Record<TopicId, Record<QType, { skill: string; tip: string }>>;
 }
@@ -147,17 +138,17 @@ export interface ConfigFile {
   appVersion: string;
   studyName: string;
   questionsPerBlock: number;
-  confidence: { min: number; max: number; step: number; default: number };
+  /** The confidence buttons, in %. With 4 options a pure guess is right 25% of the time. */
+  confidence: { levels: number[] };
   rating: { min: number; max: number };
   feedbackMinSeconds: number;
   /** Blocks (1 and/or 2) that show right/wrong feedback after every question. */
   questionFeedbackBlocks: number[];
-  /** Show the "8 questions, then a short break, then 8 more" screen before Block 1. */
-  showHowItWorks: boolean;
   gapLabel: { overAbove: number; underBelow: number };
   stratification: { scoreBandLowMax: number };
   fastAnswerMs: number;
-  attentionCheck: { itemId: string; passValue: number };
+  /** Data-quality flags: more fast answers / tab switches than this flags the participant. */
+  quality: { maxFastAnswers: number; maxAwayAnswers: number };
   beatsPctFallback: number;
   report: { topicStrongMin: number; topicMidMin: number };
   feedbackTopicRow: { strong: number; mid: number };
@@ -174,4 +165,6 @@ export interface Content {
   config: ConfigFile;
   /** questions by id */
   byId: Record<string, Question>;
+  /** topic ids in display order (from ui-text.json → topics) */
+  topics: TopicId[];
 }

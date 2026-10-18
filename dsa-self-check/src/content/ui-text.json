@@ -1,14 +1,15 @@
 {
   "consent": {
     "title": "DSA Self-Check",
-    "body": "A 30-minute study on how students practise DSA and judge their own progress.",
-    "points": "Anonymous · You can stop anytime · You get a personal topic report at the end.",
+    "body": "A 12-minute study on how students judge their own DSA skill.",
+    "points": "Anonymous · 12 short code questions · Your own topic report at the end",
+    "honesty": "Answer on your own: no Google, no AI, and stay on this tab. Guessing is fine.",
     "checkbox": "I am 18+ and agree to take part",
     "button": "Start",
     "alreadyDone": "You've already taken part. Thank you!"
   },
   "profile": {
-    "title": "Your profile",
+    "title": "About you",
     "year": {
       "label": "Year",
       "options": [
@@ -35,7 +36,27 @@
     },
     "solvedCount": "Problems solved there",
     "streak": "Current streak (days)",
-    "ownPct": "% solved fully on your own (no editorial, video or AI)",
+    "ownPct": {
+      "label": "How many did you solve fully on your own (no editorial, video or AI)?",
+      "options": [
+        {
+          "id": "0-25",
+          "label": "Under 25%"
+        },
+        {
+          "id": "25-50",
+          "label": "25–50%"
+        },
+        {
+          "id": "50-75",
+          "label": "50–75%"
+        },
+        {
+          "id": "75-100",
+          "label": "Over 75%"
+        }
+      ]
+    },
     "language": {
       "label": "Language you code in",
       "options": [
@@ -54,108 +75,91 @@
       ]
     }
   },
-  "rateSelf": {
-    "title": "Rate yourself",
-    "sub": "Could you solve a LeetCode Medium on this today, without help?",
-    "low": "Very weak",
-    "high": "Very strong",
-    "topics": [
-      {
-        "id": "arrays",
-        "label": "Arrays & Hashing"
-      },
-      {
-        "id": "window",
-        "label": "Two Pointers & Sliding Window"
-      },
-      {
-        "id": "recursion",
-        "label": "Recursion & Backtracking"
-      },
-      {
-        "id": "dp",
-        "label": "Dynamic Programming"
-      }
-    ]
+  "topics": [
+    {
+      "id": "arrays",
+      "label": "Arrays & Hashing"
+    },
+    {
+      "id": "window",
+      "label": "Two Pointers & Sliding Window"
+    },
+    {
+      "id": "dp",
+      "label": "Dynamic Programming"
+    }
+  ],
+  "before": {
+    "title": "Before you start",
+    "ratingQ": "Could you solve a LeetCode Medium on this today, without help?",
+    "low": "No way",
+    "high": "Easily",
+    "belief": "My solved count shows how good I really am.",
+    "beliefLow": "Disagree",
+    "beliefHigh": "Agree",
+    "scoreGuess": "You'll now answer {n} questions. How many will you get right?"
   },
   "rateAgain": {
-    "title": "Rate yourself again",
+    "title": "Quick check",
     "sub": "Could you solve a LeetCode Medium on this today, without help?"
-  },
-  "statements": {
-    "title": "Quick statements",
-    "low": "Disagree",
-    "high": "Agree",
-    "items": [
-      {
-        "id": "G1",
-        "text": "My solved-count shows how good I really am."
-      },
-      {
-        "id": "G2",
-        "text": "My solved-count makes me feel ready for interviews."
-      },
-      {
-        "id": "G3",
-        "text": "I compare my count or streak with others."
-      }
-    ],
-    "rankGuess": "Among 100 students in your year, where do you rank?",
-    "scoreGuess": "You'll answer 8 questions next. How many will you get right?"
-  },
-  "howItWorks": {
-    "title": "8 questions, then a short break, then 8 more.",
-    "line": "After each question: how sure are you?",
-    "langNote": "Switch the code language anytime with the tabs above the code.",
-    "button": "Begin"
   },
   "question": {
     "counter": "Question {n} of {total}",
     "confidence": "How sure are you?",
-    "confLow": "Guess",
-    "confHigh": "Certain",
+    "confLevels": [
+      "Guess",
+      "50-50",
+      "Fairly sure",
+      "Certain"
+    ],
     "button": "Continue"
   },
   "questionFeedback": {
     "correct": "✔ Correct",
     "wrong": "✘ Not quite",
-    "soFar": "**{score} / {n}** correct so far",
+    "soFar": "**{score}/{n}** right so far",
     "button": "Next"
   },
   "blockEnd": {
-    "scoreGuess": "How many of these 8 did you get right?",
-    "rankGuess": "Your rank on this block among 100 students?"
+    "scoreGuess": "How many of these {n} did you get right?"
   },
-  "endRatings": {
-    "title": "A few quick ratings",
-    "low": "Disagree",
-    "high": "Agree",
-    "items": [
-      {
-        "id": "PC",
-        "text": "I am good at problems like these."
-      },
-      {
-        "id": "CF",
-        "text": "I could solve a new LeetCode Medium on these topics."
-      },
-      {
-        "id": "SC",
-        "text": "I kept thinking about how I compared to others."
-      },
-      {
-        "id": "KN1",
-        "text": "I know which topics I am weak in."
-      },
-      {
-        "id": "KN2",
-        "text": "I know what to practise next."
-      },
-      {
-        "id": "AC",
-        "text": "Select 2 here to show you're reading."
-      }
-    ]
+  "endSurvey": {
+    "title": "Last 3 questions",
+    "judgedBy": {
+      "text": "What did you mostly use to judge how you were doing?",
+      "options": [
+        {
+          "id": "numbers",
+          "label": "My score and Beats %"
+        },
+        {
+          "id": "marks",
+          "label": "The ✔ / ✘ after each question"
+        },
+        {
+          "id": "lines",
+          "label": "The topic lines and tips",
+          "groupBOnly": true
+        },
+        {
+          "id": "feel",
+          "label": "How the questions felt"
+        }
+      ]
+    },
+    "serious": {
+      "text": "Did you answer seriously? Your report is the same either way.",
+      "options": [
+        {
+          "id": "yes",
+          "label": "Yes, use my answers"
+        },
+        {
+          "id": "no",
+          "label": "No, I rushed. Don't use them"
+        }
+      ]
+    }
   },
   "pack": {
     "title": "Pick your free practice pack",
@@ -164,89 +168,16 @@
     "easy": "10 Easy problems (count goes up fast)",
     "medium": "3 Medium problems (harder, count grows slowly)"
   },
-  "close": {
-    "title": "Quick questions",
-    "M1": {
-      "text": "The last feedback said you were strong in?",
-      "dontRemember": "Don't remember"
-    },
-    "M2": {
-      "text": "What did you use most to judge how you were doing?",
-      "options": [
-        {
-          "id": "numbers",
-          "label": "The numbers"
-        },
-        {
-          "id": "beats",
-          "label": "\"Beats %\""
-        },
-        {
-          "id": "feel",
-          "label": "How the questions felt"
-        },
-        {
-          "id": "lines",
-          "label": "The Strong / Work on lines",
-          "groupBOnly": true
-        }
-      ]
-    },
-    "O1": {
-      "text": "Can a solved-count differ from real skill?",
-      "low": "Never",
-      "high": "Very often"
-    },
-    "O2": {
-      "text": "Your own solved-count, compared with your real skill:",
-      "options": [
-        {
-          "id": "over",
-          "label": "Overstates it"
-        },
-        {
-          "id": "match",
-          "label": "Matches it"
-        },
-        {
-          "id": "under",
-          "label": "Understates it"
-        }
-      ]
-    },
-    "O3": {
-      "text": "Would you want platforms to show strengths, weak spots and tips?",
-      "low": "Not at all",
-      "high": "Definitely"
-    }
-  },
   "report": {
     "title": "Your results",
-    "blockLine": "Block {block}: predicted {guess}/8 · got {score}/8 · avg confidence {conf}%",
-    "topicsTitle": "Topics (all 16 questions)",
-    "legend": "✔ = 3–4 correct · △ = 2 · ✘ = 0–1",
-    "packTitle": "Your pack",
+    "blockLine": "Block {block}: guessed **{guess}/{total}**, got **{score}/{total}**, felt **{conf}%** sure",
+    "topicsTitle": "By topic (all {n} questions)",
+    "legend": "✔ = 3–4 right · △ = 2 · ✘ = 0–1",
+    "packTitle": "Your practice pack",
     "aboutTitle": "About this study",
-    "about": "We are testing whether platform numbers alone give students an accurate picture of their skill, and whether adding concept-level feedback helps. You were randomly placed in one of two groups: one saw only numbers, the other also saw strengths and tips. All feedback came from your real answers.",
+    "about": "We are testing whether platform numbers alone give students an accurate picture of their skill, and whether short topic feedback helps. You were randomly placed in one of two groups: one saw only numbers, the other also saw topic tips. All feedback came from your real answers.",
     "withdraw": "Withdraw my data",
     "withdrawn": "Your data will be removed. Thank you."
-  },
-  "preference": {
-    "title": "Which screen would you rather see on LeetCode?",
-    "options": [
-      {
-        "id": "A",
-        "label": "A"
-      },
-      {
-        "id": "B",
-        "label": "B"
-      },
-      {
-        "id": "Either",
-        "label": "Either"
-      }
-    ]
   },
   "thanks": "Thank you! You can close this page.",
   "saving": "Saving…",

@@ -12,7 +12,8 @@ export interface Profile {
   platform: string;
   solvedCount: number;
   streak: number;
-  ownPct: number;
+  /** Band id from ui-text.json → profile.ownPct.options, e.g. "25-50". */
+  ownPct: string;
   language: LangId;
 }
 
@@ -20,12 +21,16 @@ export interface Answer {
   qid: string;
   topic: TopicId;
   type: QType;
-  position: number; // 1-8
+  position: number; // 1..questionsPerBlock
   optionOrder: string[];
   chosen: string;
   correct: boolean;
+  /** One of config.confidence.levels (%). */
   confidence: number;
   timeMs: number;
+  /** Times the participant left the tab/app while this question was open, and for how long. */
+  awayCount: number;
+  awayMs: number;
   langAtAnswer: LangId;
   langSwitches: number;
   /** Blocks with per-question feedback only: the lines shown after the answer, and the time spent on them. */
@@ -47,7 +52,6 @@ export interface BlockData {
   answers: Answer[];
   score: number | null;
   scoreGuess: number | null;
-  rankGuess: number | null;
 }
 
 export interface FeedbackLine {
@@ -63,21 +67,22 @@ export interface FeedbackData {
   blockScore: number;
   beatsPct: number;
   profileLine: string;
-  encouragement: string;
   strong: FeedbackLine | null; // Group B only
   workOn: FeedbackLine | null; // Group B only
   tip: string | null; // Group B only
   topicRow: TopicRecord<string> | null; // Group B only: the symbol shown per topic
+  topicCorrect: TopicRecord<number> | null; // Group B only: correct answers per topic in the block
   /** Every line exactly as displayed, top to bottom. */
   linesShown: string[];
 }
 
-export interface CloseAnswers {
-  M1: string | null; // Group A: null
-  M2: string;
-  O1: number;
-  O2: string;
-  O3: number;
+export interface EndSurvey {
+  /** Same statement as beliefStart ("My solved count shows how good I really am"), 1-7. */
+  beliefEnd: number;
+  /** What they mostly used to judge how they were doing (ui-text.json → endSurvey.judgedBy). */
+  judgedBy: string;
+  /** Seriousness check: false = "I rushed, don't use my answers". */
+  serious: boolean;
 }
 
 export interface Derived {
@@ -85,24 +90,40 @@ export interface Derived {
   score2: number | null;
   meanConf1: number | null;
   meanConf2: number | null;
+  /** Calibration bias: mean confidence − % correct. Positive = overconfident. */
   confGap1: number | null;
   confGap2: number | null;
   absGap1: number | null;
   absGap2: number | null;
-  scoreGap1: number | null;
+  /** Brier score: mean of (confidence − correct)², 0 = perfect, lower is better. */
+  brier1: number | null;
+  brier2: number | null;
+  scoreGap1: number | null; // scoreGuess − score
   scoreGap2: number | null;
-  resolution1: number | null;
+  scoreGapStart: number | null; // scoreGuessStart − score1 (prediction before seeing any question)
+  resolution1: number | null; // mean conf (correct) − mean conf (wrong)
   resolution2: number | null;
   topicAcc1: TopicRecord<number | null> | null;
   topicAcc2: TopicRecord<number | null> | null;
   topicConf1: TopicRecord<number | null> | null;
   topicConf2: TopicRecord<number | null> | null;
+  /** Spearman correlation across topics: self-rating vs accuracy (null if either has no spread). */
+  ratingAlign1: number | null; // ratingStart vs Block 1
+  ratingAlign2: number | null; // ratingMid (after feedback) vs Block 2
+  /** Spearman correlation across topics: per-question confidence vs accuracy. */
+  confAlign1: number | null;
+  confAlign2: number | null;
   gapLabel1: GapLabel | null;
-  fastAnswers: number;
+  beliefChange: number | null; // beliefEnd − beliefStart
+  /** The chosen practice topic is (one of) the participant's lowest-accuracy topics. */
+  packIsWeakest: boolean | null;
+  fastAnswers: number; // answers with timeMs < config.fastAnswerMs
+  awayAnswers: number; // answers where the participant left the tab
+  awayMs: number;
+  /** Reasons to consider excluding this participant: notSerious, fast, away. */
+  qualityFlags: string[];
   languagesUsed: LangId[];
 }
-
-export type Preference = 'A' | 'B' | 'Either';
 
 export interface Participant {
   uid: string;
@@ -130,23 +151,16 @@ export interface Participant {
   profile: Profile | null;
   ratingStart: TopicRecord<number> | null;
   ratingMid: TopicRecord<number> | null;
-  ratingEnd: TopicRecord<number> | null;
-  statements: Record<string, number> | null;
-  rankGuessStart: number | null;
+  beliefStart: number | null;
   scoreGuessStart: number | null;
 
   block1: BlockData | null;
   block2: BlockData | null;
   feedback1: FeedbackData | null;
-  feedback2: FeedbackData | null;
 
-  endItems: Record<string, number> | null;
-  endItemsOrder: string[] | null;
-  attentionPassed: boolean | null;
+  endSurvey: EndSurvey | null;
   packTopic: TopicId | null;
   packType: PackType | null;
-  close: CloseAnswers | null;
-  preference: Preference | null;
   derived: Derived | null;
 
   // Set by the store with server timestamps.

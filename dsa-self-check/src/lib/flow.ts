@@ -1,16 +1,10 @@
 // Flow helpers shared by the app and the debug step-jump menu.
 
-import { TOPIC_IDS, type Content } from '../content/types';
+import type { Content } from '../content/types';
 import { setsForOrder } from './assignment';
 import { computeDerived } from './derived';
 import type { Answer, BlockData, Participant, ParticipantPatch, TopicRecord } from './model';
-import { shuffle, type Rng } from './util';
-
-/** Fixed scales from the study design (build prompt §5) that have no entry in config.json. */
-export const SCALES = {
-  ownPct: { min: 0, max: 100, step: 10, default: 50 },
-  rank: { min: 1, max: 100, step: 1, default: 50 },
-};
+import { pick, shuffle, type Rng } from './util';
 
 /** Draws the question order and every question's option order for a block. */
 export function makeBlock(n: 1 | 2, p: Pick<Participant, 'blockOrder'>, c: Content, rng: Rng = Math.random): BlockData {
@@ -25,7 +19,6 @@ export function makeBlock(n: 1 | 2, p: Pick<Participant, 'blockOrder'>, c: Conte
     answers: [],
     score: null,
     scoreGuess: null,
-    rankGuess: null,
   };
 }
 
@@ -40,8 +33,8 @@ export function blockScore(b: BlockData | null): number {
 const randInt = (min: number, max: number, rng: Rng) => min + Math.floor(rng() * (max - min + 1));
 
 function randomRatings(c: Content, rng: Rng): TopicRecord<number> {
-  const out = {} as TopicRecord<number>;
-  for (const t of TOPIC_IDS) out[t] = randInt(c.config.rating.min, c.config.rating.max, rng);
+  const out: TopicRecord<number> = {};
+  for (const t of c.topics) out[t] = randInt(c.config.rating.min, c.config.rating.max, rng);
   return out;
 }
 
@@ -51,7 +44,6 @@ export function debugAnswers(block: BlockData, p: Participant, c: Content, rng: 
     const { qid, optionOrder } = block.plan[i];
     const q = c.byId[qid];
     const chosen = rng() < 0.6 ? q.correct : optionOrder[randInt(0, optionOrder.length - 1, rng)];
-    const { min, max, step } = c.config.confidence;
     answers.push({
       qid,
       topic: q.topic,
@@ -60,8 +52,10 @@ export function debugAnswers(block: BlockData, p: Participant, c: Content, rng: 
       optionOrder,
       chosen,
       correct: chosen === q.correct,
-      confidence: min + step * randInt(0, Math.floor((max - min) / step), rng),
+      confidence: pick(c.config.confidence.levels, rng),
       timeMs: randInt(3000, 60000, rng),
+      awayCount: 0,
+      awayMs: 0,
       langAtAnswer: p.lang,
       langSwitches: 0,
     });
@@ -81,14 +75,13 @@ export function debugFill(target: number, p: Participant, c: Content, stepIndexO
       platform: c.ui.profile.platform.options[0],
       solvedCount: randInt(0, 400, rng),
       streak: randInt(0, 30, rng),
-      ownPct: 10 * randInt(0, 10, rng),
+      ownPct: pick(c.ui.profile.ownPct.options, rng).id,
       language: p.lang,
     };
   }
-  if (past('rateSelf') && !p.ratingStart) patch.ratingStart = randomRatings(c, rng);
-  if (past('statements') && !p.statements) {
-    patch.statements = Object.fromEntries(c.ui.statements.items.map((it) => [it.id, randInt(c.config.rating.min, c.config.rating.max, rng)]));
-    patch.rankGuessStart = randInt(1, 100, rng);
+  if (past('before') && !p.ratingStart) {
+    patch.ratingStart = randomRatings(c, rng);
+    patch.beliefStart = randInt(c.config.rating.min, c.config.rating.max, rng);
     patch.scoreGuessStart = randInt(0, c.config.questionsPerBlock, rng);
   }
   for (const n of [1, 2] as const) {
@@ -102,31 +95,20 @@ export function debugFill(target: number, p: Participant, c: Content, stepIndexO
       const answers = debugAnswers(b, cur(), c, rng);
       b = { ...b, answers, endedAt: new Date(), score: answers.filter((a) => a.correct).length };
     }
-    if (past(`${key}End`) && b.scoreGuess === null) {
-      b = { ...b, scoreGuess: randInt(0, c.config.questionsPerBlock, rng), rankGuess: randInt(1, 100, rng) };
-    }
+    if (past(`${key}End`) && b.scoreGuess === null) b = { ...b, scoreGuess: randInt(0, c.config.questionsPerBlock, rng) };
     patch[key] = b;
   }
   if (past('rateMid') && !p.ratingMid) patch.ratingMid = randomRatings(c, rng);
-  if (past('rateEnd') && !p.ratingEnd) patch.ratingEnd = randomRatings(c, rng);
-  if (past('endRatings') && !p.endItems) {
-    const order = shuffle(c.ui.endRatings.items.map((it) => it.id), rng);
-    patch.endItems = Object.fromEntries(order.map((id) => [id, randInt(c.config.rating.min, c.config.rating.max, rng)]));
-    patch.endItemsOrder = order;
-    patch.attentionPassed = patch.endItems[c.config.attentionCheck.itemId] === c.config.attentionCheck.passValue;
+  if (past('endSurvey') && !p.endSurvey) {
+    patch.endSurvey = {
+      beliefEnd: randInt(c.config.rating.min, c.config.rating.max, rng),
+      judgedBy: c.ui.endSurvey.judgedBy.options[0].id,
+      serious: true,
+    };
   }
   if (past('pack') && !p.packTopic) {
-    patch.packTopic = TOPIC_IDS[randInt(0, 3, rng)];
+    patch.packTopic = pick(c.topics, rng);
     patch.packType = rng() < 0.5 ? 'easy' : 'medium';
-  }
-  if (past('close') && !p.close) {
-    patch.close = {
-      M1: p.group === 'B' ? TOPIC_IDS[0] : null,
-      M2: c.ui.close.M2.options[0].id,
-      O1: 4,
-      O2: c.ui.close.O2.options[0].id,
-      O3: 4,
-    };
   }
   const merged = cur();
   if (merged.block1?.answers.length) patch.derived = computeDerived(merged, c);

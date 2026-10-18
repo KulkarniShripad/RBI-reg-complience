@@ -74,9 +74,8 @@ function flatten(obj, prefix = '', out = {}) {
 const ORDER = [
   'uid', 'status', 'withdrawn', 'pilot', 'debug', 'createdAt', 'updatedAt', 'completedAt', 'withdrawnAt',
   'appVersion', 'contentVersion', 'device', 'currentStep', 'currentStepName', 'blockOrder', 'group', 'stratum',
-  'profile', 'ratingStart', 'ratingMid', 'ratingEnd', 'statements', 'rankGuessStart', 'scoreGuessStart',
-  'block1', 'block2', 'feedback1', 'feedback2', 'endItems', 'endItemsOrder', 'attentionPassed', 'packTopic',
-  'packType', 'close', 'preference', 'derived', 'lang', 'rev',
+  'profile', 'ratingStart', 'ratingMid', 'beliefStart', 'scoreGuessStart', 'block1', 'block2', 'feedback1',
+  'endSurvey', 'packTopic', 'packType', 'derived', 'lang', 'reviewing', 'rev',
 ];
 const rank = (col) => {
   const i = ORDER.indexOf(col.split('.')[0]);
@@ -105,8 +104,9 @@ const cols = [...seen]
   .sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
 writeCsv('participants.csv', cols, flat);
 
+// awayCount / awayMs: times the participant left the tab during the question.
 // feedbackMs / feedbackShown are filled only in blocks with per-question feedback (config.questionFeedbackBlocks).
-const answerCols = ['uid', 'group', 'blockOrder', 'block', 'setId', 'position', 'qid', 'topic', 'type', 'chosen', 'correct', 'confidence', 'timeMs', 'langAtAnswer', 'langSwitches', 'feedbackMs', 'feedbackShown'];
+const answerCols = ['uid', 'group', 'blockOrder', 'block', 'setId', 'position', 'qid', 'topic', 'type', 'chosen', 'correct', 'confidence', 'timeMs', 'langAtAnswer', 'langSwitches', 'awayCount', 'awayMs', 'feedbackMs', 'feedbackShown'];
 const answers = [];
 for (const p of kept) {
   for (const block of [1, 2]) {
@@ -120,7 +120,7 @@ writeCsv('answers.csv', answerCols, answers);
 const feedbackCols = ['uid', 'group', 'block', 'blockScore', 'beatsPct', 'strongTopic', 'strongType', 'workOnTopic', 'workOnType', 'tip', 'timeOnScreenMs'];
 const feedback = [];
 for (const p of kept) {
-  for (const block of [1, 2]) {
+  for (const block of [1]) {
     const f = p[`feedback${block}`];
     if (!f) continue;
     feedback.push({

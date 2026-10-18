@@ -21,10 +21,13 @@ function problems(mutate: (r: Record<string, any>) => void): string[] {
   }
 }
 
+const qIndex = (id: string) => (questions.questions as { id: string }[]).findIndex((q) => q.id === id);
+
 describe('content files', () => {
   it('the shipped content is valid', () => {
     const c = validateContent(raw() as never);
-    expect(Object.keys(c.byId)).toHaveLength(16);
+    expect(Object.keys(c.byId)).toHaveLength(12);
+    expect(c.topics).toEqual(['arrays', 'window', 'dp']);
   });
 
   it('every code snippet and per-language option has python, cpp and java', () => {
@@ -35,10 +38,18 @@ describe('content files', () => {
     }
   });
 
-  it('every blank question shows the blank marker in every language', () => {
+  it('every fill-the-blank question shows the blank exactly once in every language', () => {
     const c = validateContent(raw() as never);
     for (const q of c.questions.questions.filter((q) => q.type === 'complete')) {
-      for (const l of LANG_IDS) expect(q.code![l]).toContain(c.questions.blank);
+      for (const l of LANG_IDS) expect(q.code![l].split(c.questions.blank)).toHaveLength(2);
+    }
+  });
+
+  it('keeps questions short (at most 11 code lines, stems under 140 characters)', () => {
+    const c = validateContent(raw() as never);
+    for (const q of c.questions.questions) {
+      expect(q.stem.length).toBeLessThan(140);
+      if (q.code) for (const l of LANG_IDS) expect(q.code[l].split('\n').length).toBeLessThanOrEqual(11);
     }
   });
 
@@ -55,30 +66,38 @@ describe('content files', () => {
   });
 
   it('fails when a per-language option text misses a language', () => {
-    expect(problems((r) => delete r.questions.questions[2].options[0].text.cpp).join('\n')).toMatch(/option "a"/);
+    expect(problems((r) => delete r.questions.questions[qIndex('S2-01')].options[0].text.cpp).join('\n')).toMatch(/option "a"/);
   });
 
   it('fails when a ui string is missing', () => {
     expect(problems((r) => delete r.ui.question.counter).join('\n')).toMatch(/question\.counter/);
   });
 
-  it('fails when a feedback template is missing', () => {
-    expect(problems((r) => delete r.feedback.templates.dp.debug).join('\n')).toMatch(/templates\.dp\.debug/);
+  it('fails when a question has no feedback template for its topic and type', () => {
+    expect(problems((r) => delete r.feedback.templates.dp.trace).join('\n')).toMatch(/templates\.dp\.trace/);
   });
 
   it('fails when a config number is not a number', () => {
     expect(problems((r) => (r.config.feedbackMinSeconds = '8')).join('\n')).toMatch(/feedbackMinSeconds/);
   });
 
+  it('fails when a question uses a topic that is not in ui-text topics', () => {
+    expect(problems((r) => (r.questions.questions[0].topic = 'graphs')).join('\n')).toMatch(/topic/);
+  });
+
+  it('fails when the two sets are not matched on topic and type', () => {
+    expect(problems((r) => (r.questions.questions[qIndex('S2-05')].type = 'complete')).join('\n')).toMatch(/matched sets/);
+  });
+
   it('fails when a **bold** marker is not closed', () => {
-    expect(problems((r) => (r.feedback.lines.tip = '→ Tip: **{tip}')).join('\n')).toMatch(/unclosed \*\*/);
+    expect(problems((r) => (r.feedback.lines.tip = '**{tip}')).join('\n')).toMatch(/unclosed \*\*/);
   });
 
   it('fails when questionFeedbackBlocks is not a list of block numbers', () => {
     expect(problems((r) => (r.config.questionFeedbackBlocks = [3])).join('\n')).toMatch(/questionFeedbackBlocks/);
   });
 
-  it('fails when a set is unbalanced across topics', () => {
-    expect(problems((r) => (r.questions.questions[0].topic = 'dp')).join('\n')).toMatch(/should have 2/);
+  it('fails when the confidence labels do not match the levels', () => {
+    expect(problems((r) => r.ui.question.confLevels.pop()).join('\n')).toMatch(/confLevels/);
   });
 });

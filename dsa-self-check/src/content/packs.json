@@ -84,48 +84,6 @@
         "url": "https://leetcode.com/problems/is-subsequence/"
       }
     ],
-    "recursion": [
-      {
-        "slug": "maximum-depth-of-binary-tree",
-        "url": "https://leetcode.com/problems/maximum-depth-of-binary-tree/"
-      },
-      {
-        "slug": "invert-binary-tree",
-        "url": "https://leetcode.com/problems/invert-binary-tree/"
-      },
-      {
-        "slug": "same-tree",
-        "url": "https://leetcode.com/problems/same-tree/"
-      },
-      {
-        "slug": "symmetric-tree",
-        "url": "https://leetcode.com/problems/symmetric-tree/"
-      },
-      {
-        "slug": "path-sum",
-        "url": "https://leetcode.com/problems/path-sum/"
-      },
-      {
-        "slug": "diameter-of-binary-tree",
-        "url": "https://leetcode.com/problems/diameter-of-binary-tree/"
-      },
-      {
-        "slug": "balanced-binary-tree",
-        "url": "https://leetcode.com/problems/balanced-binary-tree/"
-      },
-      {
-        "slug": "subtree-of-another-tree",
-        "url": "https://leetcode.com/problems/subtree-of-another-tree/"
-      },
-      {
-        "slug": "merge-two-sorted-lists",
-        "url": "https://leetcode.com/problems/merge-two-sorted-lists/"
-      },
-      {
-        "slug": "reverse-linked-list",
-        "url": "https://leetcode.com/problems/reverse-linked-list/"
-      }
-    ],
     "dp": [
       {
         "slug": "climbing-stairs",
@@ -196,20 +154,6 @@
       {
         "slug": "max-consecutive-ones-iii",
         "url": "https://leetcode.com/problems/max-consecutive-ones-iii/"
-      }
-    ],
-    "recursion": [
-      {
-        "slug": "construct-binary-tree-from-preorder-and-inorder-traversal",
-        "url": "https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/"
-      },
-      {
-        "slug": "kth-smallest-element-in-a-bst",
-        "url": "https://leetcode.com/problems/kth-smallest-element-in-a-bst/"
-      },
-      {
-        "slug": "palindrome-partitioning",
-        "url": "https://leetcode.com/problems/palindrome-partitioning/"
       }
     ],
     "dp": [

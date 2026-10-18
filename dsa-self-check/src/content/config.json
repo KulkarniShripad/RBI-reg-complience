@@ -1,33 +1,34 @@
 {
-  "appVersion": "1.0.0",
+  "appVersion": "2.0.0",
   "studyName": "DSA Self-Check",
-  "questionsPerBlock": 8,
+  "questionsPerBlock": 6,
   "confidence": {
-    "min": 0,
-    "max": 100,
-    "step": 5,
-    "default": 50
+    "levels": [
+      25,
+      50,
+      75,
+      100
+    ]
   },
   "rating": {
     "min": 1,
     "max": 7
   },
-  "feedbackMinSeconds": 8,
+  "feedbackMinSeconds": 6,
   "questionFeedbackBlocks": [
     2
   ],
-  "showHowItWorks": false,
   "gapLabel": {
     "overAbove": 15,
     "underBelow": -15
   },
   "stratification": {
-    "scoreBandLowMax": 4
+    "scoreBandLowMax": 3
   },
-  "fastAnswerMs": 5000,
-  "attentionCheck": {
-    "itemId": "AC",
-    "passValue": 2
+  "fastAnswerMs": 4000,
+  "quality": {
+    "maxFastAnswers": 4,
+    "maxAwayAnswers": 3
   },
   "beatsPctFallback": 50,
   "report": {

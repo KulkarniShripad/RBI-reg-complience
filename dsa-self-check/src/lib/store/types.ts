@@ -1,7 +1,7 @@
 import type { SetId } from '../../content/types';
 import type { BlockOrder, FeedbackData, Group, Participant, ParticipantPatch } from '../model';
 
-export type FeedbackKey = 'feedback1' | 'feedback2';
+export type FeedbackKey = 'feedback1';
 
 /**
  * Persistence for one participant plus the shared counters and stats.

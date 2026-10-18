@@ -1,11 +1,13 @@
 # DSA Self-Check
 
-A mobile-first web app for a psychology study on whether concept-level feedback ("Strong · Work on · Tip")
-helps engineering students judge their own DSA skill more accurately than numbers alone.
+A mobile-first web app for a psychology study: do engineering students judge their own DSA skill accurately
+from platform numbers (solved count, streak, "Beats %"), and does short concept-level feedback ("Strong ·
+Next · Tip") make their self-assessment more accurate than numbers alone?
 
-- **Frontend:** React 19 + TypeScript + Vite, Tailwind CSS 3, highlight.js (Python, C++ and Java only)
-- **Data:** Firebase Firestore (free Spark plan) + Anonymous Auth, called straight from the browser; no backend
-- **Hosting:** any static host; Vercel is described below
+- **About 12 minutes**, 12 short code questions, one tap per answer and per confidence rating.
+- **Frontend:** React 19 + TypeScript + Vite, Tailwind CSS 3, highlight.js (Python, C++ and Java only).
+- **Data:** Firebase Firestore (free Spark plan) + Anonymous Auth, called straight from the browser; no backend.
+- **Hosting:** any static host; Vercel is described below.
 
 Every question, label, feedback template, practice pack and number comes from the five files in
 [`src/content/`](src/content). Edit a JSON file, redeploy, and the app changes. No component holds study text.
@@ -20,8 +22,8 @@ Every question, label, feedback template, practice pack and number comes from th
 4. [Before data collection: seed the stats](#4-before-data-collection-seed-the-stats)
 5. [Testing: pilot and debug links](#5-testing-pilot-and-debug-links)
 6. [Editing the content safely](#6-editing-the-content-safely)
-7. [Exporting the data](#7-exporting-the-data)
-8. [How the app works](#8-how-the-app-works)
+7. [Exporting and analysing the data](#7-exporting-and-analysing-the-data)
+8. [Study design](#8-study-design)
 9. [Data model](#9-data-model)
 10. [Project layout](#10-project-layout)
 
@@ -29,7 +31,7 @@ Every question, label, feedback template, practice pack and number comes from th
 
 ## 1. Run it locally
 
-Requires Node 20+.
+Requires Node 20.19+ or 22.12+.
 
 ```bash
 cd dsa-self-check
@@ -44,10 +46,12 @@ Firebase project locally, copy `.env.example` to `.env` and fill it in (section 
 | Command | What it does |
 | --- | --- |
 | `npm run dev` | dev server |
-| `npm test` | content validation + unit tests for assignment, feedback and derived measures |
+| `npm test` | content validation + unit tests (assignment, feedback, derived measures) |
+| `npm run verify-questions` | compiles and runs every code question in Python, C++ and Java and checks the answer keys (needs `python3`, `g++`, `javac`) |
 | `npm run build` | type-check and build to `dist/` |
 | `npm run preview` | serve the built `dist/` |
 | `npm run export` | export CSVs (section 7) |
+| `npm run analyze` | results summary (section 7) |
 | `npm run seed-stats -- --zeros` | create the Beats-% histograms (section 4) |
 
 A production build **without** the Firebase env vars shows a "Firebase is not configured" screen instead of
@@ -66,54 +70,41 @@ npx firebase-tools emulators:start --only auth,firestore --project demo-dsa
 npm run dev
 ```
 
-The emulators need Java 11+. Export and seed scripts also work against them: set
+The emulators need Java 11+. The export, analysis and seed scripts also work against them: set
 `FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 GCLOUD_PROJECT=demo-dsa` instead of `GOOGLE_APPLICATION_CREDENTIALS`.
 
 ---
 
 ## 2. Firebase setup
 
-1. **Create the project.** Go to <https://console.firebase.google.com> → *Add project*. Google Analytics is not needed.
-   The free **Spark** plan is enough: one participant costs about 40 writes and 10 reads, far below the daily
-   free quota.
-2. **Create the database.** Open *Build → Firestore Database → Create database*. Choose *production mode* and a
-   location near your participants (e.g. `asia-south1` for India). The location cannot be changed later.
-3. **Enable Anonymous Authentication.** Open *Build → Authentication → Get started → Sign-in method*, enable
+1. **Create the project.** Go to <https://console.firebase.google.com> → *Create a project*. Google Analytics is
+   not needed. The free **Spark** plan is enough: one participant costs about 30 writes and 10 reads, far below
+   the daily free quota (20,000 writes).
+2. **Create the database.** Open *Firestore Database → Create database*. Choose the **Standard** edition, keep the
+   database ID **`(default)`**, pick a location near your participants (e.g. `asia-south1` for India; it cannot be
+   changed later) and start in **production mode**.
+3. **Enable Anonymous Authentication.** Open *Authentication → Get started → Sign-in method*, enable
    **Anonymous** and save. Without this, pressing Start keeps showing "Saving…" and the browser console shows
    `auth/admin-restricted-operation`.
-4. **Register a web app.** Open *Project settings (gear) → General → Your apps → Web (`</>`)*. Give it any name;
-   Firebase Hosting is not needed. Copy `apiKey`, `authDomain`, `projectId` and `appId` from the config shown.
-   These values are not secrets: they identify the project, and access is controlled by the security rules.
-5. **Deploy the security rules** from [`firestore.rules`](firestore.rules), using either option:
-   - **Console:** *Firestore Database → Rules*, paste the file's contents, then *Publish*.
-   - **CLI:**
-     ```bash
-     npx firebase-tools login
-     npx firebase-tools deploy --only firestore:rules --project <your-project-id>
-     ```
-   The rules let each anonymous user create, read and update only their own `participants/{uid}` document, and
-   never delete it. Signed-in users can read and write `counters/*` and `stats/*`, which the assignment
-   transactions need.
-6. **Authorise your domain.** Open *Authentication → Settings → Authorized domains* and add your Vercel domain
-   (e.g. `dsa-self-check.vercel.app`) and any custom domain. `localhost` is already listed.
+4. **Register a web app.** Open *Project settings (gear) → General → Your apps → Web (`</>`)*. Copy `apiKey`,
+   `authDomain`, `projectId` and `appId`. These identify the project; they are not secrets.
+5. **Deploy the security rules** from [`firestore.rules`](firestore.rules): paste them in *Firestore Database →
+   Rules* and *Publish*, or run `npx firebase-tools deploy --only firestore:rules --project <your-project-id>`.
+   Each anonymous user can create, read and update only their own `participants/{uid}` document, never delete
+   it; signed-in users can read and write `counters/*` and `stats/*`, which the assignment transactions need.
+6. **Put the 4 values in `.env`** (copy `.env.example`), then `npm run dev`. The amber "Local test mode" strip
+   must disappear. Press Start with `?pilot=1` and check *Firestore Database → Data*: `participants` appears on
+   Start, `counters/pilot_blockOrder` when Question 1 opens, `stats/pilot_S1` or `pilot_S2` after the feedback.
 
 ---
 
 ## 3. Deploy to Vercel
 
-1. Push this repository to GitHub, then on <https://vercel.com> choose *Add New → Project* and import it.
-2. Set **Root Directory** to `dsa-self-check`. Vercel detects Vite: the build command is `npm run build` and the
-   output directory is `dist`.
-3. Under *Environment Variables*, add the four values from Firebase step 4, for *Production* and *Preview*:
-
-   | Name | Example |
-   | --- | --- |
-   | `VITE_FIREBASE_API_KEY` | `AIzaSy…` |
-   | `VITE_FIREBASE_AUTH_DOMAIN` | `your-project.firebaseapp.com` |
-   | `VITE_FIREBASE_PROJECT_ID` | `your-project` |
-   | `VITE_FIREBASE_APP_ID` | `1:1234567890:web:abc123…` |
-
-4. Deploy. Vite bakes env vars in at build time, so **redeploy after changing any of them**.
+1. Make sure the code is on the branch Vercel builds (normally `main`).
+2. On <https://vercel.com>: *Add New → Project*, import the repo, set **Root Directory** to `dsa-self-check`.
+   Vercel detects Vite (`npm run build`, output `dist`).
+3. Add the four `VITE_FIREBASE_*` values under *Environment Variables* (Production and Preview) and deploy.
+4. Vite bakes env vars in at build time, so **redeploy after changing any of them**.
 
 The app is a single page with no URL routes, so it needs no rewrites. Participants open the root URL.
 
@@ -121,27 +112,24 @@ The app is a single page with no URL routes, so it needs no rewrites. Participan
 
 ## 4. Before data collection: seed the stats
 
-"Beats %" is computed from `stats/S1` and `stats/S2` (pilot sessions use `stats/pilot_S1` and `stats/pilot_S2`).
-Each is `{ counts: [c0, …, c8] }`, where `cK` is how many earlier participants scored K/8 on that set. A
-participant sees `round(100 × (participants who scored lower) / (all participants))`, or
-`config.beatsPctFallback` (50) while the histogram is empty. Their own score is then added. The app creates
-missing documents on its own, so seeding is optional but recommended.
+"Beats %" on the feedback screen is computed from `stats/S1` and `stats/S2` (pilot sessions use
+`stats/pilot_S1`/`pilot_S2`): `{ counts: [c0, …, c6] }`, where `cK` is how many earlier participants scored K/6 on
+that set in Block 1. A participant sees `round(100 × (participants who scored lower) / (all participants))`, or
+`config.beatsPctFallback` (50) while the histogram is empty. The app creates missing documents on its own.
 
-The scripts use the Firebase Admin SDK with a **service account key**. Create one under *Project settings →
-Service accounts → Generate new private key* and save it in this folder as `service-account.json`. It is
-git-ignored: never commit it or share it.
+The scripts use the Firebase Admin SDK with a **service account key**: *Project settings → Service accounts →
+Generate new private key*, saved as `service-account.json` in this folder (git-ignored; never share it).
 
 ```bash
 export GOOGLE_APPLICATION_CREDENTIALS=./service-account.json
-
 node scripts/seed-stats.mjs --show         # print the four stats documents
 node scripts/seed-stats.mjs --zeros        # create any missing ones with zeros
 node scripts/seed-stats.mjs --from-pilot   # after piloting: fill stats/S1 and S2 from completed pilot scores
 ```
 
-Use `--from-pilot` if you want the first real participants to be compared against the pilot students instead of
-seeing the fallback 50%. Debug sessions are left out. The script refuses to overwrite documents that already hold
-counts unless you add `--force`. **Do not reset the real stats once data collection has started.**
+`--from-pilot` makes the first real participants compare against the pilot students instead of seeing the
+fallback 50%. The script refuses to overwrite documents that already hold counts unless you add `--force`.
+**Do not reset the real stats once data collection has started.**
 
 ---
 
@@ -150,228 +138,228 @@ counts unless you add `--force`. **Do not reset the real stats once data collect
 | Link | Effect |
 | --- | --- |
 | `https://…/` | real participant |
-| `https://…/?pilot=1` | `pilot: true`: uses `counters/pilot_*` and `stats/pilot_*`; left out of the export by default |
-| `https://…/?debug=1` | testers: a *debug* button with a step-jump menu, the session's group/order/stratum, and no minimum timers on the feedback screens. **Debug sessions are always stored as pilot** (and `debug: true`), so testing never touches the real counters, stats or export. |
+| `https://…/?pilot=1` | `pilot: true`: uses `counters/pilot_*` and `stats/pilot_*`; left out of the export and analysis by default |
+| `https://…/?debug=1` | testers: a *debug* button with a step-jump menu and the session's group/order/stratum, and no minimum time on the feedback screen. **Debug sessions are always stored as pilot** (and `debug: true`). |
 
 The debug menu's **Reset session** forgets the anonymous user and the "already done" flag, so the next Start is a
-new participant. A step jump fills in any data the target screen needs with random answers.
+new participant. A step jump fills in any data the target screen needs with random answers. Each browser can take
+part once; to test again use the debug reset or a private window.
 
-Each browser can take part once: after the last screen it stores `dsa_done=1` and shows "You've already taken
-part" from then on. To test again in the same browser, use the debug reset or a private window.
+### What has been tested
 
-### Quality checklist, as tested
-
-- Unit tests (`npm test`): content validation (including deliberately broken files), the pairing rules for block
-  order and group, stratum keys, Beats %, Strong/Work-on selection with ties, the topic rows, all derived
-  measures, and that the blank marker appears in every language.
-- End-to-end in Chromium at 360 × 740 (mobile, touch), against the Firestore emulator with the real rules:
-  - full sessions for both groups, with no horizontal page scroll on any screen;
-  - same-stratum participants alternating A/B and 12/21;
-  - 10 tabs starting Block 1 and then reaching the group step at the same moment, giving exactly 5/5 block orders,
-    5/5 groups and unique uids;
-  - `?pilot=1` using only the pilot counters and stats;
-  - a reload mid-block resuming at the same question with the same group, order and language tab, with no
-    duplicate answers;
-  - a reload on a feedback screen showing the identical lines without counting the score twice in `stats`;
-  - the back button not moving between steps;
-  - Withdraw, and the export producing all three CSVs.
-- Lighthouse (mobile, simulated slow 4G): Performance 99–100, Accessibility 100, Best Practices 100 (first paint ≈ 1.7 s, no blocking time, no layout shift).
+- `npm run verify-questions`: all 12 answer keys in all 3 languages (60 compile-and-run checks; for every
+  fill-the-blank question each wrong option fails at least one test case, so no question has two right answers).
+- `npm test`: content validation (including deliberately broken files) and 40 unit tests covering the pairing
+  rules, stratum keys, Beats %, Strong/Next selection, topic rows, per-question feedback, Brier score, Spearman
+  alignment, quality flags and the other derived measures.
+- End-to-end in Chromium at 360 × 740 (mobile, touch) against the Firestore emulator with the real rules: full
+  sessions for both groups with no horizontal page scroll; tab-switch recording; reloads mid-block, during a
+  per-question review and on the report; 10 tabs starting Block 1 and reaching the group step at the same moment
+  (5/5 block orders, 5/5 groups); `?pilot=1` isolation; the back button; Withdraw; export and analysis.
+- Lighthouse (mobile, simulated slow 4G): Performance 99, Accessibility 100, Best Practices 100.
 
 ---
 
 ## 6. Editing the content safely
 
-All study content lives in `src/content/`:
-
 | File | Holds |
 | --- | --- |
-| `questions.json` | the 16 questions (sets `S1`, `S2`), code in Python/C++/Java, options, answer keys, `version` |
-| `ui-text.json` | every on-screen string, grouped by screen; `{placeholders}` are filled at runtime |
-| `feedback.json` | topic names, ✔/△/✘ symbols, encouragements, line templates, Group-B `templates[topic][type]` |
+| `questions.json` | the 12 questions (sets `S1`, `S2`, 6 each), code in Python/C++/Java, options, answer keys, `version` |
+| `ui-text.json` | every on-screen string, grouped by screen, plus the list of `topics`; `{placeholders}` are filled at runtime |
+| `feedback.json` | topic names, ✔/△/✘ symbols, the feedback line templates, and a `skill` + `tip` per topic × question type |
 | `packs.json` | practice packs: `easy[topic]` (10) and `medium[topic]` (3) as `{ slug, url }`; titles come from the slug |
-| `config.json` | every number: block size, slider, timers, thresholds, pilot prefix, default language, `appVersion`, and two switches (below) |
+| `config.json` | every number and switch (below) and `appVersion` |
 
-**Workflow:** edit → `npm test` → commit → Vercel redeploys. The same validation runs when the app starts, and
-a malformed file shows a "Content error" page listing every problem instead of starting a session. It checks,
-among other things, that:
+**Workflow:** edit → `npm test` → (if you changed code in a question: update its test cases in
+`scripts/verify-questions.py` and run `npm run verify-questions`) → commit → redeploy. The same validation runs
+when the app starts; a malformed file shows a "Content error" page listing every problem. It checks, among other
+things, that every set has `questionsPerBlock` questions with the same number per topic, that **S1 and S2 have the
+same topic × type mix** (matched blocks), that every `correct` matches an option id, that every code object and
+per-language option has `python`, `cpp` and `java`, that every question's topic and type has a feedback template,
+and that every `**bold**` marker is closed.
 
-- every id in `sets` exists, sits in the right set, and each set has `questionsPerBlock` questions with 2 per
-  topic and 2 per type;
-- every `correct` matches an option id, and option ids are unique;
-- every `code` object and every per-language option `text` has `python`, `cpp` and `java`;
-- every ui-text key the app uses exists, every `templates[topic][type]` has a `skill` and a `tip`, and every
-  pack entry has a `slug` and an `http(s)` URL.
+**Topics are data, not code.** `ui-text.json → topics` lists them (ids + labels); `feedback.json → topics` and
+`templates` and `packs.json` must have an entry for each. To add or swap a topic, add it in all four places and
+add matching questions to both sets.
 
-**Rules once real data collection has started:**
+**Bold:** wrap words in `**…**` in `ui-text.json` or `feedback.json` to show them in bold. The markers are
+removed from stored and exported text.
 
-- **Never change a question `id`** or move it between sets. Answers are stored by id. To replace a question, add
-  a new id and update `sets`.
-- **Bump `questions.json → version`** whenever question content changes, and **`config.json → appVersion`** for
-  any other change. Every participant stores both (`contentVersion`, `appVersion`), so you can tell versions apart
-  in the export.
-- Keep option ids stable. Correctness is decided by option id, never by text, and options are shuffled per
-  participant (the order is stored as `optionOrder`).
-- Text in `ui-text.json` and `feedback.json` can be reworded freely, but keep the `{placeholders}`.
-- **Bold:** wrap words in `**…**` in `ui-text.json` or `feedback.json` to show them in bold, e.g.
-  `"workOn": "✘ Work on: **{topic}**, **{skill}**"`. The markers are removed from the stored and exported text,
-  and validation rejects an unclosed `**`.
-
-**Switches in `config.json`:**
+**Switches and numbers in `config.json`:**
 
 | Key | Default | Effect |
 | --- | --- | --- |
-| `questionFeedbackBlocks` | `[2]` | Blocks that show feedback after every question (right/wrong, score so far; Group B also the question's Strong or Work on + Tip line). `[]` turns it off, `[1, 2]` uses it in both blocks (in Block 1 the group is not assigned yet, so everyone gets right/wrong only). |
-| `showHowItWorks` | `false` | `true` brings back the "8 questions, then a short break, then 8 more" screen before Block 1. When `false`, the statements screen goes straight to the first question. |
-- Do not reorder the steps in `src/lib/steps.ts`. `currentStep` is stored as an index into that list.
+| `questionsPerBlock` | `6` | questions per block (must be a multiple of the number of topics) |
+| `confidence.levels` | `[25, 50, 75, 100]` | the confidence buttons; labels in `ui-text.json → question.confLevels` |
+| `questionFeedbackBlocks` | `[2]` | blocks with right/wrong feedback after every question (`[]` = off) |
+| `feedbackMinSeconds` | `6` | minimum time on the Block 1 feedback screen |
+| `fastAnswerMs` | `4000` | answers faster than this count as "fast" |
+| `quality.maxFastAnswers` / `maxAwayAnswers` | `4` / `3` | more fast answers / tab-switched questions than this flags the participant |
+| `stratification.scoreBandLowMax` | `3` | Block 1 score ≤ this is the "low" stratum |
+| `gapLabel.overAbove` | `15` | Block 1 gap above this is "over" (stratification) |
+
+**Rules once real data collection has started:** never change a question `id` or move it between sets (add a new
+id instead); keep option ids stable (correctness is decided by option id); bump `questions.json → version` when
+question content changes and `config.json → appVersion` for anything else (both are stored per participant);
+don't reorder `src/lib/steps.ts` (`currentStep` is an index into it).
 
 ---
 
-## 7. Exporting the data
+## 7. Exporting and analysing the data
 
 ```bash
 export GOOGLE_APPLICATION_CREDENTIALS=./service-account.json   # see section 4
-node scripts/export.mjs                     # real participants, withdrawn excluded
+
+node scripts/export.mjs                     # real participants, withdrawn excluded → ./export/*.csv
 node scripts/export.mjs --include-withdrawn # keep withdrawn participants
 node scripts/export.mjs --pilot             # pilot (and debug) sessions only
-node scripts/export.mjs --out ./my-folder   # different output folder (default ./export, git-ignored)
+
+node scripts/analyze.mjs                    # results summary → ./export/summary.md
+node scripts/analyze.mjs --include-flagged  # keep participants with data-quality flags
+node scripts/analyze.mjs --pilot            # summary of the pilot
 ```
 
-This needs Node 18+. It writes three UTF-8 CSVs, with a BOM so Excel shows ✔/△/✘ correctly:
+**Export** (UTF-8 CSV with a BOM so Excel shows ✔/△/✘):
 
 | File | Rows | Columns |
 | --- | --- | --- |
-| `participants.csv` | one per participant | every field, flattened with dot-names: `profile.language`, `derived.confGap1`, `ratingMid.dp`, `feedback1.linesShown` … Timestamps are ISO-8601 UTC; lists are `|`-separated. |
-| `answers.csv` | one per answer | `uid, group, blockOrder, block, setId, position, qid, topic, type, chosen, correct, confidence, timeMs, langAtAnswer, langSwitches, feedbackMs, feedbackShown` (the last two only in blocks with per-question feedback) |
+| `participants.csv` | one per participant | every field, flattened with dot-names: `profile.ownPct`, `derived.confGap1`, `ratingMid.dp`, `endSurvey.serious`, `feedback1.linesShown` … Timestamps are ISO-8601 UTC; lists are `|`-separated. |
+| `answers.csv` | one per answer | `uid, group, blockOrder, block, setId, position, qid, topic, type, chosen, correct, confidence, timeMs, langAtAnswer, langSwitches, awayCount, awayMs, feedbackMs, feedbackShown` |
 | `feedback.csv` | one per feedback screen | `uid, group, block, blockScore, beatsPct, strongTopic, strongType, workOnTopic, workOnType, tip, timeOnScreenMs` |
 
-Participants who dropped out are included with whatever they completed. Filter on `status == completed` for
-completers. `attentionPassed` and `derived.fastAnswers` (answers under `config.fastAnswerMs`) are there for
-exclusion rules.
+**Analysis** (`summary.md`): uses completed, non-withdrawn sessions and, by default, drops participants with a
+data-quality flag (said they rushed, many very fast answers, or left the tab on several questions). It reports:
+
+- **Sample:** started, completed, drop-outs, each exclusion reason, n per group, median minutes.
+- **RQ1 (is there a gap?):** the Block 1 calibration gap (one-sample t-test against 0), % over/underconfident,
+  solved count vs actual accuracy (Spearman), trust in the solved count vs the gap, predicted vs actual score.
+- **RQ2 (does concept feedback help?):** Group B vs A on the change from Block 1 to Block 2 in the gap (**main
+  outcome**), |gap| and Brier score; topic self-rating ↔ accuracy alignment before vs after feedback; change in
+  trust in the solved count; time on the feedback screen; practice-pack choice (Medium pack, own weakest topic);
+  what participants used to judge their progress. Welch t-tests with Cohen's d, z-tests for percentages.
+
+Treat these as a first look: pre-register the main test (Δ gap, B vs A) and run the final analysis in your
+statistics package from the CSVs.
 
 ---
 
-## 8. How the app works
+## 8. Study design
 
-### Flow
+### Flow (about 12 minutes)
 
-`src/lib/steps.ts` lists the steps. The stored `currentStep` is the index into this list, and `currentStepName`
-is the same step by name.
-
-| # | Step | Stores |
+| # | Screen | Stores |
 | --- | --- | --- |
-| 0 | consent: anonymous sign-in and the participant document are created on Start | `uid, device, pilot, appVersion…` |
-| 1 | profile | `profile` |
-| 2 | rate yourself | `ratingStart` |
-| 3 | statements; Continue assigns the block order and opens Question 1 | `statements, rankGuessStart, scoreGuessStart, blockOrder` |
-| 4 | how it works: **skipped** unless `config.showHowItWorks` is `true` (then its Begin assigns the block order) | |
-| 5 | Block 1: 8 questions in random order, options shuffled | `block1.answers[]` (one write per answer) |
-| 6 | block end; Continue assigns the **group** | `block1.scoreGuess/rankGuess, derived, group, stratum` |
-| 7 | feedback screen 1 (Continue unlocks after `feedbackMinSeconds`) | `feedback1` |
-| 8 | rate yourself again | `ratingMid` |
-| 9–10 | Block 2 + block end. After each answer (and its confidence rating) the same screen shows that question's feedback, with the right option marked, then **Next** | `block2.answers[]` incl. `feedbackShown`, `feedbackMs` |
-| 11 | feedback screen 2 | `feedback2` |
-| 12 | rate again | `ratingEnd` |
-| 13 | end ratings (PC, CF, SC, KN1, KN2, AC in random order) | `endItems, endItemsOrder, attentionPassed` |
-| 14 | practice pack | `packTopic, packType` |
-| 15 | quick questions (M1 Group B only; M2's `groupBOnly` option Group B only) | `close` |
-| 16 | report + debrief, Withdraw button | (`withdrawn`) |
-| 17 | preference (mock-ups A and B built from the participant's own Block 2) | `preference, status: completed, completedAt` |
-| 18 | thanks | |
+| 0 | Consent, with the honesty request ("answer on your own, no Google or AI, stay on this tab; guessing is fine") | `uid, device, pilot, appVersion…` |
+| 1 | About you: year, platform, solved count, streak, % solved on own (4 bands), language | `profile` |
+| 2 | Before you start: topic self-ratings (1–7), "my solved count shows how good I really am" (1–7), score prediction (0–6); Continue assigns the block order | `ratingStart, beliefStart, scoreGuessStart, blockOrder` |
+| 3 | Block 1: 6 questions in random order, options shuffled, one-tap confidence; no feedback (baseline) | `block1.answers[]` |
+| 4 | "How many did you get right?"; Continue assigns the **group** | `block1.scoreGuess, group, stratum` |
+| 5 | Feedback: both groups see the numbers; Group B also sees topics, a strength and a next step | `feedback1` |
+| 6 | Topic self-ratings again (a prediction for Block 2) | `ratingMid` |
+| 7 | Block 2: 6 matched questions; after each answer and its confidence, the same screen shows feedback, then Next | `block2.answers[]` incl. `feedbackShown`, `feedbackMs` |
+| 8 | "How many did you get right?" | `block2.scoreGuess` |
+| 9 | Last 3 questions: solved-count belief again, what they used to judge progress, seriousness check | `endSurvey` |
+| 10 | Practice pack: topic + Easy/Medium (a real behavioural choice); the session counts as **completed** here | `packTopic, packType, status, completedAt` |
+| 11 | Report + debrief: guessed vs got vs felt-sure per block, topic breakdown, pack links, withdraw | (`withdrawn`) |
+| 12 | Thanks | |
 
-- **No URL routes.** The back button is neutralised with a dummy history entry, and a `beforeunload` warning is
-  active while a session is in progress.
-- **Writes:** after every screen the change is merge-written to `participants/{uid}`. Writes are queued,
-  coalesced and retried with backoff, so a flaky mobile connection never drops a screen. A copy is kept in
-  localStorage (`dsa_uid`, `dsa_step`, `dsa_state`).
-- **Resume:** on reload the app signs back in as the same anonymous user, loads the document and continues at
-  `currentStep`. Within a block it continues at the first unanswered question, with the same order, options and
-  language tab. Answered questions cannot be redone. If the local copy is ahead (a write never arrived), it is
-  pushed. Group, block order and feedback always keep the stored value.
-- **Withdraw** sets `withdrawn: true` and `withdrawnAt`, shows `report.withdrawn` and ends the session: the report
-  stays visible with the pack links, but there is no Continue, no preference question, and `dsa_done` is set.
-- **"Saving…"** appears only when a save or transaction takes longer than 300 ms.
+### Why it looks like this
+
+- **Short and low-effort, to keep answers genuine.** Long online studies lose people and get careless answers in
+  later parts (satisficing); vendor data shows completion drops for surveys over ~7–8 minutes and fatigue rising
+  later on. So: 12 questions (6 per block, 3 topics × 2), easy-to-medium, code ≤ 10 lines, short stems, no
+  "find the bug" items (the most effortful), one-tap confidence, and only the survey items the analysis uses.
+- **Matched blocks.** S1 and S2 have the same topic × question-type mix (fill-the-blank, trace, choose-the-approach)
+  and similar difficulty; which set comes first is counterbalanced.
+- **Confidence on a 25–100% scale.** With 4 options a pure guess is right 25% of the time, so "Guess" = 25%; a
+  0–100 scale would make honest guessers look underconfident. Four labelled buttons (Guess · 50-50 · Fairly sure ·
+  Certain) are faster and easier to use consistently than a slider.
+- **Data quality.** An honesty request at the start; tab/app switches are recorded per question (`awayCount`,
+  `awayMs`) to catch looking answers up; very fast answers are counted; and a seriousness check at the end
+  (Aust et al., 2013), with the report unchanged either way so there is no reason to lie. Each participant gets
+  `derived.qualityFlags`.
+- **Feedback format.** Both groups get the platform-style numbers (score, Beats %, solved count), which is the
+  control condition. Group B adds task-level feedback built only from their own answers, following Hattie &
+  Timperley's (2007) "how am I going / where to next": a per-topic breakdown (✔/△/✘ with a dot per question), one
+  strength, and one next step with a single concrete tip, kept short (Shute, 2008). There is no generic praise
+  ("Keep going!"): feedback that turns attention to the self rather than the task tends to help less (Kluger &
+  DeNisi, 1996). Focus words are bold.
+- **Insight beyond the main outcome.** The belief "my solved count shows how good I really am" is asked before and
+  after; topic ratings before and after the feedback are compared with topic accuracy (rank alignment); the
+  practice pack is a real choice (count-friendly Easy vs skill-building Medium, and whether they pick their own
+  weakest topic); and one item asks what they actually used to judge their progress.
+- **Ethics.** Anonymous; all feedback comes from the participant's real answers; the hypothesis and the groups are
+  revealed only in the debrief; withdrawal is one tap.
 
 ### Assignment (all in Firestore transactions)
 
-Each transaction re-reads the participant document first. If the value is already assigned, it is returned
+Each transaction re-reads the participant document first; if the value is already assigned it is returned
 unchanged, so retries, double taps and reloads can never re-assign.
 
-- **Block order** uses `counters/blockOrder` `{ n, last }`. When `n` is even it draws "12" or "21" at random and
-  stores it in `last`; when `n` is odd it assigns the opposite of `last`. Then `n++`. "12" means S1 first.
-- **Group** (after Block 1) uses `counters/group_{year}_{low|high}_{over|notover}` `{ n, last, countA, countB }`
-  with the same pairing rule. `low` means `score1 ≤ stratification.scoreBandLowMax`. `over` means
-  `confGap1 > gapLabel.overAbove`, where `confGap1 = meanConf1 − score1/8 × 100`. That gives 8 strata.
+- **Block order:** `counters/blockOrder` `{ n, last }`. When `n` is even, draw "12" or "21" at random and store it
+  in `last`; when `n` is odd, assign the opposite of `last`. Then `n++`. "12" means S1 first.
+- **Group** (after Block 1): `counters/group_{year}_{low|high}_{over|notover}` `{ n, last, countA, countB }` with
+  the same pairing rule. `low` means `score1 ≤ 3`; `over` means `confGap1 > 15`. 8 strata.
 - **Beats %:** one transaction reads `stats/{setId}`, builds the feedback from the counts before this participant,
-  increments `counts[score]` and stores the feedback on the participant. A reload therefore shows the identical
-  screen and never counts twice.
-- Pilot sessions use the same document ids with the `config.pilotPrefix` (`pilot_`).
+  increments `counts[score]` and stores the feedback, so a reload shows the identical screen and never counts twice.
+- Pilot sessions use the same ids with the `pilot_` prefix.
 
-### Feedback (identical numbers for both groups)
+### Saving and resume
 
-- **Both groups:** `Block N done`, then `score / 8 solved · Beats X%`, the profile line (Step 1 solved-count +
-  correct so far + streak; the no-streak version when the streak is 0), and a random encouragement.
-- **Group B** also sees:
-  - **Strong:** a correct question from the topic with the highest accuracy in this block.
-  - **Work on:** a wrong question from the topic with the lowest accuracy, with that question's tip.
-  - Ties between equally qualifying questions are broken at random. When there is nothing to show, the "none this
-    block" line appears instead.
-  - The topic row: ✔ = 2 correct, △ = 1, ✘ = 0, per `feedbackTopicRow`.
-- Every line shown is stored in `feedbackN` (structured fields plus `linesShown`). The group is never revealed
-  before the debrief.
-- **Per-question feedback** (blocks in `questionFeedbackBlocks`, Block 2 by default) appears only after the answer
-  and its confidence are recorded, so `confidence` is never influenced by it. Everyone sees ✔ Correct / ✘ Not
-  quite, the score so far and the right option marked; Group B also sees the Strong line (right) or the Work on +
-  Tip lines (wrong) for that question's topic and type. The exact lines are stored on the answer as
-  `feedbackShown`, and the reading time as `feedbackMs`. A reload during this feedback shows it again.
-- **Bold:** the topic, skill and tip in the Strong / Work on / Tip lines are bold (set in `feedback.json` with `**…**`).
+After every screen the change is merge-written to `participants/{uid}`; writes are queued, coalesced and retried
+with backoff, and a copy is kept in localStorage. On reload the app signs back in as the same anonymous user and
+continues at the same step, question, review, order and language tab; answered questions cannot be redone. The
+back button is neutralised and a `beforeunload` warning is shown while a session is in progress. **Withdraw** sets
+`withdrawn: true` and `withdrawnAt` and ends the session.
 
 ---
 
 ## 9. Data model
 
-`participants/{uid}` (uid = anonymous auth uid). The fields marked † go beyond the build spec and help with
-resume and analysis.
+`participants/{uid}` (uid = anonymous auth uid):
 
 ```ts
 {
-  uid, createdAt, updatedAt, completedAt, withdrawnAt†,
-  status: "started" | "completed", withdrawn, pilot, debug†,
+  uid, createdAt, updatedAt, completedAt, withdrawnAt,
+  status: "started" | "completed", withdrawn, pilot, debug,
   appVersion, contentVersion,
   device: { userAgent, screenW, screenH, isMobile },
-  currentStep, currentStepName†, rev†,       // rev: save counter used to reconcile on resume
-  lang†,                                     // code tab currently selected
-  reviewing†,                                // qid whose per-question feedback is on screen, else null
+  currentStep, currentStepName, rev, lang, reviewing,
   blockOrder: "12" | "21", group: "A" | "B", stratum,
-  profile: { year, platform, solvedCount, streak, ownPct, language },
-  ratingStart / ratingMid / ratingEnd: { arrays, window, recursion, dp },   // 1-7
-  statements: { G1, G2, G3 }, rankGuessStart, scoreGuessStart,
+  profile: { year, platform, solvedCount, streak, ownPct, language },   // ownPct: "0-25" | "25-50" | "50-75" | "75-100"
+  ratingStart, ratingMid: { arrays, window, dp },                       // 1-7
+  beliefStart, scoreGuessStart,
   block1 / block2: {
-    setId, startedAt, endedAt, score, scoreGuess, rankGuess,
-    plan†: [{ qid, optionOrder }],           // drawn at block start, so a reload shows the same order
+    setId, startedAt, endedAt, score, scoreGuess,
+    plan: [{ qid, optionOrder }],
     answers: [{ qid, topic, type, position, optionOrder, chosen, correct,
-                confidence, timeMs, langAtAnswer, langSwitches,
-                feedbackShown†, feedbackMs† }]  // † only in blocks with per-question feedback
+                confidence,            // 25 | 50 | 75 | 100
+                timeMs, awayCount, awayMs, langAtAnswer, langSwitches,
+                feedbackShown, feedbackMs }]   // last two: Block 2 only
   },
-  feedback1 / feedback2: {
-    shownAt, timeOnScreenMs, blockScore, beatsPct, profileLine, encouragement,
-    strong, workOn: { qid, topic, type, text } | null,   // Group B
-    tip, topicRow: { arrays, window, recursion, dp } | null, // Group B (symbols)
-    linesShown†: string[]
-  },
-  endItems: { PC, CF, SC, KN1, KN2, AC }, endItemsOrder†, attentionPassed,
-  packTopic, packType, close: { M1, M2, O1, O2, O3 }, preference,
+  feedback1: { shownAt, timeOnScreenMs, blockScore, beatsPct, profileLine,
+               strong, workOn: { qid, topic, type, text } | null,       // Group B
+               tip, topicRow, topicCorrect,                             // Group B
+               linesShown },
+  endSurvey: { beliefEnd, judgedBy, serious },
+  packTopic, packType: "easy" | "medium",
   derived: {
-    score1, score2, meanConf1, meanConf2, confGap1, confGap2, absGap1, absGap2,
-    scoreGap1, scoreGap2, resolution1, resolution2,
-    topicAcc1, topicAcc2, topicConf1, topicConf2, gapLabel1, fastAnswers, languagesUsed
+    score1, score2, meanConf1, meanConf2,
+    confGap1, confGap2, absGap1, absGap2,        // gap = mean confidence − % correct
+    brier1, brier2,                              // mean (confidence − correct)², lower is better
+    scoreGap1, scoreGap2, scoreGapStart,         // guessed − actual score
+    resolution1, resolution2,                    // mean conf (right) − mean conf (wrong)
+    topicAcc1, topicAcc2, topicConf1, topicConf2,
+    ratingAlign1, ratingAlign2,                  // Spearman: topic self-rating vs topic accuracy
+    confAlign1, confAlign2,                      // Spearman: topic confidence vs topic accuracy
+    gapLabel1, beliefChange, packIsWeakest,
+    fastAnswers, awayAnswers, awayMs, qualityFlags, languagesUsed
   }
 }
 ```
 
-Block 1 and Block 2 are **time order**; `block1.setId` says which question set came first. Derived measures
-are rounded to 4 decimals. `resolution` is `null` when a block has no correct or no wrong answers.
-
-Other collections: `counters/*` (assignment, section 8) and `stats/*` (Beats %, section 4).
+Block 1 and Block 2 are **time order**; `block1.setId` says which set came first. Other collections:
+`counters/*` (assignment) and `stats/*` (Beats %).
 
 ---
 
@@ -383,8 +371,8 @@ dsa-self-check/
 │  ├─ content/            the five JSON files + types.ts + validate.ts (startup validation)
 │  ├─ lib/
 │  │  ├─ assignment.ts    pairing rules, stratum, Beats %
-│  │  ├─ feedback.ts      feedback screens, Strong/Work on, topic rows
-│  │  ├─ derived.ts       derived measures
+│  │  ├─ feedback.ts      feedback screen, per-question feedback, topic rows
+│  │  ├─ derived.ts       derived measures (gap, Brier, alignment, quality flags)
 │  │  ├─ session.ts       write queue, local mirror, resume
 │  │  ├─ steps.ts         the step list
 │  │  ├─ flow.ts          block plans, debug fill
@@ -394,7 +382,16 @@ dsa-self-check/
 │  └─ App.tsx             the step machine
 ├─ tests/                 vitest unit tests
 ├─ scripts/export.mjs     CSV export
+├─ scripts/analyze.mjs    results summary
 ├─ scripts/seed-stats.mjs Beats-% histogram seeding
+├─ scripts/verify-questions.py  compiles/runs every question in 3 languages
 ├─ firestore.rules
 └─ firebase.json          rules path + emulator ports
 ```
+
+### References
+
+- Hattie, J., & Timperley, H. (2007). The power of feedback. *Review of Educational Research, 77*(1), 81–112.
+- Shute, V. J. (2008). Focus on formative feedback. *Review of Educational Research, 78*(1), 153–189.
+- Kluger, A. N., & DeNisi, A. (1996). The effects of feedback interventions on performance. *Psychological Bulletin, 119*(2), 254–284.
+- Aust, F., Diedenhofen, B., Ullrich, S., & Musch, J. (2013). Seriousness checks are useful to improve data validity in online research. *Behavior Research Methods, 45*(2), 527–535.

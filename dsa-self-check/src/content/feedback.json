@@ -5,12 +5,8 @@
       "short": "Arrays"
     },
     "window": {
-      "name": "Sliding Window",
-      "short": "Window"
-    },
-    "recursion": {
-      "name": "Recursion",
-      "short": "Recursion"
+      "name": "Two Pointers & Sliding Window",
+      "short": "Two pointers"
     },
     "dp": {
       "name": "Dynamic Programming",
@@ -22,21 +18,20 @@
     "mid": "△",
     "weak": "✘"
   },
-  "encouragements": [
-    "Keep going!",
-    "Nice work, every problem counts!",
-    "Stay consistent!"
-  ],
   "lines": {
     "title": "Block {block} done",
-    "score": "{score} / {total} solved · Beats {beatsPct}%",
+    "score": "**{score}/{total}** solved · Beats **{beatsPct}%**",
     "profile": "Profile: {solved} + {sessionCorrect} solved · {streak}-day streak",
     "profileNoStreak": "Profile: {solved} + {sessionCorrect} solved",
-    "strong": "✔ Strong: **{topic}**, **{skill}**",
-    "workOn": "✘ Work on: **{topic}**, **{skill}**",
-    "tip": "→ Tip: **{tip}**",
-    "strongNone": "✔ Strong: none this block",
-    "workOnNone": "✘ Work on: none this block"
+    "byTopic": "By topic",
+    "topicCount": "{correct}/{n}",
+    "strong": "✔ Strong: **{topic}**, {skill}",
+    "workOn": "→ Next: **{topic}**, {skill}",
+    "tip": "**{tip}**",
+    "strongNone": "✔ Strong: none yet",
+    "workOnNone": "→ Next: no misses here. Try a Medium.",
+    "qRight": "✔ **{topic}**: {skill}",
+    "qWrong": "→ Work on **{topic}**: {skill}"
   },
   "templates": {
     "arrays": {
@@ -45,70 +40,40 @@
         "tip": "Write the map's contents after each step."
       },
       "complete": {
-        "skill": "choosing the key",
-        "tip": "Ask what grouped items must share."
+        "skill": "map lookups",
+        "tip": "Say what the map stores, then what you need from it."
       },
       "pattern": {
-        "skill": "spotting O(n) with a map",
-        "tip": "Check the time limit first."
-      },
-      "debug": {
-        "skill": "store vs lookup order",
-        "tip": "Try an element that could pair with itself."
+        "skill": "choosing a hash key",
+        "tip": "Ask what grouped items share. Make that the key."
       }
     },
     "window": {
       "trace": {
-        "skill": "tracing the window",
-        "tip": "Track left and right at each step."
+        "skill": "tracking the pointers",
+        "tip": "Write left, right and the running total at each step."
       },
       "complete": {
-        "skill": "the shrink condition",
-        "tip": "Test on input with repeats, e.g. \"abba\"."
+        "skill": "pointer conditions",
+        "tip": "Test the condition on a tiny case like [1, 2, 2]."
       },
       "pattern": {
-        "skill": "spotting a window problem",
-        "tip": "Contiguous + shortest/longest usually means a window."
-      },
-      "debug": {
-        "skill": "pointer moves",
-        "tip": "Move the side that limits the answer."
-      }
-    },
-    "recursion": {
-      "trace": {
-        "skill": "following the calls",
-        "tip": "Draw the call tree for a small input."
-      },
-      "complete": {
-        "skill": "the undo step",
-        "tip": "Every choose needs an un-choose."
-      },
-      "pattern": {
-        "skill": "spotting \"list all\" problems",
-        "tip": "\"Return all\" usually means backtracking."
-      },
-      "debug": {
-        "skill": "undo order",
-        "tip": "Undo a pick right after exploring with it."
+        "skill": "spotting two-pointer problems",
+        "tip": "Sorted input or a contiguous range? Try two pointers."
       }
     },
     "dp": {
       "trace": {
         "skill": "filling the table",
-        "tip": "Write dp for every index."
+        "tip": "Write dp[0], dp[1], dp[2] … before answering."
       },
       "complete": {
-        "skill": "the transition",
-        "tip": "List the edge cases (zeros, bounds) first."
+        "skill": "the recurrence",
+        "tip": "Name the last choice; the rest is a smaller dp."
       },
       "pattern": {
-        "skill": "picking the approach",
-        "tip": "Test greedy on one tricky case before trusting it."
-      },
-      "debug": {
-        "skill": "loop order",
-        "tip": "Does order matter? It decides the loop order."
+        "skill": "DP vs greedy",
+        "tip": "Find one input where greedy fails before trusting it."
       }
     }
   }

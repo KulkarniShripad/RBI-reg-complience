@@ -1,7 +1,7 @@
 {
   "name": "dsa-self-check",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,7 +11,9 @@
     "test": "vitest run",
     "validate": "vitest run tests/content.test.ts",
     "export": "node scripts/export.mjs",
-    "seed-stats": "node scripts/seed-stats.mjs"
+    "seed-stats": "node scripts/seed-stats.mjs",
+    "analyze": "node scripts/analyze.mjs",
+    "verify-questions": "python3 scripts/verify-questions.py src/content/questions.json"
   },
   "dependencies": {
     "firebase": "^13.0.0",

@@ -122,27 +122,20 @@ export function newParticipant(uid: string, c: Content, flags: Flags): Participa
     profile: null,
     ratingStart: null,
     ratingMid: null,
-    ratingEnd: null,
-    statements: null,
-    rankGuessStart: null,
+    beliefStart: null,
     scoreGuessStart: null,
     block1: null,
     block2: null,
     feedback1: null,
-    feedback2: null,
-    endItems: null,
-    endItemsOrder: null,
-    attentionPassed: null,
+    endSurvey: null,
     packTopic: null,
     packType: null,
-    close: null,
-    preference: null,
     derived: null,
   };
 }
 
 // Fields written by assignment transactions: the stored value always wins on resume.
-const ASSIGNED: (keyof Participant)[] = ['blockOrder', 'group', 'stratum', 'feedback1', 'feedback2'];
+const ASSIGNED: (keyof Participant)[] = ['blockOrder', 'group', 'stratum', 'feedback1'];
 // Fields the store manages itself.
 const STORE_MANAGED: (keyof Participant)[] = ['createdAt', 'updatedAt'];
 
@@ -252,12 +245,20 @@ export class Session {
   }
 }
 
+/**
+ * Nothing left to do: withdrawn, or completed and past the report. (A completed
+ * session still on its report page resumes there, so a reload keeps the report.)
+ */
+function isFinished(p: Participant): boolean {
+  return p.withdrawn || (p.status === 'completed' && p.currentStepName !== 'report');
+}
+
 /** Signs in anonymously and creates the participant (or picks up an existing one for this browser). */
 export async function startSession(store: Store, c: Content, flags: Flags): Promise<Session | 'done'> {
   const uid = await store.signIn();
   const existing = await store.load(uid);
   if (existing) {
-    if (existing.status === 'completed' || existing.withdrawn) {
+    if (isFinished(existing)) {
       markDone();
       return 'done';
     }
@@ -305,7 +306,7 @@ export async function resumeSession(store: Store): Promise<Session | 'done' | nu
 
   const session = new Session(store, p);
   if (push) session.save(push);
-  if (p.status === 'completed' || p.withdrawn) {
+  if (isFinished(p)) {
     // Give an unsent final write a few seconds to land before showing "already done".
     await Promise.race([session.flush(), sleep(5000)]);
     markDone();

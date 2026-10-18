@@ -1,10 +1,11 @@
-// Steps 0-4: consent, profile, self-ratings, statements, how it works.
+// Steps 0-2: consent, profile, "before you start" (topic ratings, belief, prediction),
+// plus the topic re-rating used after the first feedback.
 
 import { useState } from 'react';
 import type { Content, LangId, TopicId } from '../content/types';
-import { ChoiceGroup, Label, NumberField, PrimaryButton, RatingScale, Screen, Slider, Sub, Title, parseCount } from '../components/ui';
-import { SCALES } from '../lib/flow';
+import { ChoiceGroup, Label, NumberField, PrimaryButton, RatingScale, Screen, Sub, Title, parseCount } from '../components/ui';
 import type { Profile, TopicRecord } from '../lib/model';
+import { fill } from '../lib/util';
 
 export function Consent({ c, onStart }: { c: Content; onStart: () => void }) {
   const u = c.ui.consent;
@@ -34,6 +35,13 @@ export function Consent({ c, onStart }: { c: Content; onStart: () => void }) {
           </li>
         ))}
       </ul>
+      <p className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3.5 text-[15px] font-medium text-amber-900">
+        <svg viewBox="0 0 24 24" className="mt-0.5 h-5 w-5 flex-none" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M12 3l8 4v5c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V7l8-4z" />
+          <path d="M9 12l2 2 4-4" />
+        </svg>
+        <span>{u.honesty}</span>
+      </p>
       <label className="card flex cursor-pointer items-center gap-3 px-4 py-3.5 text-[15px] font-medium text-slate-800">
         <input
           type="checkbox"
@@ -69,13 +77,12 @@ export function ProfileScreen({ c, onDone }: { c: Content; onDone: (p: Profile) 
   const [platform, setPlatform] = useState<string | null>(null);
   const [solved, setSolved] = useState('');
   const [streak, setStreak] = useState('');
-  const [ownPct, setOwnPct] = useState(SCALES.ownPct.default);
-  const [ownTouched, setOwnTouched] = useState(false);
+  const [ownPct, setOwnPct] = useState<string | null>(null);
   const [language, setLanguage] = useState<LangId | null>(null);
 
   const solvedN = parseCount(solved, lim.solvedCountMax);
   const streakN = parseCount(streak, lim.streakMax);
-  const complete = year && platform && solvedN !== null && streakN !== null && ownTouched && language;
+  const complete = year && platform && solvedN !== null && streakN !== null && ownPct && language;
 
   return (
     <Screen
@@ -85,7 +92,7 @@ export function ProfileScreen({ c, onDone }: { c: Content; onDone: (p: Profile) 
           disabled={!complete}
           onClick={() =>
             complete &&
-            onDone({ year: year!, platform: platform!, solvedCount: solvedN!, streak: streakN!, ownPct, language: language! })
+            onDone({ year: year!, platform: platform!, solvedCount: solvedN!, streak: streakN!, ownPct: ownPct!, language: language! })
           }
         />
       }
@@ -105,19 +112,14 @@ export function ProfileScreen({ c, onDone }: { c: Content; onDone: (p: Profile) 
           onChange={setPlatform}
         />
       </div>
-      <NumberField label={u.solvedCount} value={solved} onChange={setSolved} max={lim.solvedCountMax} />
-      <NumberField label={u.streak} value={streak} onChange={setStreak} max={lim.streakMax} />
-      <Slider
-        label={u.ownPct}
-        {...SCALES.ownPct}
-        value={ownPct}
-        touched={ownTouched}
-        onChange={(v) => {
-          setOwnPct(v);
-          setOwnTouched(true);
-        }}
-        format={(v) => `${v}%`}
-      />
+      <div className="grid grid-cols-2 gap-3">
+        <NumberField label={u.solvedCount} value={solved} onChange={setSolved} max={lim.solvedCountMax} />
+        <NumberField label={u.streak} value={streak} onChange={setStreak} max={lim.streakMax} />
+      </div>
+      <div>
+        <Label id="pf-own">{u.ownPct.label}</Label>
+        <ChoiceGroup labelledBy="pf-own" cols={2} options={u.ownPct.options} value={ownPct} onChange={setOwnPct} />
+      </div>
       <div>
         <Label id="pf-lang">{u.language.label}</Label>
         <ChoiceGroup labelledBy="pf-lang" cols={3} options={u.language.options} value={language} onChange={setLanguage} />
@@ -126,116 +128,92 @@ export function ProfileScreen({ c, onDone }: { c: Content; onDone: (p: Profile) 
   );
 }
 
-/** The 4 topic ratings (rateSelf, then rateAgain twice). */
-export function TopicRatings({
+function TopicRatingCards({
   c,
-  title,
-  sub,
-  onDone,
+  value,
+  onChange,
 }: {
   c: Content;
-  title: string;
-  sub: string;
-  onDone: (r: TopicRecord<number>) => void;
+  value: Partial<TopicRecord<number>>;
+  onChange: (t: TopicId, v: number) => void;
 }) {
-  const u = c.ui.rateSelf;
-  const [r, setR] = useState<Partial<Record<TopicId, number>>>({});
-  const complete = u.topics.every((t) => r[t.id] != null);
+  const b = c.ui.before;
   return (
-    <Screen footer={<PrimaryButton label={c.ui.question.button} disabled={!complete} onClick={() => complete && onDone(r as TopicRecord<number>)} />}>
-      <div className="space-y-2">
-        <Title>{title}</Title>
-        <Sub>{sub}</Sub>
-      </div>
-      {u.topics.map((t) => (
+    <>
+      {c.ui.topics.map((t) => (
         <div key={t.id} className="card p-4">
           <RatingScale
             label={t.label}
             min={c.config.rating.min}
             max={c.config.rating.max}
-            low={u.low}
-            high={u.high}
-            value={r[t.id] ?? null}
-            onChange={(v) => setR((prev) => ({ ...prev, [t.id]: v }))}
+            low={b.low}
+            high={b.high}
+            value={value[t.id] ?? null}
+            onChange={(v) => onChange(t.id, v)}
           />
         </div>
       ))}
-    </Screen>
+    </>
   );
 }
 
-export function Statements({
+/** Topic self-ratings, belief in the solved count, and a score prediction, all on one screen. */
+export function BeforeScreen({
   c,
   onDone,
 }: {
   c: Content;
-  onDone: (statements: Record<string, number>, rankGuessStart: number, scoreGuessStart: number) => void;
+  onDone: (ratings: TopicRecord<number>, belief: number, scoreGuess: number) => void;
 }) {
-  const u = c.ui.statements;
-  const [g, setG] = useState<Record<string, number>>({});
-  const [rank, setRank] = useState(SCALES.rank.default);
-  const [rankTouched, setRankTouched] = useState(false);
+  const b = c.ui.before;
+  const [r, setR] = useState<Partial<TopicRecord<number>>>({});
+  const [belief, setBelief] = useState<number | null>(null);
   const [score, setScore] = useState<number | null>(null);
-  const complete = u.items.every((it) => g[it.id] != null) && rankTouched && score !== null;
-  const scores = Array.from({ length: c.config.questionsPerBlock + 1 }, (_, i) => ({ id: i, label: String(i) }));
+  const n = c.config.questionsPerBlock;
+  const scores = Array.from({ length: n + 1 }, (_, i) => ({ id: i, label: String(i) }));
+  const complete = c.topics.every((t) => r[t] != null) && belief !== null && score !== null;
   return (
-    <Screen footer={<PrimaryButton label={c.ui.question.button} disabled={!complete} onClick={() => complete && onDone(g, rank, score!)} />}>
-      <Title>{u.title}</Title>
-      {u.items.map((it) => (
-        <div key={it.id} className="card p-4">
-          <RatingScale
-            label={it.text}
-            min={c.config.rating.min}
-            max={c.config.rating.max}
-            low={u.low}
-            high={u.high}
-            value={g[it.id] ?? null}
-            onChange={(v) => setG((prev) => ({ ...prev, [it.id]: v }))}
-          />
-        </div>
-      ))}
+    <Screen
+      footer={
+        <PrimaryButton label={c.ui.question.button} disabled={!complete} onClick={() => complete && onDone(r as TopicRecord<number>, belief!, score!)} />
+      }
+    >
+      <div className="space-y-2">
+        <Title>{b.title}</Title>
+        <Sub>{b.ratingQ}</Sub>
+      </div>
+      <TopicRatingCards c={c} value={r} onChange={(t, v) => setR((prev) => ({ ...prev, [t]: v }))} />
       <div className="card p-4">
-        <Slider
-          label={u.rankGuess}
-          {...SCALES.rank}
-          value={rank}
-          touched={rankTouched}
-          onChange={(v) => {
-            setRank(v);
-            setRankTouched(true);
-          }}
+        <RatingScale
+          label={b.belief}
+          min={c.config.rating.min}
+          max={c.config.rating.max}
+          low={b.beliefLow}
+          high={b.beliefHigh}
+          value={belief}
+          onChange={setBelief}
         />
       </div>
       <div className="card p-4">
-        <Label id="st-score">{u.scoreGuess}</Label>
-        <ChoiceGroup labelledBy="st-score" cols={9} compact options={scores} value={score} onChange={setScore} />
+        <Label id="bf-score">{fill(b.scoreGuess, { n })}</Label>
+        <ChoiceGroup labelledBy="bf-score" cols={n + 1 <= 9 ? n + 1 : 1} compact options={scores} value={score} onChange={setScore} />
       </div>
     </Screen>
   );
 }
 
-export function HowItWorks({ c, onBegin }: { c: Content; onBegin: () => void }) {
-  const u = c.ui.howItWorks;
+/** The topic ratings again (after the first feedback). */
+export function TopicRatings({ c, onDone }: { c: Content; onDone: (r: TopicRecord<number>) => void }) {
+  const u = c.ui.rateAgain;
+  const [r, setR] = useState<Partial<TopicRecord<number>>>({});
+  const complete = c.topics.every((t) => r[t] != null);
   return (
-    <Screen footer={<PrimaryButton label={u.button} onClick={onBegin} />}>
-      <div className="pt-4">
+    <Screen footer={<PrimaryButton label={c.ui.question.button} disabled={!complete} onClick={() => complete && onDone(r as TopicRecord<number>)} />}>
+      <div className="space-y-2">
         <Title>{u.title}</Title>
+        <Sub>{u.sub}</Sub>
       </div>
-      <div className="card divide-y divide-slate-100 text-[16px] text-slate-700">
-        <p className="flex items-start gap-3 p-4">
-          <svg viewBox="0 0 24 24" className="mt-0.5 h-5 w-5 flex-none text-accent-600" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
-            <path d="M4 15a8 8 0 0116 0" />
-            <path d="M12 15l4-5" />
-          </svg>
-          {u.line}
-        </p>
-        <p className="flex items-start gap-3 p-4">
-          <svg viewBox="0 0 24 24" className="mt-0.5 h-5 w-5 flex-none text-accent-600" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="M8 7l-5 5 5 5M16 7l5 5-5 5" />
-          </svg>
-          {u.langNote}
-        </p>
-      </div>
+      <TopicRatingCards c={c} value={r} onChange={(t, v) => setR((prev) => ({ ...prev, [t]: v }))} />
     </Screen>
   );
 }

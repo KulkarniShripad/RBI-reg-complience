@@ -1,7 +1,7 @@
 // Shared building blocks. No study text lives here: every label is passed in
 // from the content files.
 
-import { useId, useRef, type ReactNode } from 'react';
+import { useId, type ReactNode } from 'react';
 
 export function cx(...parts: (string | false | null | undefined)[]) {
   return parts.filter(Boolean).join(' ');
@@ -115,6 +115,9 @@ export function ChoiceGroup<T extends string | number>({
     3: 'grid-cols-3',
     4: 'grid-cols-4',
     5: 'grid-cols-5',
+    6: 'grid-cols-6',
+    7: 'grid-cols-7',
+    8: 'grid-cols-8',
     9: 'grid-cols-9',
   };
   return (
@@ -212,62 +215,48 @@ export function RatingScale({
 }
 
 /**
- * Range slider that only counts once the participant has touched it.
- * Until then the value reads "—" and the thumb is hollow.
+ * Confidence in one tap: one button per level (e.g. 25% Guess … 100% Certain).
+ * Nothing is pre-selected, so a default can never be recorded by accident.
  */
-export function Slider({
+export function ConfidencePicker({
   label,
-  min,
-  max,
-  step,
+  levels,
+  names,
   value,
-  touched,
   onChange,
-  format = (v) => String(v),
-  low,
-  high,
 }: {
   label: ReactNode;
-  min: number;
-  max: number;
-  step: number;
-  value: number;
-  touched: boolean;
+  levels: number[];
+  names: string[];
+  value: number | null;
   onChange: (v: number) => void;
-  format?: (v: number) => string;
-  low?: string;
-  high?: string;
 }) {
   const id = useId();
-  const ref = useRef<HTMLInputElement>(null);
-  const touch = () => {
-    if (!touched && ref.current) onChange(Number(ref.current.value));
-  };
   return (
     <div>
-      <Label id={`${id}-l`} htmlFor={id}>
+      <p id={id} className="mb-2.5 text-[15px] font-medium leading-snug text-slate-800">
         {label}
-      </Label>
-      <div className={cx('mb-1 text-center text-[32px] font-semibold tabular-nums leading-none', touched ? 'text-accent-700' : 'text-slate-300')} aria-hidden>
-        {touched ? format(value) : '—'}
-      </div>
-      <input
-        ref={ref}
-        id={id}
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        aria-valuetext={touched ? format(value) : undefined}
-        onPointerDown={touch}
-        onKeyDown={touch}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className={cx('slider', touched && 'is-set')}
-      />
-      <div className="flex justify-between text-[13px] text-slate-500" aria-hidden>
-        <span>{low ?? format(min)}</span>
-        <span>{high ?? format(max)}</span>
+      </p>
+      <div role="radiogroup" aria-labelledby={id} className="grid gap-1.5" style={{ gridTemplateColumns: `repeat(${levels.length}, minmax(0, 1fr))` }}>
+        {levels.map((v, i) => {
+          const selected = value === v;
+          return (
+            <button
+              key={v}
+              type="button"
+              role="radio"
+              aria-checked={selected}
+              onClick={() => onChange(v)}
+              className={cx(
+                'focus-ring flex min-h-[56px] flex-col items-center justify-center rounded-xl border px-1 py-1.5 transition-colors',
+                selected ? 'border-accent-600 bg-accent-600 text-white' : 'border-slate-200 bg-white text-slate-800 hover:border-accent-500',
+              )}
+            >
+              <span className="text-[16px] font-semibold tabular-nums leading-tight">{v}%</span>
+              <span className={cx('text-[12px] leading-tight', selected ? 'text-accent-100' : 'text-slate-500')}>{names[i]}</span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

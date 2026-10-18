@@ -4,9 +4,7 @@
 
 import {
   LANG_IDS,
-  QTYPES,
   SET_IDS,
-  TOPIC_IDS,
   type ConfigFile,
   type Content,
   type FeedbackFile,
@@ -43,7 +41,13 @@ function isPerLangString(v: unknown): boolean {
   return isObj(v) && LANG_IDS.every((l) => isStr(v[l]));
 }
 
-function checkQuestions(q: unknown, cfg: unknown, p: string[]) {
+/** Topic ids from ui-text.json → topics (empty if malformed; checkUi reports that). */
+function topicIds(ui: unknown): string[] {
+  const list = get(ui, 'topics');
+  return Array.isArray(list) ? list.filter(isObj).map((t) => t.id).filter(isStr) : [];
+}
+
+function checkQuestions(q: unknown, cfg: unknown, fb: unknown, topics: string[], p: string[]) {
   const f = 'questions.json';
   if (!isObj(q)) return p.push(`${f}: not an object`);
   if (!isStr(q.version)) p.push(`${f}: "version" must be a non-empty string`);
@@ -74,8 +78,10 @@ function checkQuestions(q: unknown, cfg: unknown, p: string[]) {
     byId.set(id, raw);
 
     if (!SET_IDS.includes(raw.set as never)) p.push(`${at}: "set" must be one of ${SET_IDS.join(', ')}`);
-    if (!TOPIC_IDS.includes(raw.topic as never)) p.push(`${at}: "topic" must be one of ${TOPIC_IDS.join(', ')}`);
-    if (!QTYPES.includes(raw.type as never)) p.push(`${at}: "type" must be one of ${QTYPES.join(', ')}`);
+    if (!topics.includes(raw.topic as string)) p.push(`${at}: "topic" must be one of ui-text.json → topics (${topics.join(', ')})`);
+    else if (!isObj(get(fb, `templates.${String(raw.topic)}.${String(raw.type)}`))) {
+      p.push(`${at}: feedback.json has no templates.${String(raw.topic)}.${String(raw.type)} for this question's topic and type`);
+    }
     if (!isStr(raw.stem)) p.push(`${at}: "stem" must be a non-empty string`);
     if (typeof raw.showLineNumbers !== 'boolean') p.push(`${at}: "showLineNumbers" must be true or false`);
 
@@ -106,6 +112,7 @@ function checkQuestions(q: unknown, cfg: unknown, p: string[]) {
   if (!isObj(q.sets)) p.push(`${f}: "sets" must be an object`);
   else {
     const seen = new Set<string>();
+    const shapes: string[] = [];
     for (const s of SET_IDS) {
       const ids = q.sets[s];
       if (!Array.isArray(ids)) {
@@ -116,7 +123,7 @@ function checkQuestions(q: unknown, cfg: unknown, p: string[]) {
         p.push(`${f}: sets.${s} has ${ids.length} questions but config.questionsPerBlock is ${perBlock}`);
       }
       const topicCount: Record<string, number> = {};
-      const typeCount: Record<string, number> = {};
+      const shape: string[] = [];
       for (const id of ids) {
         const qq = isStr(id) ? byId.get(id) : undefined;
         if (!qq) {
@@ -127,65 +134,61 @@ function checkQuestions(q: unknown, cfg: unknown, p: string[]) {
         seen.add(id as string);
         if (qq.set !== s) p.push(`${f}: question ${String(id)} is listed in sets.${s} but its "set" is ${String(qq.set)}`);
         topicCount[String(qq.topic)] = (topicCount[String(qq.topic)] ?? 0) + 1;
-        typeCount[String(qq.type)] = (typeCount[String(qq.type)] ?? 0) + 1;
+        shape.push(`${String(qq.topic)}/${String(qq.type)}`);
       }
-      // The feedback topic row (✔ = 2, △ = 1, ✘ = 0) assumes 2 questions per topic per block.
-      if (isNum(perBlock) && perBlock === ids.length) {
-        const per = perBlock / TOPIC_IDS.length;
-        for (const t of TOPIC_IDS) {
+      shapes.push(shape.sort().join(','));
+      // The topic rows (✔ / △ / ✘) assume the same number of questions per topic in each block.
+      if (isNum(perBlock) && perBlock === ids.length && topics.length && perBlock % topics.length === 0) {
+        const per = perBlock / topics.length;
+        for (const t of topics) {
           if ((topicCount[t] ?? 0) !== per) p.push(`${f}: sets.${s} should have ${per} "${t}" questions, has ${topicCount[t] ?? 0}`);
         }
-        for (const t of QTYPES) {
-          if ((typeCount[t] ?? 0) !== per) p.push(`${f}: sets.${s} should have ${per} "${t}" questions, has ${typeCount[t] ?? 0}`);
-        }
+      } else if (isNum(perBlock) && topics.length && perBlock % topics.length !== 0) {
+        p.push(`${f}: config.questionsPerBlock (${perBlock}) must be a multiple of the number of topics (${topics.length})`);
       }
     }
+    // Block 1 and Block 2 are compared, so both sets must have the same topic × type mix.
+    if (shapes.length === 2 && shapes[0] !== shapes[1]) p.push(`${f}: sets S1 and S2 must have the same topic/type mix (matched sets)`);
   }
 }
 
 const UI_STRINGS = [
-  'consent.title', 'consent.body', 'consent.points', 'consent.checkbox', 'consent.button', 'consent.alreadyDone',
+  'consent.title', 'consent.body', 'consent.points', 'consent.honesty', 'consent.checkbox', 'consent.button', 'consent.alreadyDone',
   'profile.title', 'profile.year.label', 'profile.platform.label', 'profile.solvedCount', 'profile.streak',
-  'profile.ownPct', 'profile.language.label',
-  'rateSelf.title', 'rateSelf.sub', 'rateSelf.low', 'rateSelf.high',
+  'profile.ownPct.label', 'profile.language.label',
+  'before.title', 'before.ratingQ', 'before.low', 'before.high', 'before.belief', 'before.beliefLow', 'before.beliefHigh', 'before.scoreGuess',
   'rateAgain.title', 'rateAgain.sub',
-  'statements.title', 'statements.low', 'statements.high', 'statements.rankGuess', 'statements.scoreGuess',
-  'howItWorks.title', 'howItWorks.line', 'howItWorks.langNote', 'howItWorks.button',
-  'question.counter', 'question.confidence', 'question.confLow', 'question.confHigh', 'question.button',
+  'question.counter', 'question.confidence', 'question.button',
   'questionFeedback.correct', 'questionFeedback.wrong', 'questionFeedback.soFar', 'questionFeedback.button',
-  'blockEnd.scoreGuess', 'blockEnd.rankGuess',
-  'endRatings.title', 'endRatings.low', 'endRatings.high',
+  'blockEnd.scoreGuess',
+  'endSurvey.title', 'endSurvey.judgedBy.text', 'endSurvey.serious.text',
   'pack.title', 'pack.sub', 'pack.topicLabel', 'pack.easy', 'pack.medium',
-  'close.title', 'close.M1.text', 'close.M1.dontRemember', 'close.M2.text', 'close.O1.text', 'close.O1.low',
-  'close.O1.high', 'close.O2.text', 'close.O3.text', 'close.O3.low', 'close.O3.high',
   'report.title', 'report.blockLine', 'report.topicsTitle', 'report.legend', 'report.packTitle',
   'report.aboutTitle', 'report.about', 'report.withdraw', 'report.withdrawn',
-  'preference.title', 'thanks', 'saving', 'leaveWarning',
+  'thanks', 'saving', 'leaveWarning',
 ];
 
-const UI_ID_LISTS: [path: string, labelKey: 'label' | 'text'][] = [
-  ['profile.year.options', 'label'],
-  ['profile.language.options', 'label'],
-  ['rateSelf.topics', 'label'],
-  ['statements.items', 'text'],
-  ['endRatings.items', 'text'],
-  ['close.M2.options', 'label'],
-  ['close.O2.options', 'label'],
-  ['preference.options', 'label'],
+const UI_ID_LISTS = [
+  'profile.year.options',
+  'profile.ownPct.options',
+  'profile.language.options',
+  'topics',
+  'endSurvey.judgedBy.options',
+  'endSurvey.serious.options',
 ];
 
 function checkUi(ui: unknown, cfg: unknown, p: string[]) {
   const f = 'ui-text.json';
   if (!isObj(ui)) return p.push(`${f}: not an object`);
   for (const path of UI_STRINGS) if (!isStr(get(ui, path))) p.push(`${f}: "${path}" must be a non-empty string`);
-  for (const [path, key] of UI_ID_LISTS) {
+  for (const path of UI_ID_LISTS) {
     const list = get(ui, path);
     if (!Array.isArray(list) || list.length === 0) {
       p.push(`${f}: "${path}" must be a non-empty array`);
       continue;
     }
     list.forEach((it, i) => {
-      if (!isObj(it) || !isStr(it.id) || !isStr(it[key])) p.push(`${f}: ${path}[${i}] needs "id" and "${key}"`);
+      if (!isObj(it) || !isStr(it.id) || !isStr(it.label)) p.push(`${f}: ${path}[${i}] needs "id" and "label"`);
     });
   }
   const platforms = get(ui, 'profile.platform.options');
@@ -194,39 +197,42 @@ function checkUi(ui: unknown, cfg: unknown, p: string[]) {
   }
   const langIds = (get(ui, 'profile.language.options') as Obj[] | undefined)?.map((o) => o?.id) ?? [];
   for (const l of LANG_IDS) if (!langIds.includes(l)) p.push(`${f}: profile.language.options is missing "${l}"`);
-  const topicIds = (get(ui, 'rateSelf.topics') as Obj[] | undefined)?.map((o) => o?.id) ?? [];
-  for (const t of TOPIC_IDS) if (!topicIds.includes(t)) p.push(`${f}: rateSelf.topics is missing "${t}"`);
-  const prefIds = (get(ui, 'preference.options') as Obj[] | undefined)?.map((o) => o?.id) ?? [];
-  for (const id of ['A', 'B', 'Either']) if (!prefIds.includes(id)) p.push(`${f}: preference.options is missing "${id}"`);
-  const acId = get(cfg, 'attentionCheck.itemId');
-  const endIds = (get(ui, 'endRatings.items') as Obj[] | undefined)?.map((o) => o?.id) ?? [];
-  if (isStr(acId) && !endIds.includes(acId)) p.push(`${f}: endRatings.items has no "${acId}" (config.attentionCheck.itemId)`);
+  const serious = (get(ui, 'endSurvey.serious.options') as Obj[] | undefined)?.map((o) => o?.id) ?? [];
+  for (const id of ['yes', 'no']) if (!serious.includes(id)) p.push(`${f}: endSurvey.serious.options needs ids "yes" and "no"`);
+  const levels = get(ui, 'question.confLevels');
+  const cfgLevels = get(cfg, 'confidence.levels');
+  if (!Array.isArray(levels) || !levels.every(isStr)) p.push(`${f}: "question.confLevels" must be a list of labels`);
+  else if (Array.isArray(cfgLevels) && levels.length !== cfgLevels.length) {
+    p.push(`${f}: "question.confLevels" has ${levels.length} labels but config.confidence.levels has ${cfgLevels.length} values`);
+  }
 }
 
-function checkFeedback(fb: unknown, p: string[]) {
+function checkFeedback(fb: unknown, topics: string[], p: string[]) {
   const f = 'feedback.json';
   if (!isObj(fb)) return p.push(`${f}: not an object`);
-  for (const t of TOPIC_IDS) {
+  for (const t of topics) {
     if (!isStr(get(fb, `topics.${t}.name`))) p.push(`${f}: "topics.${t}.name" is missing`);
     if (!isStr(get(fb, `topics.${t}.short`))) p.push(`${f}: "topics.${t}.short" is missing`);
-    for (const ty of QTYPES) {
-      if (!isStr(get(fb, `templates.${t}.${ty}.skill`))) p.push(`${f}: "templates.${t}.${ty}.skill" is missing`);
-      if (!isStr(get(fb, `templates.${t}.${ty}.tip`))) p.push(`${f}: "templates.${t}.${ty}.tip" is missing`);
+    const tmpl = get(fb, `templates.${t}`);
+    if (!isObj(tmpl)) p.push(`${f}: "templates.${t}" is missing`);
+    else {
+      for (const [ty, v] of Object.entries(tmpl)) {
+        if (!isStr(get(v, 'skill'))) p.push(`${f}: "templates.${t}.${ty}.skill" is missing`);
+        if (!isStr(get(v, 'tip'))) p.push(`${f}: "templates.${t}.${ty}.tip" is missing`);
+      }
     }
   }
   for (const s of ['strong', 'mid', 'weak']) if (!isStr(get(fb, `symbols.${s}`))) p.push(`${f}: "symbols.${s}" is missing`);
-  const enc = fb.encouragements;
-  if (!Array.isArray(enc) || enc.length === 0 || !enc.every(isStr)) p.push(`${f}: "encouragements" must be a non-empty array of strings`);
-  for (const k of ['title', 'score', 'profile', 'profileNoStreak', 'strong', 'workOn', 'tip', 'strongNone', 'workOnNone']) {
+  for (const k of ['title', 'score', 'profile', 'profileNoStreak', 'byTopic', 'topicCount', 'strong', 'workOn', 'tip', 'strongNone', 'workOnNone', 'qRight', 'qWrong']) {
     if (!isStr(get(fb, `lines.${k}`))) p.push(`${f}: "lines.${k}" is missing`);
   }
 }
 
-function checkPacks(packs: unknown, p: string[]) {
+function checkPacks(packs: unknown, topics: string[], p: string[]) {
   const f = 'packs.json';
   if (!isObj(packs)) return p.push(`${f}: not an object`);
   for (const kind of ['easy', 'medium']) {
-    for (const t of TOPIC_IDS) {
+    for (const t of topics) {
       const list = get(packs, `${kind}.${t}`);
       if (!Array.isArray(list) || list.length === 0) {
         p.push(`${f}: "${kind}.${t}" must be a non-empty array`);
@@ -241,9 +247,8 @@ function checkPacks(packs: unknown, p: string[]) {
 }
 
 const CONFIG_NUMBERS = [
-  'questionsPerBlock', 'confidence.min', 'confidence.max', 'confidence.step', 'confidence.default',
-  'rating.min', 'rating.max', 'feedbackMinSeconds', 'gapLabel.overAbove', 'gapLabel.underBelow',
-  'stratification.scoreBandLowMax', 'fastAnswerMs', 'attentionCheck.passValue', 'beatsPctFallback',
+  'questionsPerBlock', 'rating.min', 'rating.max', 'feedbackMinSeconds', 'gapLabel.overAbove', 'gapLabel.underBelow',
+  'stratification.scoreBandLowMax', 'fastAnswerMs', 'quality.maxFastAnswers', 'quality.maxAwayAnswers', 'beatsPctFallback',
   'report.topicStrongMin', 'report.topicMidMin', 'feedbackTopicRow.strong', 'feedbackTopicRow.mid',
   'profileLimits.solvedCountMax', 'profileLimits.streakMax',
 ];
@@ -252,17 +257,16 @@ function checkConfig(cfg: unknown, p: string[]) {
   const f = 'config.json';
   if (!isObj(cfg)) return p.push(`${f}: not an object`);
   for (const k of CONFIG_NUMBERS) if (!isNum(get(cfg, k))) p.push(`${f}: "${k}" must be a number`);
-  for (const k of ['appVersion', 'studyName', 'pilotPrefix', 'attentionCheck.itemId']) {
+  for (const k of ['appVersion', 'studyName', 'pilotPrefix']) {
     if (!isStr(get(cfg, k))) p.push(`${f}: "${k}" must be a non-empty string`);
   }
   if (!LANG_IDS.includes(cfg.defaultLanguage as never)) p.push(`${f}: "defaultLanguage" must be one of ${LANG_IDS.join(', ')}`);
+  const levels = get(cfg, 'confidence.levels');
+  if (!Array.isArray(levels) || levels.length < 2 || !levels.every((v) => isNum(v) && v >= 0 && v <= 100)) {
+    p.push(`${f}: "confidence.levels" must be a list of at least 2 percentages, e.g. [25, 50, 75, 100]`);
+  } else if (levels.some((v, i) => i > 0 && v <= levels[i - 1])) p.push(`${f}: "confidence.levels" must go up`);
   const qfb = cfg.questionFeedbackBlocks;
   if (!Array.isArray(qfb) || !qfb.every((b) => b === 1 || b === 2)) p.push(`${f}: "questionFeedbackBlocks" must be a list of block numbers (1, 2), e.g. [2] or []`);
-  if (typeof cfg.showHowItWorks !== 'boolean') p.push(`${f}: "showHowItWorks" must be true or false`);
-  const c = cfg.confidence as Obj | undefined;
-  if (c && isNum(c.min) && isNum(c.max) && isNum(c.default) && (c.default < c.min || c.default > c.max || c.min >= c.max)) {
-    p.push(`${f}: confidence needs min < max and min ≤ default ≤ max`);
-  }
   const r = cfg.rating as Obj | undefined;
   if (r && isNum(r.min) && isNum(r.max) && r.min >= r.max) p.push(`${f}: rating.min must be below rating.max`);
 }
@@ -284,11 +288,12 @@ export function validateContent(raw: {
   config: unknown;
 }): Content {
   const p: string[] = [];
+  const topics = topicIds(raw.ui);
   checkConfig(raw.config, p);
-  checkQuestions(raw.questions, raw.config, p);
   checkUi(raw.ui, raw.config, p);
-  checkFeedback(raw.feedback, p);
-  checkPacks(raw.packs, p);
+  checkQuestions(raw.questions, raw.config, raw.feedback, topics, p);
+  checkFeedback(raw.feedback, topics, p);
+  checkPacks(raw.packs, topics, p);
   checkBold(raw.ui, 'ui-text.json', p);
   checkBold(raw.feedback, 'feedback.json', p);
   if (p.length) throw new ContentError(p);
@@ -303,5 +308,6 @@ export function validateContent(raw: {
     packs: raw.packs as PacksFile,
     config: raw.config as ConfigFile,
     byId,
+    topics,
   };
 }

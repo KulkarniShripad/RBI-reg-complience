@@ -1,12 +1,12 @@
-// Steps 7/9 (feedback screens) and 10-14: end ratings, pack, close, report, preference.
+// Step 5 (feedback screen) and steps 9-11: end survey, practice pack, report.
 
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { TOPIC_IDS, type Content, type PackType, type TopicId } from '../content/types';
-import { FeedbackCard, TopicRow } from '../components/FeedbackCard';
-import { ChoiceGroup, Label, PrimaryButton, RatingScale, Screen, Sub, Title, cx } from '../components/ui';
-import { groupBExtras, reportTopicRow } from '../lib/feedback';
-import type { CloseAnswers, FeedbackData, Group, Participant, Preference } from '../lib/model';
-import { fill, shuffle, slugTitle } from '../lib/util';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import type { Content, PackType, TopicId } from '../content/types';
+import { FeedbackCard, RichText, TopicBreakdown } from '../components/FeedbackCard';
+import { ChoiceGroup, Label, PrimaryButton, RatingScale, Screen, Sub, Title } from '../components/ui';
+import { correctByTopic, reportTopicRow } from '../lib/feedback';
+import type { EndSurvey, FeedbackData, Group, Participant } from '../lib/model';
+import { fill, slugTitle } from '../lib/util';
 
 export function FeedbackScreen({
   c,
@@ -46,41 +46,44 @@ export function FeedbackScreen({
   );
 }
 
-export function EndRatings({
-  c,
-  onDone,
-}: {
-  c: Content;
-  onDone: (items: Record<string, number>, order: string[]) => void;
-}) {
-  const u = c.ui.endRatings;
-  const [items] = useState(() => shuffle(u.items));
-  const [v, setV] = useState<Record<string, number>>({});
-  const complete = items.every((it) => v[it.id] != null);
+/** Belief in the solved count again, what they used to judge, and the seriousness check. */
+export function EndSurveyScreen({ c, group, onDone }: { c: Content; group: Group; onDone: (s: EndSurvey) => void }) {
+  const u = c.ui.endSurvey;
+  const b = c.ui.before;
+  const [belief, setBelief] = useState<number | null>(null);
+  const [judged, setJudged] = useState<string | null>(null);
+  const [serious, setSerious] = useState<string | null>(null);
+  const complete = belief !== null && judged && serious;
   return (
     <Screen
       footer={
         <PrimaryButton
           label={c.ui.question.button}
           disabled={!complete}
-          onClick={() => complete && onDone(v, items.map((it) => it.id))}
+          onClick={() => complete && onDone({ beliefEnd: belief!, judgedBy: judged!, serious: serious === 'yes' })}
         />
       }
     >
       <Title>{u.title}</Title>
-      {items.map((it) => (
-        <div key={it.id} className="card p-4">
-          <RatingScale
-            label={it.text}
-            min={c.config.rating.min}
-            max={c.config.rating.max}
-            low={u.low}
-            high={u.high}
-            value={v[it.id] ?? null}
-            onChange={(n) => setV((prev) => ({ ...prev, [it.id]: n }))}
-          />
-        </div>
-      ))}
+      <div className="card p-4">
+        <RatingScale
+          label={b.belief}
+          min={c.config.rating.min}
+          max={c.config.rating.max}
+          low={b.beliefLow}
+          high={b.beliefHigh}
+          value={belief}
+          onChange={setBelief}
+        />
+      </div>
+      <div className="card p-4">
+        <Label id="es-judged">{u.judgedBy.text}</Label>
+        <ChoiceGroup labelledBy="es-judged" options={u.judgedBy.options.filter((o) => group === 'B' || !o.groupBOnly)} value={judged} onChange={setJudged} />
+      </div>
+      <div className="card p-4">
+        <Label id="es-serious">{u.serious.text}</Label>
+        <ChoiceGroup labelledBy="es-serious" options={u.serious.options} value={serious} onChange={setSerious} />
+      </div>
     </Screen>
   );
 }
@@ -101,7 +104,7 @@ export function Pack({ c, onDone }: { c: Content; onDone: (topic: TopicId, type:
       </div>
       <div>
         <Label id="pk-topic">{u.topicLabel}</Label>
-        <ChoiceGroup labelledBy="pk-topic" options={c.ui.rateSelf.topics} value={topic} onChange={setTopic} />
+        <ChoiceGroup labelledBy="pk-topic" options={c.ui.topics} value={topic} onChange={setTopic} />
       </div>
       <ChoiceGroup<PackType>
         options={[
@@ -111,59 +114,6 @@ export function Pack({ c, onDone }: { c: Content; onDone: (topic: TopicId, type:
         value={type}
         onChange={setType}
       />
-    </Screen>
-  );
-}
-
-export function Close({ c, group, onDone }: { c: Content; group: Group; onDone: (a: CloseAnswers) => void }) {
-  const u = c.ui.close;
-  const isB = group === 'B';
-  const [m1, setM1] = useState<string | null>(null);
-  const [m2, setM2] = useState<string | null>(null);
-  const [o1, setO1] = useState<number | null>(null);
-  const [o2, setO2] = useState<string | null>(null);
-  const [o3, setO3] = useState<number | null>(null);
-  const complete = (!isB || m1) && m2 && o1 !== null && o2 && o3 !== null;
-  const { min, max } = c.config.rating;
-  return (
-    <Screen
-      footer={
-        <PrimaryButton
-          label={c.ui.question.button}
-          disabled={!complete}
-          onClick={() => complete && onDone({ M1: isB ? m1 : null, M2: m2!, O1: o1!, O2: o2!, O3: o3! })}
-        />
-      }
-    >
-      <Title>{u.title}</Title>
-      {isB && (
-        <div className="card p-4">
-          <Label id="cl-m1">{u.M1.text}</Label>
-          <ChoiceGroup
-            labelledBy="cl-m1"
-            options={[
-              ...TOPIC_IDS.map((t) => ({ id: t as string, label: c.feedback.topics[t].name })),
-              { id: 'dontRemember', label: u.M1.dontRemember },
-            ]}
-            value={m1}
-            onChange={setM1}
-          />
-        </div>
-      )}
-      <div className="card p-4">
-        <Label id="cl-m2">{u.M2.text}</Label>
-        <ChoiceGroup labelledBy="cl-m2" options={u.M2.options.filter((o) => isB || !o.groupBOnly)} value={m2} onChange={setM2} />
-      </div>
-      <div className="card p-4">
-        <RatingScale label={u.O1.text} min={min} max={max} low={u.O1.low} high={u.O1.high} value={o1} onChange={setO1} />
-      </div>
-      <div className="card p-4">
-        <Label id="cl-o2">{u.O2.text}</Label>
-        <ChoiceGroup labelledBy="cl-o2" options={u.O2.options} value={o2} onChange={setO2} />
-      </div>
-      <div className="card p-4">
-        <RatingScale label={u.O3.text} min={min} max={max} low={u.O3.low} high={u.O3.high} value={o3} onChange={setO3} />
-      </div>
     </Screen>
   );
 }
@@ -186,11 +136,12 @@ export function Report({
   onContinue: () => void;
 }) {
   const u = c.ui.report;
+  const total = c.config.questionsPerBlock;
   const blocks = [p.block1, p.block2];
   const answers = [...(p.block1?.answers ?? []), ...(p.block2?.answers ?? [])];
-  const row = reportTopicRow(answers, c);
-  const pack = p.packType && p.packTopic ? c.packs[p.packType][p.packTopic] : [];
+  const pack = p.packType && p.packTopic ? (c.packs[p.packType][p.packTopic] ?? []) : [];
   const conf = [p.derived?.meanConf1, p.derived?.meanConf2];
+  const perTopic = answers.length / c.topics.length;
   return (
     <Screen footer={withdrawn ? undefined : <PrimaryButton label={c.ui.question.button} onClick={onContinue} />}>
       <Title>{u.title}</Title>
@@ -198,21 +149,26 @@ export function Report({
         {blocks.map((b, i) =>
           b ? (
             <p key={i}>
-              {fill(u.blockLine, {
-                block: i + 1,
-                guess: b.scoreGuess ?? '–',
-                score: b.score ?? b.answers.filter((a) => a.correct).length,
-                conf: conf[i] != null ? Math.round(conf[i]!) : '–',
-              })}
+              <RichText
+                text={fill(u.blockLine, {
+                  block: i + 1,
+                  total,
+                  guess: b.scoreGuess ?? '–',
+                  score: b.score ?? b.answers.filter((a) => a.correct).length,
+                  conf: conf[i] != null ? Math.round(conf[i]!) : '–',
+                })}
+              />
             </p>
           ) : null,
         )}
       </section>
-      <section className="card p-4">
-        <H2>{u.topicsTitle}</H2>
-        <TopicRow row={row} c={c} />
-        <p className="mt-2.5 text-[13px] text-slate-500">{u.legend}</p>
-      </section>
+      {answers.length > 0 && (
+        <section className="card p-4">
+          <H2>{fill(u.topicsTitle, { n: answers.length })}</H2>
+          <TopicBreakdown row={reportTopicRow(answers, c)} correct={correctByTopic(answers, c)} perTopic={perTopic} c={c} />
+          <p className="mt-2.5 text-[13px] text-slate-500">{u.legend}</p>
+        </section>
+      )}
       {pack.length > 0 && (
         <section className="card p-4">
           <H2>{u.packTitle}</H2>
@@ -253,55 +209,6 @@ export function Report({
           {u.withdraw}
         </button>
       )}
-    </Screen>
-  );
-}
-
-/** Static mock-ups of the two feedback cards, built from this participant's own Block 2. */
-export function PreferenceScreen({
-  c,
-  p,
-  onDone,
-}: {
-  c: Content;
-  p: Participant;
-  onDone: (pref: Preference) => void;
-}) {
-  const u = c.ui.preference;
-  const [pref, setPref] = useState<Preference | null>(null);
-  const label = (id: string) => u.options.find((o) => o.id === id)?.label ?? id;
-  const fb = p.feedback2 ?? p.feedback1;
-  const blockNo = p.feedback2 ? 2 : 1;
-  const mock = useMemo(() => {
-    if (!fb) return null;
-    const answers = (blockNo === 2 ? p.block2 : p.block1)?.answers ?? [];
-    const extras = p.group === 'B' && fb.topicRow ? fb : groupBExtras(answers, c, Math.random);
-    return { ...fb, strong: extras.strong, workOn: extras.workOn, tip: extras.tip, topicRow: extras.topicRow };
-  }, [fb, blockNo, p.group, p.block1, p.block2, c]);
-
-  return (
-    <Screen wide footer={<PrimaryButton label={c.ui.question.button} disabled={!pref} onClick={() => pref && onDone(pref)} />}>
-      <Title>{u.title}</Title>
-      {mock && (
-        <div className="grid gap-4 md:grid-cols-2" aria-hidden>
-          {(['A', 'B'] as const).map((g) => (
-            <div key={g} className={cx('space-y-2', pref === g && 'rounded-2xl ring-2 ring-accent-600 ring-offset-4 ring-offset-slate-50')}>
-              <span className="inline-flex h-8 min-w-8 items-center justify-center rounded-lg bg-slate-900 px-2.5 text-[15px] font-semibold text-white">
-                {label(g)}
-              </span>
-              <div className="pointer-events-none select-none">
-                <FeedbackCard fb={mock} block={blockNo} showGroupB={g === 'B'} c={c} />
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-      <ChoiceGroup<Preference>
-        cols={3}
-        options={u.options.map((o) => ({ id: o.id as Preference, label: o.label }))}
-        value={pref}
-        onChange={setPref}
-      />
     </Screen>
   );
 }
