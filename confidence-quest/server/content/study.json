@@ -1,0 +1,102 @@
+{
+  "status": "placeholder",
+  "note": "Texts marked [TEAM] and the consent/debrief wording are placeholders (DECISIONS D1, D2, D8). Every setting here is a content edit; see docs/decision_register.md.",
+  "study_title": "Coding Practice Study",
+  "consent": {
+    "version": "consent-PLACEHOLDER-v0",
+    "title": "Before you begin",
+    "paragraphs": [
+      "[TEAM: replace with the approved consent text, D1.]",
+      "You are invited to take part in a short research study about learning to code. You will answer a short survey, nine multiple-choice coding questions, and a second short survey. It takes about 20-30 minutes.",
+      "Taking part is voluntary. You can stop at any time using the 'Stop taking part' link at the bottom of the page, with no penalty.",
+      "We do not collect your name, email, student ID or any other identifying information. At the end you will get a random participant code. Keep it if you want to ask for your answers to be removed later."
+    ],
+    "checkbox_label": "I have read the information above and I agree to take part.",
+    "agree_button": "Start",
+    "decline_button": "I do not want to take part",
+    "declined_title": "Thank you",
+    "declined_paragraphs": ["Nothing has been recorded. You can close this page."]
+  },
+  "surveys": {
+    "pre": {
+      "title": "Before the questions",
+      "intro": "Please tell us how much you agree with each statement. There are no right or wrong answers."
+    },
+    "post": {
+      "title": "After the questions",
+      "intro": "Please tell us how much you agree with each statement now. There are no right or wrong answers."
+    },
+    "submit_button": "Submit",
+    "missing_message": "Please answer every statement before continuing."
+  },
+  "instructions": {
+    "title": "Instructions",
+    "paragraphs": [
+      "You will now see nine multiple-choice questions about sliding windows, two pointers and arrays.",
+      "Questions appear one at a time. Choose one answer and press Submit. You cannot skip a question or go back.",
+      "After each answer you will see whether it was correct.",
+      "Please work on your own and do not use other websites, notes or tools."
+    ],
+    "start_button": "Start question 1"
+  },
+  "questions": {
+    "order": "fixed",
+    "show_section": true,
+    "show_difficulty_labels": false,
+    "dont_know_option": { "enabled": false, "label": "I don't know" },
+    "time_limit": { "enabled": false, "total_seconds": 1200, "on_expiry": "end_test" },
+    "submit_button": "Submit answer",
+    "progress_text": "Question {n} of {total}"
+  },
+  "feedback": {
+    "correct_text": "Correct",
+    "incorrect_text": "Incorrect",
+    "next_button": "Next question",
+    "last_button": "Continue"
+  },
+  "final_screen": {
+    "title": "You have finished the questions",
+    "score_text": "You answered {correct} of {total} questions correctly.",
+    "control": {
+      "show_score": true,
+      "paragraphs": ["Next there is one more short survey."]
+    },
+    "experimental": {
+      "show_score": true,
+      "paragraphs": ["Next there is one more short survey."]
+    },
+    "continue_button": "Continue to the last survey"
+  },
+  "debrief": {
+    "title": "Thank you for taking part",
+    "paragraphs": [
+      "[TEAM: replace with the approved debrief, D1.]",
+      "This study looks at whether game features on coding platforms, such as tokens, badges and leaderboards, change how confident students feel about coding.",
+      "Participants were randomly given one of two versions of the same test. Both versions had the same nine questions and told you whether each answer was correct. One version also showed tokens, a badge and a leaderboard. Comparing the two versions lets us see what the game features add.",
+      "The leaderboard only ever showed real results from people who took part."
+    ],
+    "code_label": "Your participant code",
+    "code_help": "Write this code down. It is the only way to link your answers to you. If you take part in an interview, you can choose to share it.",
+    "withdraw_paragraphs": [
+      "If you want your answers removed from the study, give your participant code to the research team: [TEAM: contact details and deadline]."
+    ]
+  },
+  "withdraw": {
+    "link_label": "Stop taking part",
+    "confirm_text": "Are you sure you want to stop? You will not be able to continue afterwards.",
+    "title": "You have stopped taking part",
+    "paragraphs": ["Thank you for your time. You can close this page. Please tell the proctor you have finished."]
+  },
+  "ui": {
+    "connection_lost": "Connection lost. Please raise your hand and tell the proctor.",
+    "retry_button": "Try again",
+    "generic_error": "Something went wrong. Please tell the proctor.",
+    "time_left_label": "Time left"
+  },
+  "allocation": {
+    "block_size": 2,
+    "main_slots": 60,
+    "pilot_slots": 20,
+    "separate_pilot_list": true
+  }
+}

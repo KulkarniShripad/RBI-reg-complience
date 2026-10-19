@@ -1,0 +1,90 @@
+{
+  "status": "placeholder",
+  "note": "DECISION D9: these confidence items are working placeholders so the app runs end to end. Replace the wording, scale and reverse flags with the team's approved items before the pilot, then set status to \"approved\". Extra measures stay disabled until the team supplies their wording.",
+  "default_scale": {
+    "min": 1,
+    "max": 7,
+    "labels": { "1": "Strongly disagree", "4": "Neither agree nor disagree", "7": "Strongly agree" }
+  },
+  "items": [
+    {
+      "id": "conf_1",
+      "measure": "confidence",
+      "phases": ["pre", "post"],
+      "reverse": false,
+      "text": "I feel confident solving coding problems that use sliding windows, two pointers or arrays."
+    },
+    {
+      "id": "conf_2",
+      "measure": "confidence",
+      "phases": ["pre", "post"],
+      "reverse": false,
+      "text": "I can work out what a short piece of code does without running it."
+    },
+    {
+      "id": "conf_3",
+      "measure": "confidence",
+      "phases": ["pre", "post"],
+      "reverse": false,
+      "text": "When I get stuck on a coding problem, I believe I can find a way to solve it."
+    },
+    {
+      "id": "conf_4",
+      "measure": "confidence",
+      "phases": ["pre", "post"],
+      "reverse": true,
+      "text": "I feel unsure of myself when I have to answer coding questions on my own."
+    },
+    {
+      "id": "conf_5",
+      "measure": "confidence",
+      "phases": ["pre", "post"],
+      "reverse": false,
+      "text": "I would feel confident answering questions like these in a technical interview."
+    },
+    {
+      "id": "prior_experience",
+      "measure": "prior_experience",
+      "phases": ["pre"],
+      "enabled": false,
+      "text": "[Team to supply wording: prior coding experience]",
+      "scale": { "min": 1, "max": 5, "labels": { "1": "None", "5": "A lot" } }
+    },
+    {
+      "id": "competitiveness",
+      "measure": "competitiveness",
+      "phases": ["pre"],
+      "enabled": false,
+      "text": "[Team to supply wording: competitiveness]"
+    },
+    {
+      "id": "postdiction",
+      "measure": "postdiction",
+      "phases": ["post"],
+      "enabled": false,
+      "text": "How many of the nine questions do you think you got right?",
+      "scale": { "min": 0, "max": 9, "labels": {} }
+    },
+    {
+      "id": "manipulation_check",
+      "measure": "manipulation_check",
+      "phases": ["post"],
+      "enabled": false,
+      "text": "[Team to supply wording: manipulation check]"
+    },
+    {
+      "id": "pressure",
+      "measure": "pressure",
+      "phases": ["post"],
+      "enabled": false,
+      "text": "[Team to supply wording: perceived pressure]"
+    },
+    {
+      "id": "enjoyment",
+      "measure": "enjoyment",
+      "phases": ["post"],
+      "enabled": false,
+      "text": "[Team to supply wording: enjoyment]"
+    }
+  ]
+}

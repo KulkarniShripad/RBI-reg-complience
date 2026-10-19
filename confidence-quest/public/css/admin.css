@@ -1,0 +1,87 @@
+.admin {
+  max-width: 960px;
+}
+.login {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.login input,
+.admin-row input {
+  font: inherit;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.mode {
+  display: inline-block;
+  padding: 2px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+.mode-live {
+  background: var(--correct-bg);
+  color: var(--correct);
+}
+.mode-pilot {
+  background: var(--warn-bg);
+  color: #8a5a00;
+}
+.warnings {
+  background: var(--warn-bg);
+  border: 1px solid #e6c870;
+  border-radius: 8px;
+  padding: 10px 14px 10px 32px;
+  margin: 0 0 18px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.stat {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+.stat .big {
+  font-size: 1.8rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.stat .label {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+table.status {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 18px;
+  font-variant-numeric: tabular-nums;
+}
+table.status th,
+table.status td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  text-align: right;
+}
+table.status th:first-child,
+table.status td:first-child {
+  text-align: left;
+}
+.admin section {
+  margin-bottom: 22px;
+}
+.admin-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.small-print {
+  font-size: 0.85rem;
+  color: var(--muted);
+}

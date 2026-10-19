@@ -1,0 +1,30 @@
+{
+  "name": "confidence-quest",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "better-sqlite3": "^12.11.1",
+    "express": "^5.3.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1",
+    "supertest": "^7.3.1",
+    "vitest": "^5.0.5"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "check:content": "node scripts/check_content.js",
+    "allocation": "node scripts/generate_allocation.js",
+    "backup": "node scripts/backup.js",
+    "export": "node scripts/export_all.js",
+    "screenshots": "SCREENSHOTS=1 playwright test"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "status": "provisional",
+  "note": "DECISIONS D4-D7 and D17: the values below are the design review's candidates (points 1/2/3 by difficulty, one effort-based badge, pseudonymous top-5 leaderboard plus the participant's own row, ties broken by finishing time). They are NOT approved. Edit this file to change any rule; no code change is needed.",
+  "instructions_extra": "In this version you earn tokens for correct answers, can unlock a badge, and will see how you rank on a leaderboard at the end.",
+  "tokens": {
+    "enabled": true,
+    "label": "tokens",
+    "award_on": "correct",
+    "points_by_difficulty": { "Easy": 1, "Medium": 2, "Hard": 3 },
+    "default_points": 1
+  },
+  "badges": {
+    "enabled": true,
+    "definitions": [
+      {
+        "key": "finisher",
+        "name": "Finisher",
+        "description": "Answered all nine questions",
+        "criteria": { "type": "answered_count", "gte": 9 }
+      }
+    ]
+  },
+  "feedback_panel": {
+    "show_tokens_earned": true,
+    "show_total_tokens": true,
+    "show_new_badges": true
+  },
+  "leaderboard": {
+    "enabled": true,
+    "title": "Leaderboard",
+    "metric": "tokens",
+    "metric_label": "Tokens",
+    "top_n": 5,
+    "include_self_row": true,
+    "include_pilot_results": false,
+    "tie_break": "earlier_finish",
+    "names": {
+      "adjectives": ["Swift", "Bright", "Calm", "Bold", "Clever", "Quick", "Steady", "Keen", "Lucky", "Brave", "Sharp", "Witty"],
+      "nouns": ["Otter", "Falcon", "Panda", "Tiger", "Koala", "Heron", "Lynx", "Dolphin", "Fox", "Owl", "Badger", "Gecko"]
+    },
+    "self_label": "You",
+    "empty_text": "No other results yet."
+  },
+  "rank": {
+    "show": "both",
+    "rank_text": "You are ranked {rank} of {of}.",
+    "percentile_text": "That puts you in the top {top_percent}%."
+  }
+}

@@ -9,6 +9,7 @@
 | `docs/AUTO_CHECK.md` | **automatic compliance check**: upload a bank's annual report / Pillar 3 disclosure / figures file, get a compliance report |
 | `sample-data/` | test documents: real published bank figures (with sources) and fictional test cases with known results — see its [README](sample-data/README.md) |
 | `docs/NETWORK_GRAPH.md` | the counterparty network (graph) subsystem: data model, algorithms, rules, API |
+| `confidence-quest/` | separate project: the gamification-and-confidence experiment web app (Node/Express/SQLite) — see its [README](confidence-quest/README.md) |
 
 ## Run it
 
